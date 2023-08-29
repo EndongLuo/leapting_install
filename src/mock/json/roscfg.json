@@ -1,0 +1,17 @@
+{
+    "pvm":{
+        "pvm_width": "1134",
+        "pvm_length": "2382",
+        "install_gap": "20"
+    },
+    "drive": {
+        "type": "teemo",
+        "wheel_base": 2.0
+    },
+    "laser": {
+        "type": "rslidar_16",
+        "x": 2.33,
+        "angle_min": -1.6,
+        "angle_max": 1.6
+    }
+}

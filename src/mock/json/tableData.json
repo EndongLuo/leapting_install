@@ -1,0 +1,17 @@
+[
+    {
+        "uid": "001",
+        "username": "admin",
+        "phone": "1386666666",
+        "role": "超级管理员",
+        "status": false
+    },
+    {
+        "uid": "002",
+        "username": "test",
+        "phone": "1386666666",
+        "role": "研发人员",
+        "status": true
+    }
+    
+]

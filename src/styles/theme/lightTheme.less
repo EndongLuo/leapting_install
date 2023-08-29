@@ -1,0 +1,49 @@
+@baseBackColor: #e1dee4;
+@baseColor: #000000a6;
+@baseBackColor2: #dcd8e3;
+
+body.leapting-admin-lightTheme {
+    .el-menu {
+      // border-right: solid 1px #e6e6e600 !important; 
+      background-color: @baseBackColor !important;
+      .el-menu-item, .el-submenu__title{
+        color: @baseColor;
+        i{
+          color: @baseColor;
+        }
+      }
+    }
+    .el-header {
+      background-color: @baseBackColor;
+      color: @baseColor;
+    }
+
+    .el-main {
+      background-color: @baseBackColor2;
+    }
+  
+    .map_left,
+    .map_right {
+      background: @baseBackColor;
+      .left_list {
+        .l_icon {
+          span {
+            color: @baseColor;
+          }
+        }
+      }
+    }
+  
+
+  .leaflet-container {
+    background: #e1dee4 !important;
+  }
+  .leaflet-bar a {
+    background-color: @baseBackColor;
+    border-bottom: 1px solid @baseBackColor2;
+    color: @baseColor;
+  }
+  .tips {
+    color: #202020;
+  }
+}

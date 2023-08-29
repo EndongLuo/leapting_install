@@ -1,0 +1,65 @@
+[
+    {
+        "message": "Stale",
+        "name": "/robot_2/ALGORITHM",
+        "level": 3
+    },
+    {
+        "message": "ok",
+        "name": "/robot_2/STATUS/MAINTENANCE",
+        "level": 0
+    },
+    {
+        "message": "Stale",
+        "name": "/robot_2/STATUS/MOTTON/LEFT",
+        "level": 3
+    },{
+        "message": "Stale",
+        "name": "/robot_2/STATUS/MOTTON/RIGHT",
+        "level": 3
+    },{
+        "message": "Stale",
+        "name": "/robot_2/STATUS/MOTTON/NACK",
+        "level": 3
+    },{
+        "message": "Stale",
+        "name": "/robot_2/STATUS/MOTTON",
+        "level": 3
+    },{
+        "message": "Stale",
+        "name": "/robot_2/STATUS/START/RELAY",
+        "level": 3
+    },{
+        "message": "Stale",
+        "name": "/robot_2/STATUS/START",
+        "level": 3
+    },{
+        "message": "ok",
+        "name": "/robot_2/STATUS/TASK",
+        "level": 0
+    },{
+        "message": "ok",
+        "name": "/robot_2/STATUS",
+        "level": 2
+    },{
+        "message": "ok",
+        "name": "/robot_2",
+        "level": 2
+    },{
+        "message": "Stale",
+        "name": "/robot_1/STATUS/START",
+        "level": 3
+    },{
+        "message": "ok",
+        "name": "/robot_1/STATUS/TASK",
+        "level": 0
+    },{
+        "message": "ok",
+        "name": "/robot_1/STATUS",
+        "level": 2
+    },{
+        "message": "ok",
+        "name": "/robot_1",
+        "level": 2
+    }
+]
