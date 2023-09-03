@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <router-view />
+    <keep-alive exclude='three'>
+  <router-view/>
+</keep-alive>
+    <!-- <router-view /> -->
 
      <!-- 交互弹框 -->
      <el-dialog  :visible.sync="dialogVisible" width="80%" :before-close="handleClose" center
@@ -38,6 +41,7 @@ export default {
       viewer: null,
       ws: 'ws://10.168.5.252:9090',
       dialogVisible: false,
+      flag:false,
     };
   },
   mounted() {
@@ -53,10 +57,11 @@ export default {
     connect() {
       var _this = this;
       // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.252:9090" }); // 杭叉
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
       this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.251:9090" }); // 小库卡
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.253:9090" }); // 夹爪
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.240:9090" }); // 巡检
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 磁铁
       // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
       // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.238:9090" }); // zeng
 
@@ -122,16 +127,18 @@ export default {
       // console.log(taskState);
         
       if (typeof taskState == 'undefined') return;
-      if (taskState.indexOf('UI') != -1 && !this.dialogVisible){
-        console.log(1);
+      if (taskState.indexOf('UI') != -1 && !this.dialogVisible &&!this.flag){
+        // console.log(1);
+        this.flag = true;
         this.dialogVisible = true;
       } 
-      else if(taskState.indexOf('UI') == -1 && this.dialogVisible) setTimeout(()=>{ this.dialogVisible = false;}, 2000);
+      else if(taskState.indexOf('UI') == -1 && this.dialogVisible) setTimeout(()=>{ this.dialogVisible = false;}, 0);
       
     },
     // 放回流程
     putBack() {
       this.dialogVisible = false;
+      this.flag = false;
       this.uichoose("withdraw");
       this.$message({
         type: 'info',
@@ -141,6 +148,7 @@ export default {
     // 安装流程
     installPV() {
       this.dialogVisible = false;
+      this.flag = false;
       this.uichoose("next");
       this.$message({
         type: 'success',

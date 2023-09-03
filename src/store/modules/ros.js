@@ -46,6 +46,9 @@ const mutations = {
         let [key, value] = pair.split(/:\s*/);
         wifiobj[key] = value;
       });
+      wifiobj.downspeed/=8;
+      wifiobj.upspeed/=8;
+      
       // console.log(wifiobj);
 
       if(!diag) return
@@ -268,18 +271,6 @@ const getters = {
   // 树形诊断信息
   // treeDiagnostics: ({ diagnostics }) => dataProcess(diagnostics),
   treeDiagnostics: ({ diagnostics }) => diagnostics,
-  // wifi: ({Device}) => {
-  //   console.log(Device)
-  //   if (Device.SYSTEM.underling) return
-  //   var wifi = Device.SYSTEM.underling[0].underling[0].message;
-  //   let obj = {};
-
-  //   wifi.split(/,\s+/).forEach(pair => {
-  //     let [key, value] = pair.split(/:\s*/);
-  //     obj[key] = value;
-  //   });
-  //   return obj
-  // },
 
   // wifi: ({jsonAgg}) => {
   //   // if (!diagnostics.SYSTEM) return
@@ -294,8 +285,6 @@ const getters = {
   //   return obj
   // },
 
-  // treeDiagnostics: ({ Device }) => dataProcess(Device),
-
 
   getTabPane: ({ diagnostics, elTabPane }) => {
     var data1 = diagnostics;
@@ -308,15 +297,6 @@ const getters = {
     }
     elTabPane[4].num = data1.length;
   },
-  // getTabPane: ({ Device, elTabPane }) => {
-  //   var data1 = dataProcess(Device);
-  //   for (var i = 0; i < 4; i++) {
-  //     var num = 0;
-  //     data1.forEach(item => { if (item.level == i) num++ })
-  //     elTabPane[i].num = num;
-  //   }
-  //   elTabPane[4].num = data1.length;
-  // },
 
   // 诊断信息分类
   getClassify: (state) => (tab) => {
@@ -325,12 +305,6 @@ const getters = {
     state.classifyDiagnostics = data1;
     // state.classifyDiagnostics = dataProcess(data1);
   },
-  // getClassify: (state) => (tab) => {
-  //   var data1 = dataProcess(state.Device);
-  //   if (tab !== "4") data1 = data1.filter((d) => d.level == Number(tab));
-  //   state.classifyDiagnostics = data1;
-  //   // state.classifyDiagnostics = dataProcess(data1);
-  // }
 };
 
 export default {

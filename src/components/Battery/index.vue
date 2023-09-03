@@ -57,6 +57,7 @@ export default {
 .panel(@color) {
   .panel {
     border-color: @color;
+    
     &:before {
       background: @color;
     }
@@ -66,6 +67,7 @@ export default {
   }
   .text {
     color: @color;
+    overflow: hidden;
   }
 }
 .electric-panel {

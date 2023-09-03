@@ -5,11 +5,6 @@ const zh = {
       name: 'English'
   },
   ...zhLocale,
-  user: {
-      login:'登录',
-      register:'注册',
-      loginUsername:'请输入邮箱/手机号',
-  },
   mains:{
     confirm:'确认',
     cancel:'取消',
@@ -19,7 +14,7 @@ const zh = {
   },
   nav:{
     index: '首页',
-    flexbe:'任务',
+    task:'任务',
     diagnostic:'诊断',
     config:'配置',
     map:'地图'
@@ -43,8 +38,7 @@ const zh = {
     notconnect:'未连接',
     battery: '电池',
     network:'网络',
-    angular:'角速度',
-    linear:'线速度'
+    speed:'速度'
   },
   map:{
     selectmap:'选择地图',

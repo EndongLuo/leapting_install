@@ -26,97 +26,97 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import gsap from "gsap"; // 导入动画库
 let transforms = [
-{
-  child_frame_id:"base_footprint",
-  transform:{ 
-    rotation:{ y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-    translation:{ y: 0.22960672748231425, x: -0.9876049593204282, z: -0.03639902950190259 }
-  }
-},
-{
-  child_frame_id:"base_arm",
-  transform:{ 
-    rotation:{ y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-    translation:{ y: 0.22960672748231425, x: -0.9876049593204282, z: -0.33639902950190259 }
-  }
-},
-{
-  child_frame_id:"front_left_link",
-  transform:{ 
-    rotation:{y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148},
-    translation:{y: 0.5707992483490187, x: 0.031302915974368864, z: -0.9818859503881016}
-  }
-},
-{
-  child_frame_id:"back_left_link",
-  transform:{ 
-    rotation:{y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148},
-    translation:{y: 0.9549944760017427, x: -1.6363529780620216, z: -1.0386257145271873}
-  }
-},
-{
-  child_frame_id:"front_right_link",
-  transform:{ 
-    rotation:{y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148},
-    translation:{y: -0.5691167115074701, x: -0.23973535871944426, z: -0.958943694277141}
-  }
-},
-{
-  child_frame_id:"back_right_link",
-  transform:{ 
-    rotation:{y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148},
-    translation:{y: -0.16770409839755607, x: -1.9033050219505354, z: -1.0160796349228087}
-  }
-},
-{
-  child_frame_id:"link_1",
-  transform:{ 
-    rotation:{y: -0.008210107771176877, x: -0.025815693856549585, z: 0.6166795934254456, w: 0.7867480048488952},
-    translation:{y: 0.23446089481852445, x: -0.9971750398707624, z: -0.28827703120003797}
-  }
-},
-{
-  child_frame_id:"link_2",
-  transform:{ 
-    rotation:{y: -0.6441493376497155, x: -0.3323355477073564, z: 0.16081810822919154, w: 0.6698971940537355},
-    translation:{y: 0.5694412523732717, x: -0.9452668231853263, z: 0.2903753488948912}
-  }
-},
-{
-  child_frame_id:"link_3",
-  transform:{ 
-    rotation:{y: -0.6448408424829656, x: -0.3309918025123512, z: 0.15942105269032059, w: 0.6702310366542228},
-    translation: {y: 1.282452425624788, x: -0.6985149943756066, z: 1.165717911436868}
-  }
-},
-{
-  child_frame_id:"link_4",
-  transform:{ 
-    rotation:{y: -0.5771395804664744, x: -0.7011076923671675, z: -0.34609392562934105, w: 0.23574754082501026},
-    translation:{y: 2.015172540089084, x: -0.6016969487282604, z: 0.683753441899478}
-  }
-},
-{
-  child_frame_id:"link_5",
-  transform:{ 
-    rotation:{y: -0.44627620624174424, x: -0.5790478771016361, z: 0.43383079120601, w: 0.526623155936133},
-    translation:{y: 2.2849251631944947, x: -0.5841391447582419, z: 0.4514637610105058}
-  }
-},
-{
-  child_frame_id:"link_6",
-  transform:{ 
-    rotation:{y: -0.6257569738292328, x: -0.7790869420377798, z: -0.008638498244933667, w: -0.03710960520371138},
-    translation:{y: 2.263796123429619, x: -0.5165812363834075, z: 0.2860234615226485}
-  }
-},
-{
-  child_frame_id:"tool0",
-  transform:{ 
-    rotation:{y: 0.020131909532110245, x: -0.03234751314540283, z: 0.9933745032102814, w: 0.10842251142464311},
-    translation:{y: 2.248105392757048, x: -0.49658785394669336, z: -0.0532325313131546}
-  }
-},
+  {
+    child_frame_id: "base_footprint",
+    transform: {
+      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
+      translation: { y: 0.22960672748231425, x: -0.9876049593204282, z: -0.03639902950190259 }
+    }
+  },
+  {
+    child_frame_id: "base_arm",
+    transform: {
+      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
+      translation: { y: 0.22960672748231425, x: -0.9876049593204282, z: -0.33639902950190259 }
+    }
+  },
+  {
+    child_frame_id: "front_left_link",
+    transform: {
+      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
+      translation: { y: 0.5707992483490187, x: 0.031302915974368864, z: -0.9818859503881016 }
+    }
+  },
+  {
+    child_frame_id: "back_left_link",
+    transform: {
+      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
+      translation: { y: 0.9549944760017427, x: -1.6363529780620216, z: -1.0386257145271873 }
+    }
+  },
+  {
+    child_frame_id: "front_right_link",
+    transform: {
+      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
+      translation: { y: -0.5691167115074701, x: -0.23973535871944426, z: -0.958943694277141 }
+    }
+  },
+  {
+    child_frame_id: "back_right_link",
+    transform: {
+      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
+      translation: { y: -0.16770409839755607, x: -1.9033050219505354, z: -1.0160796349228087 }
+    }
+  },
+  {
+    child_frame_id: "link_1",
+    transform: {
+      rotation: { y: -0.008210107771176877, x: -0.025815693856549585, z: 0.6166795934254456, w: 0.7867480048488952 },
+      translation: { y: 0.23446089481852445, x: -0.9971750398707624, z: -0.28827703120003797 }
+    }
+  },
+  {
+    child_frame_id: "link_2",
+    transform: {
+      rotation: { y: -0.6441493376497155, x: -0.3323355477073564, z: 0.16081810822919154, w: 0.6698971940537355 },
+      translation: { y: 0.5694412523732717, x: -0.9452668231853263, z: 0.2903753488948912 }
+    }
+  },
+  {
+    child_frame_id: "link_3",
+    transform: {
+      rotation: { y: -0.6448408424829656, x: -0.3309918025123512, z: 0.15942105269032059, w: 0.6702310366542228 },
+      translation: { y: 1.282452425624788, x: -0.6985149943756066, z: 1.165717911436868 }
+    }
+  },
+  {
+    child_frame_id: "link_4",
+    transform: {
+      rotation: { y: -0.5771395804664744, x: -0.7011076923671675, z: -0.34609392562934105, w: 0.23574754082501026 },
+      translation: { y: 2.015172540089084, x: -0.6016969487282604, z: 0.683753441899478 }
+    }
+  },
+  {
+    child_frame_id: "link_5",
+    transform: {
+      rotation: { y: -0.44627620624174424, x: -0.5790478771016361, z: 0.43383079120601, w: 0.526623155936133 },
+      translation: { y: 2.2849251631944947, x: -0.5841391447582419, z: 0.4514637610105058 }
+    }
+  },
+  {
+    child_frame_id: "link_6",
+    transform: {
+      rotation: { y: -0.6257569738292328, x: -0.7790869420377798, z: -0.008638498244933667, w: -0.03710960520371138 },
+      translation: { y: 2.263796123429619, x: -0.5165812363834075, z: 0.2860234615226485 }
+    }
+  },
+  {
+    child_frame_id: "tool0",
+    transform: {
+      rotation: { y: 0.020131909532110245, x: -0.03234751314540283, z: 0.9933745032102814, w: 0.10842251142464311 },
+      translation: { y: 2.248105392757048, x: -0.49658785394669336, z: -0.0532325313131546 }
+    }
+  },
 ];
 
 let list = {
@@ -151,6 +151,7 @@ export default {
       controls: null,
       carPosition: { x: 0, y: 0, z: 0 },
       farScreen: true,
+      ip: null
     };
   },
   mounted() {
@@ -195,8 +196,10 @@ export default {
   computed: {
     ...mapState("ros", ["ros"]),
   },
-  beforeDestory(){
-    this.renderer = null
+  beforeDestory() {
+    console.log(1);
+    cancelAnimationFrame();
+    console.log(2);
   },
   methods: {
     rosAction() {
@@ -258,6 +261,10 @@ export default {
       Goal.on("result", (result) => {
         console.log("result: ", result);
       });
+    },
+    regexip(ws) {
+      const regex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
+      return ws.match(regex)[1];
     },
     // 初始化
     init() {
@@ -359,138 +366,23 @@ export default {
       );
       this.scene.add(group);
 
+      this.ip = this.regexip(this.ros.socket.url)
       // 车子模型
+      if (this.ip == '10.168.5.251') this.selectModel('hc', loader)
+      else if (this.ip == '10.168.5.246') this.selectModel('dkk', loader)
+
+    },
+    // 选择
+    selectModel(name, loader) {
       for (const key in list) {
-        loader.load(`/hc/${key}.STL`, (geometry) => {
+        loader.load(`/${name}/${key}.STL`, (geometry) => {
           const material = new THREE.MeshLambertMaterial({ color: list[key].color });
           list[key].mash = new THREE.Mesh(geometry, material);
-
-          // list[key].mash.position = {};
-          // 材料位姿
-          // list[key].mesh.position.set(list[key].position); 
 
           list[key].mash.castShadow = true;
           group.add(list[key].mash);
         });
       }
-
-      // // base
-      // loader.load(`/hc/base.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0x659e1b });
-      //   base = new THREE.Mesh(geometry, material);
-
-      //   base.castShadow = true;
-      //   group.add(base);
-      // });
-
-      // // front_left
-      // loader.load(`/hc/front_left.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0x58596b });
-      //   front_left = new THREE.Mesh(geometry, material);
-
-      //   front_left.castShadow = true;
-      //   group.add(front_left);
-      // });
-
-      // // front_right
-      // loader.load(`/hc/front_right.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0x58596b });
-      //   front_right = new THREE.Mesh(geometry, material);
-
-      //   front_right.castShadow = true;
-      //   group.add(front_right);
-      // });
-
-      // // back_left
-      // loader.load(`/hc/back_left.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0x58596b });
-      //   back_left = new THREE.Mesh(geometry, material);
-
-      //   back_left.castShadow = true;
-      //   group.add(back_left);
-      // });
-
-      // // back_right
-      // loader.load(`/hc/back_right.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0x58596b });
-      //   back_right = new THREE.Mesh(geometry, material);
-
-      //   back_right.castShadow = true;
-      //   group.add(back_right);
-      // });
-
-      // // base_arm
-      // loader.load(`/hc/base_arm.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xfd8d3a });
-      //   base_arm = new THREE.Mesh(geometry, material);
-
-      //   base_arm.castShadow = true;
-      //   group.add(base_arm);
-      // });
-
-      // // link_1
-      // loader.load(`/hc/link_1.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xfd8d3a });
-      //   link_1 = new THREE.Mesh(geometry, material);
-
-      //   link_1.castShadow = true;
-      //   group.add(link_1);
-      // });
-
-      // // link_2
-      // loader.load(`/hc/link_2.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xfd8d3a });
-      //   link_2 = new THREE.Mesh(geometry, material);
-
-      //   link_2.castShadow = true;
-      //   group.add(link_2);
-      // });
-
-      // // link_3
-      // loader.load(`/hc/link_3.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xfd8d3a });
-      //   link_3 = new THREE.Mesh(geometry, material);
-
-      //   link_3.castShadow = true;
-      //   group.add(link_3);
-      // });
-
-      // // link_4
-      // loader.load(`/hc/link_4.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xfd8d3a });
-      //   link_4 = new THREE.Mesh(geometry, material);
-
-      //   link_4.castShadow = true;
-      //   group.add(link_4);
-      // });
-
-      // // link_5
-      // loader.load(`/hc/link_5.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xfd8d3a });
-      //   link_5 = new THREE.Mesh(geometry, material);
-
-      //   link_5.castShadow = true;
-      //   group.add(link_5);
-      // });
-
-      // // link_6
-      // loader.load(`/hc/link_6.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0xed6751 });
-      //   link_6 = new THREE.Mesh(geometry, material);
-
-      //   link_6.castShadow = true;
-      //   group.add(link_6);
-      // });
-
-
-      // // tool
-      // loader.load(`/hc/tool.STL`, (geometry) => {
-      //   const material = new THREE.MeshLambertMaterial({ color: 0x96999e });
-      //   tool = new THREE.Mesh(geometry, material);
-
-      //   tool.castShadow = true;
-      //   group.add(tool);
-      // });
     },
 
     createLight() {
@@ -533,31 +425,34 @@ export default {
     render() {
       requestAnimationFrame(this.render);
 
-      if (!this.farScreen) {
-        angle += 0.0005;
-        this.camera.position.x = R * Math.cos(angle) + 15;
-        this.camera.position.y = R * Math.sin(angle) - 20;
-        // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
-        this.camera.lookAt(15, -20, 0);
-      } else {
-        // console.log(this.carPosition);
-        // this.camera.position.x = this.carPosition.x+20;
-        // this.camera.position.y = this.carPosition.y-20;
-        // this.camera.position.z = 10;
+      // if (!this.farScreen) {
+      //   angle += 0.0005;
+      //   this.camera.position.x = R * Math.cos(angle) + 15;
+      //   this.camera.position.y = R * Math.sin(angle) - 20;
+      //   // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
+      //   this.camera.lookAt(15, -20, 0);
+      // } else {
+      //   // console.log(this.carPosition);
+      //   // this.camera.position.x = this.carPosition.x+20;
+      //   // this.camera.position.y = this.carPosition.y-20;
+      //   // this.camera.position.z = 10;
 
-        // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
-        this.camera.lookAt(this.carPosition.x, this.carPosition.y, 0);
-      }
+      //   // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
+      //   this.camera.lookAt(this.carPosition.x, this.carPosition.y, 0);
+      // }
+      var that =this
 
       function poselist(link, item) {
         var { rotation, translation } = item.transform;
-        // console.log(link);
-        if(!link.mash) return;
-        if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1.2);
-        else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.30);
+        if (!link.mash || !that.ip) return;
+        if (that.ip == '10.168.5.251') {
+          if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1.2);
+          else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.30);
+          else link.mash.position.set(translation.x, translation.y, translation.z);
+        }
+        else if (that.ip == '10.168.5.246') link.mash.position.set(translation.x, translation.y, translation.z);
         else link.mash.position.set(translation.x, translation.y, translation.z);
-        
-        // link.mash.position.set(translation.x, translation.y, translation.z);
+
         link.mash.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
       }
       if (transforms) {

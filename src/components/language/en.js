@@ -5,11 +5,6 @@ const en = {
       name: '中文'
   },
   ...enLocale,
-  user: {
-      login:'login',
-      register:'register',
-      loginUsername:'please input email or phone',
-  },
   mains:{
     confirm:'Confirm',
     cancel:'Cancel',
@@ -19,13 +14,13 @@ const en = {
   },
   nav:{
     index: 'Index',
-    flexbe:'Flexbe',
-    diagnostic:'Diagnostic',
+    task:'Task',
+    diagnostic:'Diagnosis',
     config:'Config',
     map:'Map'
   },
   table:{
-    send: 'Send',
+    send: 'Start',
     stop: 'Stop',
   },
   diagnostics:{
@@ -43,8 +38,7 @@ const en = {
     notconnect:'Not Connected',
     battery: 'Battery',
     network:'Network',
-    angular:'Angular',
-    linear:'Linear'
+    speed:'Speed'
   },
   map:{
     selectmap:'Select Map',
@@ -52,13 +46,13 @@ const en = {
   task:{
     taskinfo:'Task Info',
     task:'Task',
-    step:'Step',
+    step:'Status',
     none: 'None'
   },
   install:{
-    control:'Robot Control',
-    fai: 'Full Auto Install',
-    sai: 'Semi Auto Install',
+    control:'Chassis Control',
+    fai: 'Fully-Auto',
+    sai: 'Semi-Auto',
     monitor:'Monitor',
     model:'3D Model',
     start:'Start',

@@ -79,7 +79,7 @@
           <span>{{ $t('install.model') }}</span>
           <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
         </template>
-        <Three />
+        <Three v-if="isThree" />
       </Toast>
     </div>
   </div>
@@ -91,12 +91,11 @@ import Telecontrol from "@/components/Telecontrol";
 import { number } from "echarts";
 import { mapState } from "vuex";
 import Toast from "@/components/toast";
-import Toast1 from "@/components/toast/index1.vue";
 import Three from '@/components/three/index_hc.vue'
 
 export default {
   name: "home",
-  components: { Tips, Telecontrol, Toast,Toast1, Three },
+  components: { Tips, Telecontrol, Toast, Three },
   data() {
     return {
       isShow: 0,
@@ -131,9 +130,9 @@ export default {
       // 暂停继续
       if(this.goon){this.Pause();return;} 
       this.flexbeSwitch = false;
-      this.isInstall = id;
-      if (this.isInstall) this.$message(this.$t('prompt.switchMode'));
-      else if (id == 1) {
+      // this.isInstall = id;
+      // if (this.isInstall) this.$message(this.$t('prompt.switchMode'));
+     if (id == 1) {
         this.isShow = id;
         this.isInstall = id;
         var auto = id == 1 ? false : true;

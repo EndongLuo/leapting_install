@@ -235,6 +235,8 @@ export default {
         maxBoundsViscosity: 0.5, // 边界
       });
       
+      // var imageBounds = [[30.659269, 119.927920], [30.657906, 119.929502]];
+	    // L.imageOverlay('img/6841.png', imageBounds).addTo(this.map);
 
       this.map.getContainer().style.height =this.mapHeight+'px';
       window.onresize=()=>{ 

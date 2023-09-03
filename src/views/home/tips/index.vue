@@ -17,8 +17,8 @@
           <!-- 信号 -->
           <Signal :num="Number(wifi.signal)" />
 
-          <div class="jqr_id">{{$t('robot.linear')}}：{{linear}} m/s</div>
-          <div class="jqr_id">{{$t('robot.angular')}}：{{angular}} m/s</div>
+          <div class="jqr_id">{{$t('robot.speed')}}：{{linear}} m/s</div>
+          <div class="jqr_id">{{angular}} rad/s</div>
         </div>
       </div>
 
@@ -55,8 +55,8 @@
             <div class="signal-div">
               <Signal :num="Number(wifi.signal)" />
               <div>
-                <i class="el-icon-sort-up" style="color: #64b4ff;"></i>{{ wifi.upspeed }}Mb/s<br/>
-                <i class="el-icon-sort-down" style="color:#64e1b4"></i>{{ wifi.downspeed }}Mb/s
+                <i class="el-icon-sort-up" style="color: #64b4ff;"></i>{{ wifi.upspeed }}MB/s<br/>
+                <i class="el-icon-sort-down" style="color:#64e1b4"></i>{{ wifi.downspeed }}MB/s
               </div>
             </div>
             

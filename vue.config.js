@@ -8,7 +8,7 @@ module.exports = defineConfig({
   
   devServer: {
     // 自动打开浏览器
-    host: localhost,
+    // host: localhost,
     port: 8888,
     open: true,
     

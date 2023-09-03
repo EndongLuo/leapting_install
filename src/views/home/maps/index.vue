@@ -17,19 +17,17 @@
     </div>
 
     <!-- 安装中 -->
-    <div class="PVMdata1">
+    <!-- <div class="PVMdata1">
       <div class="datain">
         <span style="font-size: 20px;">Installing...</span>
       </div>
       <div class="datain">
-        <!-- <span>Installed：</span><i>{{num1}}</i> -->
         <span>Installed：</span><i>1</i>
       </div>
       <div class="datain">
         <span>Time：</span><i>{{time}}</i>
-        <!-- <span>Time：</span><i>00:11:18</i> -->
       </div>
-    </div>
+    </div> -->
 
     <!-- 未安装 -->
     <!-- <div class="PVMdata2">
@@ -43,8 +41,30 @@
         <span>Position：</span><i>102.76, 25.54</i>
       </div>
       <div class="datain" style="display: flex; justify-content: center;">
-        <el-button>Cancel Nav</el-button>
-        <el-button>Install</el-button>
+        <el-button>Single</el-button>
+        <el-button>Multi</el-button>
+        <el-button>Cancel</el-button>
+      </div>
+    </div> -->
+
+    <!-- 多块安装 -->
+    <!-- <div class="PVMdata2">
+      <div class="datain" style="display: flex; justify-content: center; margin: 10px;">
+        <span style="font-size: 20px;">Not Installed</span>
+      </div>
+      <div class="datain">
+        <span>Start：</span><i>X0Y0_1_1</i>
+      </div>
+      <div class="datain">
+        <span>End：</span><i style="color: chocolate;">Please Select</i>
+        <span>End：</span><i>X0Y0_1_9</i>
+      </div>
+      <div class="datain">
+        <span>QTY：</span><i>9</i>
+      </div>
+      <div class="datain" style="display: flex; justify-content: center;">
+        <el-button>Confirm</el-button>
+        <el-button>Cancel</el-button>
       </div>
     </div> -->
 
@@ -386,17 +406,18 @@ export default {
   // top: 110px;
   // right: 10px;
   z-index: 1002;
-  // height: 120px;
-  height: 150px;
+  width: 300px;
+  height: 190px;
   border-radius: 5px;
   right: 500px;
   bottom: 500px;
+  background-color: #fff;
   
 
   box-shadow: 5px 5px 20px 10px rgb(0 0 0 / 15%);
 
   .datain{
-    margin: 5px 20px;
+    margin: 10px 40px;
     display: flex;
     font-size: 16px;
     span{

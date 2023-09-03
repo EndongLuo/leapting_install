@@ -16,8 +16,11 @@
           <div class="tasklist" style="font-weight: 700; margin: 10px 100px 10px 70px"> 
           <span>{{$t('task.task')}}</span><span>{{$t('task.step')}}</span> <span>Time</span></div>
           <div class="tasklist" v-for="l in list">
+          <!-- <div v-for="l in list"> -->
             <!-- <div v-for=" l1 in l"> {{ l1 }} </div> -->
-            <span>{{ l[1] }}</span><span>{{ l[0] }}</span> <span>{{ l[2] }}</span>
+            <span class="li-in">{{ l[1] }}</span>
+            <span class="li-in1">{{ l[0] }}</span>
+            <span class="li-in">{{ l[2] }}</span>
           </div>
           
         </div>
@@ -88,6 +91,14 @@ export default {
 <style lang="less" scoped>
 .tasklist{
   display: flex; justify-content: space-between; margin: 5px 50px
+}
+.li-in{
+  display: inline-block;
+  width: 150px;
+  // margin-right: 50px;
+}
+.li-in1{
+  width: 320px;
 }
 .tacks {
   display: flex;

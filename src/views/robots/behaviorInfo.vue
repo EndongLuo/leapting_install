@@ -2,17 +2,18 @@
     <div>
       <div class="send_cancel">
         <el-input
-          placeholder="behavior name"
+          placeholder="Task Name"
           v-model="goalMsg.behavior_name"
           clearable>
         </el-input>
-        <el-button type="primary" @click="sendGoal(goalMsg)">{{$t('table.send')}}</el-button>
+          <el-button type="primary" v-if="!flexbeSwitch" @click="sendGoal(goalMsg)">{{$t('table.send')}}</el-button>
+          <el-button type="primary" v-else @click="Pause(goalMsg)">{{$t('table.send')}}</el-button>
           <el-button type="danger" @click="isCancel">{{$t('table.stop')}}</el-button>
       </div>
       <L_table 
       :tableData="filterData" 
       :column="column"
-      @sendGoal="sendGoal"
+      @sendGoal="sendGoal()"
       tableName="behaviorInfo"
       />
     </div>
@@ -22,6 +23,7 @@
   import L_table from "@/components/L_table";
   import { mapState } from 'vuex';
   import { reqBehaviorList } from "@/api";
+  import { mixins } from "@/mixin/index";
 
   export default {
     components: { L_table, },
@@ -38,18 +40,18 @@
           {
             id:'001',
             prop:'uid',
-            label:'ID',
+            label:'Sr.No.',
             width: 100
           },{
             id:'002',
             prop:'behavior_name',
-            label:'Behavior',
+            label:'Task',
             width: 200
           },
           {
             id:'003',
             prop:'behavior_msg',
-            label:'Message'
+            label:'Description'
           },
         ],
         goalMsg:{
@@ -58,6 +60,7 @@
         goal:null,
       };
     },
+    mixins: [mixins],
     computed:{
       ...mapState('ros',['ros']),
       filterData(){
@@ -128,6 +131,27 @@
         // goal.on('status', function(status) {
         //     console.log('status: ', status);
         // });
+      },
+
+      Pause(){
+        this.goon=1;
+        var pause_sub = new ROSLIB.Topic({
+          ros: this.ros,
+          name: '/flexbe/command/pause',
+          messageType: 'std_msgs/Bool'
+        });
+
+        if (this.flexbeSwitch) {
+          this.$message.success('Go on.');
+          this.flexbeSwitch = false;
+        }
+        else {
+          this.$message('Pause');
+          this.flexbeSwitch = true;
+        }
+
+        console.log(this.flexbeSwitch);
+        pause_sub.publish({ "data": this.flexbeSwitch });
       },
 
       // 取消行为
