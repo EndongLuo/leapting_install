@@ -1,25 +1,35 @@
 <template>
   <div id="app">
     <keep-alive exclude='three'>
-  <router-view/>
-</keep-alive>
+      <router-view />
+    </keep-alive>
     <!-- <router-view /> -->
 
-     <!-- 交互弹框 -->
-     <el-dialog  :visible.sync="dialogVisible" width="80%" :before-close="handleClose" center
-      :append-to-body='true'>
+    <!-- 交互弹框 -->
+    <el-dialog :visible.sync="dialogVisible" width="80%" :before-close="handleClose" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
-        <!-- <span style="font-weight: 1000; font-size: 48px;">Installation completed ！</span><br/>
-        <span style="font-weight: 800;font-size: 32px;" >Install Num： 9</span><br/>
+        <span style="font-weight: 1000; font-size: 48px;">提 示</span><br />
+        <!-- <span style="font-weight: 800;font-size: 32px;" >Install QTY： 9</span><br/>
         <span style="font-weight: 800;font-size: 32px;" >TIME：00:11:18</span> -->
-        <span style="font-weight: 800;font-size: 32px;" >Do you want to continue with the installation</span>
+        <span style="font-weight: 800;font-size: 32px;">是否{{ toptip }}？</span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="putBack">放回</el-button>
+        <el-button type="primary" @click="installPV">确认</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 识别失败继续识别 -->
+    <el-dialog :visible.sync="shibieDialog" width="80%" :before-close="handleClose" center :append-to-body='true'>
+      <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
+        <span style="font-weight: 1000; font-size: 48px;">提 示</span><br />
+        <span style="font-weight: 800;font-size: 32px;">识别失败，是否重新识别？</span>
+        <span style="font-weight: 800;font-size: 28px; color: chocolate;">{{ shibiePick }}</span>
 
       </div>
-      
-      
       <span slot="footer" class="dialog-footer">
-        <el-button @click="putBack">Put Back</el-button>
-        <el-button type="primary" @click="installPV">Confirm</el-button>
+        <!-- <el-button @click="putBack">放回</el-button> -->
+        <el-button type="primary" @click="shibiePV">确认</el-button>
       </span>
     </el-dialog>
   </div>
@@ -41,14 +51,33 @@ export default {
       viewer: null,
       ws: 'ws://10.168.5.252:9090',
       dialogVisible: false,
-      flag:false,
+      shibieDialog: false,
+      shibiePick: null,
+      flag: false,
+      trig_sub: null,
+      toptip:null
     };
   },
   mounted() {
     this.connect();
+    this.shibie();
+    this.dialog();
   },
   created() {
-    this.timer = setInterval(this.dialog, 3000);
+    this.timer = setInterval(() => {
+      // this.shibie();
+      // this.dialog();
+
+      var taskState = this.$store.state.ros.taskState;
+      if (typeof taskState == 'undefined') return;
+      if (taskState.indexOf('checkPickupTF') != -1) {
+        this.$message.success('抓取识别中。。。');
+      }
+      if (taskState.indexOf('checkPlaceTF') != -1) {
+        this.$message.success('放置识别中。。。');
+      }
+      
+    }, 3000);
   },
   beforeDestroy() {
     if (this.timer) clearInterval(this.timer);
@@ -58,29 +87,27 @@ export default {
       var _this = this;
       // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
-      this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.251:9090" }); // 小库卡
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.253:9090" }); // 夹爪
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.240:9090" }); // 巡检
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 磁铁
-      // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
+      this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
       // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.238:9090" }); // zeng
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)
 
       //判断是否连接成功
-      this.ros.on("connection",  ()=> {
+      this.ros.on("connection", () => {
         this.connected = true;
         this.$message.success(`${this.$t('connPrompt.success')}`);
-        
+        // this.$message.success(`Place choose the last module!`);
+
         console.log("Connected to websocket server.");
       });
 
-      this.ros.on("error",  (error)=> {
+      this.ros.on("error", (error) => {
         // console.log("Error connecting to websocket server: ", error);
       });
 
-      this.ros.on("close",  ()=> {
+      this.ros.on("close", () => {
         this.connected = false;
         this.$message.error(`${this.$t('connPrompt.close')}`);
 
@@ -121,25 +148,61 @@ export default {
       // });
     },
 
+    shibie() {
+      var trig_sub = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/trig',
+        messageType: 'std_msgs/Header',
+      });
+      trig_sub.subscribe((msg) => {
+        // console.log(msg);
+        if (msg.frame_id == 'install_detect_pick') {
+          if (msg.seq == 1) this.$message.success('识别成功。');
+          else {
+            this.$message('识别失败。');
+            this.shibiePick = '请检查是否有组件或者组件是否反光。'
+            this.shibieDialog = true;
+          }
+        }
+        else if (msg.frame_id == 'install_detect_put') {
+          if (msg.seq == 1) this.$message.success('识别成功。');
+          else {
+            this.$message('识别失败。');
+            this.shibiePick = '请移动车辆：桩子与车内侧履带2m平行（误差±5cm）。'
+            this.shibieDialog = true;
+          }
+        }
+      });
+    },
+
     // 开启弹框
-    dialog(){
-      var taskState = this.$store.state.ros.taskState
-      // console.log(taskState);
-        
-      if (typeof taskState == 'undefined') return;
-      if (taskState.indexOf('UI') != -1 && !this.dialogVisible &&!this.flag){
-        // console.log(1);
-        this.flag = true;
-        this.dialogVisible = true;
-      } 
-      else if(taskState.indexOf('UI') == -1 && this.dialogVisible) setTimeout(()=>{ this.dialogVisible = false;}, 0);
-      
+    dialog() {
+      var trig_sub = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/trig',
+        messageType: 'std_msgs/Header',
+      });
+      this.toptip = ''
+
+      trig_sub.subscribe((msg) => {
+        console.log(msg);
+        var fid = msg.frame_id;
+        if (fid.indexOf('UI_dump') != -1) {
+          this.toptip = '释放吸盘'
+          this.dialogVisible = true;
+        }
+        else if(fid.indexOf('UI_place') != -1){
+          this.toptip = '放下光伏组件到支架上'
+          this.dialogVisible = true;
+        }
+      })
+
+
     },
     // 放回流程
     putBack() {
       this.dialogVisible = false;
       this.flag = false;
-      this.uichoose("withdraw");
       this.$message({
         type: 'info',
         message: '放回中。。。'
@@ -150,10 +213,15 @@ export default {
       this.dialogVisible = false;
       this.flag = false;
       this.uichoose("next");
-      this.$message({
-        type: 'success',
-        message: '光伏板已放下，可以开始打螺丝!'
-      });
+      this.$message.success(`${this.toptip}`);
+    },
+
+    // 重新识别
+    shibiePV() {
+      this.shibieDialog = false;
+      this.flag = false;
+      this.uichoose("next");
+      this.$message('继续识别!');
     },
     uichoose(Msg) {
       // 订阅该主题

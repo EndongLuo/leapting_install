@@ -7,20 +7,18 @@
         <div class="btn" :title="$t('install.control')" @click="isShow = 3">
           <img src="./img/joy.png" alt="">
           <span>{{ $t('install.control') }}</span>
+        </div>
 
-          <!-- 单块安装---test -->
-          <!-- <img src="./img/dan.png" alt="">
-          <span>Single</span> -->
+        <!-- 机械臂操控 -->
+        <div class="btn" :title="$t('install.armcontrol')" @click="isShow = 4">
+          <img src="./img/arm.png" alt="">
+          <span>{{ $t('install.armcontrol') }}</span>
         </div>
         
         <!-- 半自动安装 -->
         <div class="btn" :title="$t('install.sai')"  @click="isShow = 1">
           <img src="./img/bauto.png" alt="">
           <span>{{ $t('install.sai') }}</span>
-
-          <!-- 多块安装---test -->
-          <!-- <img src="./img/more.png" alt="">
-          <span>Multiblock</span> -->
         </div>
 
         <!-- 自动安装 -->
@@ -38,6 +36,33 @@
       <div v-if="isShow == 3">
         <Telecontrol />
       </div>
+      <div v-else-if="isShow == 4" class="l2">
+        <div class="in" :title="$t('install.monitor')" @click="poseAction('armTopPose')">
+          <span>展开</span>
+          <!-- <img src="./img/video1.png" alt=""> -->
+          <!-- <span>{{ $t('install.monitor') }}</span> -->
+        </div>
+
+        <div class="in" :title="$t('install.pause')" @click="poseAction('armPlaceDetectPose')">
+          <span>检测</span>
+          <!-- <img src="./img/pause1.png" alt=""> -->
+          <!-- <span>{{ $t('install.pause') }}</span> -->
+        </div>
+        <div class="in" :title="$t('install.start')" @click="poseAction('armInitPose')">
+          <span>收起</span>
+          <!-- <img src="./img/start.png" alt=""> -->
+          <!-- <span>{{ $t('install.start') }}</span> -->
+        </div>
+        <div class="in" :title="$t('install.stop')" @click="Stop()">
+          <!-- <img src="./img/stop.png" alt="" @click="Stop()"> -->
+          <span>{{ $t('install.stop') }}</span>
+        </div>
+        <div class="in" :title="$t('install.stop')" @click="control('Z',10)">
+          <!-- <img src="./img/stop.png" alt="" @click="Stop()"> -->
+          <span>上</span>
+        </div>
+        <!-- <Telecontrol /> -->
+      </div>
       <!-- 安装 -->
       <div class="l2" v-else>
         <div class="in" :title="$t('install.monitor')" @click="videoRos()">
@@ -46,11 +71,11 @@
         </div>
 
         <div v-if="!flexbeSwitch" class="in" :title="$t('install.pause')" @click="Pause()">
-          <img src="./img/pause.png" alt="">
+          <img src="./img/pause1.png" alt="">
           <span>{{ $t('install.pause') }}</span>
         </div>
         <div v-else class="in" :title="$t('install.start')" @click="start(isShow)">
-          <img src="./img/start1.png" alt="">
+          <img src="./img/start.png" alt="">
           <span>{{ $t('install.start') }}</span>
         </div>
         <div class="in" :title="$t('install.stop')">
@@ -58,7 +83,7 @@
           <span>{{ $t('install.stop') }}</span>
         </div>
         <div class="in" :title="$t('install.model')" @click="isThree = 1">
-          <img src="./img/3d1.png" alt="">
+          <img src="./img/3d.png" alt="">
           <span>{{ $t('install.model') }}</span>
         </div>
       </div>
@@ -117,6 +142,70 @@ export default {
     // this.$message.success('Installation Completed');
   },
   methods: {
+    // control
+    control(axis,offset){
+      var goalMsg = new ROSLIB.Message({
+        behavior_name: 'TransManipulation',
+        arg_keys: ['axis','offset'],
+        arg_values: [`${axis}`,`${offset}`]
+      });
+      // console.log(goalMsg);
+
+      var actionClient = new ROSLIB.ActionClient({
+        ros: this.ros,
+        actionName: 'flexbe_msgs/BehaviorExecutionAction',
+        serverName: '/flexbe/execute_behavior'
+      });
+      this.goal = new ROSLIB.Goal({
+        actionClient: actionClient,
+        goalMessage: goalMsg
+      });
+
+      this.goal.send();
+
+      this.goal.on('feedback', (feedback) => {
+        this.$message(`feedback: ${JSON.stringify(feedback)}`);
+        console.log('Feedback: ', feedback);
+      });
+
+      this.goal.on('result', (result) => {
+        this.$message(`result: ${JSON.stringify(result)}`);
+        console.log('Final Result: ', result);
+      });
+    },
+
+    // pose Action
+    poseAction(name){
+      var goalMsg = new ROSLIB.Message({
+        behavior_name: 'SiteManipulation',
+        arg_keys: ['site_name'],
+        arg_values: [`${name}`,]
+      });
+      // console.log(goalMsg);
+
+      var actionClient = new ROSLIB.ActionClient({
+        ros: this.ros,
+        actionName: 'flexbe_msgs/BehaviorExecutionAction',
+        serverName: '/flexbe/execute_behavior'
+      });
+      this.goal = new ROSLIB.Goal({
+        actionClient: actionClient,
+        goalMessage: goalMsg
+      });
+
+      this.goal.send();
+
+      this.goal.on('feedback', (feedback) => {
+        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
+        console.log('Feedback: ', feedback);
+      });
+
+      this.goal.on('result', (result) => {
+        this.$message(`result: ${JSON.stringify(result)}`);
+        console.log('Final Result: ', result);
+      });
+    },
+
     // 检查ros连接状态
     checkRos(){
       if(!this.ros.isConnected){
@@ -187,10 +276,10 @@ export default {
         goalMessage: goalMsg
       });
 
-      // this.goal.send();
+      this.goal.send();
 
       this.goal.on('feedback', (feedback) => {
-        this.$message(`feedback: ${JSON.stringify(feedback)}`);
+        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
         console.log('Feedback: ', feedback);
       });
 
@@ -237,7 +326,7 @@ export default {
       this.flexbeSwitch =true;
       this.isVideo = 0;
       this.isThree = 0;
-      this.isShow = 0;
+      // this.isShow = 0;
       this.goon = 0;
     },
 
@@ -284,6 +373,8 @@ export default {
 
   .h_inner {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     // height: 833px; 
     // justify-content: center;
     // align-items: center;
@@ -342,7 +433,7 @@ export default {
       }
 
       span {
-        // margin-top: 10px;
+        margin-top: 10px;
         font-size: 16px;
       }
 
@@ -386,7 +477,7 @@ export default {
   }
 
   span {
-    // margin-top: 10px;
+    margin-top: 10px;
     font-size: 24px;
     font-weight: 700;
   }

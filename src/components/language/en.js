@@ -51,6 +51,7 @@ const en = {
   },
   install:{
     control:'Chassis Control',
+    armcontrol:'Chassis armControl',
     fai: 'Fully-Auto',
     sai: 'Semi-Auto',
     monitor:'Monitor',

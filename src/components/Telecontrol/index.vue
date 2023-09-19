@@ -17,7 +17,7 @@ export default {
       publisher: null,
       message: {
         header: {
-          frame_id: '/map'
+          frame_id: '/web'
         },
         axes: [0, 0, 1.0, 0, 0, 1.0, 0, 0],
         buttons: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

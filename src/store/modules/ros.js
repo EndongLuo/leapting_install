@@ -54,7 +54,7 @@ const mutations = {
       if(!diag) return
       // console.log(diag);
       var taskState = diag.STATUS.underling.TASK.underling.STATE.underling.task_state.message
-      console.log(taskState);
+      // console.log(taskState);
       state.taskState = taskState;
 
       state.wifi = wifiobj;

@@ -51,6 +51,7 @@ const zh = {
   },
   install:{
     control:'机器人操控',
+    armcontrol:'机械臂操控',
     fai: '全自动安装',
     sai: '半自动安装',
     monitor:'监控',

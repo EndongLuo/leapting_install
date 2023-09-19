@@ -110,7 +110,6 @@ var getDistance = function (x1, y1, x2, y2) {
   return Math.sqrt(_x * _x + _y * _y);
 };
 import { mapState } from 'vuex';
-import { CLOSING } from 'ws';
 export default {
   props: [ "stop", 'velocity'],
   data() {

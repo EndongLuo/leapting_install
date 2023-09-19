@@ -1,122 +1,188 @@
 <template>
   <div>
-    <el-button type="primary" v-if="!isEdit" @click="isEdit = true">编辑</el-button>
-    <el-button v-else  @click="isEdit = false">返回</el-button>
-    <el-form ref="form" size="small" :model="form">
-      <el-form-item v-for="(ros, k1, index) in rosCfg" :key="index">
-        <el-divider content-position="center">{{ k1 }}</el-divider>
-
-        <el-form-item
-          v-for="(r, k2, index) in ros"
-          :key="index"
-          :label="k2"
-          label-width="140px"
+    <!-- <div class="flex-display">
+      <div class="left-box">表格上传:</div>
+      <el-upload
+        action="https://jsonplaceholder.typicode.com/posts/"
+        :on-success="handleChange"
+        :file-list="fileList"
+        class="el-upload"
+      >
+        <el-button size="small" type="primary" class="el-btn"
+          >点击上传</el-button
         >
-        <div v-if="!isEdit">
-          ：{{ form[k1][k2] }}
+        <div slot="tip" class="el-upload-tip">
+          只能上传xlsx文件，且不超过5MB
         </div>
-
-        <div v-else>
-          <div v-if=" typeof r =='boolean'">
-            <el-switch v-model="form[k1][k2]"></el-switch>
-          </div>
-          <div v-else-if=" typeof r =='string'">
-            <el-col :span="18">
-            <el-input v-model="form[k1][k2]"></el-input></el-col>
-          </div>
-          <div v-else-if=" typeof r =='object'">
-            <el-col :span="18">
-            <el-select style="width:100%" v-model="form[k1][k2]" placeholder="请选择">
-              <el-option  v-for="s,i in r" :key="i" :label="s.label" :value="s"></el-option>
-            </el-select></el-col>
-          </div>
-          <div v-else-if=" typeof r =='number'">
-            <el-col :span="18">
-            <el-input type="number" :step="0.1" v-model.number="form[k1][k2]"></el-input></el-col>
-          </div>
-        </div>
-        </el-form-item>
-      </el-form-item>
-      <el-form-item class="threeBtn" v-if="isEdit">
-        <el-button type="primary" @click="saveCfg">保存</el-button>
-      </el-form-item>
-    </el-form>
+      </el-upload>
+    </div> -->
+    <el-upload
+      drag
+      action="https://jsonplaceholder.typicode.com/posts/"
+      :on-success="handleChange"
+        :file-list="fileList"
+        class="el-upload"
+      multiple>
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+      <div class="el-upload__tip" slot="tip">只能上传xlsx文件，且不超过5MB</div>
+    </el-upload>
+    <el-table v-if="tableHead.length" :data="tableData[0]" style="width: 100%">
+      <el-table-column
+        v-for="(data, key) in tableHead"
+        :prop="data"
+        :label="data"
+        :key="key"
+        width="180"
+      >
+      </el-table-column>
+    </el-table>
+    <!-- <div class="flex-display">
+      <div class="left-box">文件上传(input)：</div>
+      <input type="file" v-on:change="onChange" class="file-ipt" />
+    </div> -->
   </div>
 </template>
-
 <script>
-// import {reqRoscfg} from "@/api";
-import rosCfg from "@/assets/ros.cfg.json";
-import { mapState } from "vuex";
+import Vue from "vue";
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+import { read, utils } from "xlsx";
+
+Vue.use(ElementUI);
 export default {
   data() {
     return {
-      isEdit:false,
-      rosCfg: null,
-      form:null,
+      fileList: [], //上传文件列表
+      tableHead: [], //表头
+      tableData: [] // 表数据
     };
   },
-  computed: {
-    ...mapState("ros", ["ros"]),
-  },
-  mounted() {
-    // this.getRoscfg()
-    this.getRoscfgs()
-  },
   methods: {
-    saveCfg() {
-      var cfg_pub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/cfg_istring',
-        messageType: "std_msgs/String",
-      });
-      
-      var msgJson = JSON.stringify(this.form);
-      // console.log(msgJson)
-      cfg_pub.publish({data:msgJson});
-      // console.log('pub',this.form);
+    onChange(e) {
+      const file = e.target.files[0];
+      const fileReader = new FileReader();
 
-      this.$message({
-        type: 'success',
-        message: '保存成功!'
-      });
-      this.isEdit = false;
-      this.getRoscfgs();
+      fileReader.onload = ev => {
+        try {
+          const data = ev.target.result;
+          console.log(data);
+          const workbook = read(data, { type: "binary" });
+          const params = [];
+          // 取对应表生成json表格内容
+          workbook.SheetNames.forEach(item => {
+            params.push({
+              name: item,
+              dataList: utils.sheet_to_json(workbook.Sheets[item])
+            });
+            this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
+          });
+          // 该算法仅针对表头无合并的情况
+          if (this.tableData.length > 0) {
+            // 获取excel中第一个表格数据tableData[0][0]，并且将表头提取出来
+            for (const key in this.tableData[0][0]) {
+              this.tableHead.push(key);
+            }
+          }
+          return params;
+          // 重写数据
+        } catch (e) {
+          console.log("error:" + e);
+          return false;
+        }
+      };
+      fileReader.readAsBinaryString(file);
     },
+    handleChange(res, file, fileList) {
+      // console.log(res, file,fileList);
+      // 将文件放入
+      for (let i = 0; i < fileList.length; i++) {
+        if (file.name != fileList[i].name) {
+          this.fileList.push({
+            name: file.name,
+            url: "",
+            uid: file.uid
+          });
+        }
+      }
 
-    getRoscfgs(){
-      var cfg_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/cfg_ostring',
-        messageType: "std_msgs/String",
-      });
-
-      cfg_sub.subscribe((msg)=> {
-        this.rosCfg = rosCfg;
-        var msgJson = `[${msg.data}]`;
-        // console.log(msg.data)
-        this.form =JSON.parse(msgJson)[0];
-        // console.log('sub',this.form);
-      })
+      this.fileList = fileList.slice(-3);
+      // console.log(this.fileList);
+      const files = { 0: file };
+      this.readExcel(files);
     },
-    // async getRoscfg(){
-    //   var res = await reqRoscfg();
-    //   this.rosCfg = rosCfg;
-    //   this.form = res.data.data;
-    //   console.log(this.form)
-    // },
-  },
+    readExcel(file) {
+      const fileReader = new FileReader();
+
+      fileReader.onload = ev => {
+        try {
+          const data = ev.target.result;
+          const workbook = read(data, { type: "binary" });
+          console.log(workbook);
+          const params = [];
+          // 取对应表生成json表格内容
+          workbook.SheetNames.forEach(item => {
+            console.log(utils);
+            params.push({
+              name: item,
+              dataList: utils.sheet_to_json(workbook.Sheets[item])
+            });
+            this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
+          });
+          // 该算法仅针对表头无合并的情况
+          if (this.tableData.length > 0) {
+            // 获取excel中第一个表格数据tableData[0][0]，并且将表头提取出来
+            for (const key in this.tableData[0][0]) {
+              this.tableHead.push(key);
+            }
+          }
+          return params;
+          // 重写数据
+        } catch (e) {
+          console.log("error:" + e);
+          return false;
+        }
+      };
+      fileReader.readAsBinaryString(file[0].raw);
+    }
+  }
 };
 </script>
-
-<style scoped>
-.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
-  margin-bottom: 2px ;
+<style lang="less" scoped>
+.upload-demo {
+  width: 100%;
 }
-::v-deep .threeBtn .el-form-item__content{
+.flex-display {
+  // margin: 50px 30px;
+  width: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 15px;
-  margin-left: 0 !important;
+  justify-content: flex-start;
+  .left-box {
+    margin: 20 30;
+    height: 36px;
+    line-height: 36px;
+  }
+}
+.el-upload {
+  margin-left: 40px;
+  .el-btn {
+    font-size: 16px;
+  }
+  .el-upload-tip {
+    display: inline;
+    font-size: 12px;
+  }
+}
+.file-ipt {
+  width: 200px;
+  height: 36px;
+  line-height: 36px;
+  button {
+    background-color: #409eff;
+  }
+}
+input #file-upload-button {
+  background-color: #409eff;
 }
 </style>
+

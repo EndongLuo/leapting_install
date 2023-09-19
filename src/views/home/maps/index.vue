@@ -3,7 +3,7 @@
     <Tips />
 
     <!-- 数量 -->
-    <div class="PVMdata">
+    <!-- <div class="PVMdata">
       <div class="datain">
         <span style="font-size: 20px;">Installation Situation</span>
       </div>
@@ -14,20 +14,32 @@
         <span>Not Installed：</span><i>14235</i>
       </div>
       <div class="datain"><span>Install Today：</span><i>312</i></div>
-    </div>
+    </div> -->
 
     <!-- 安装中 -->
-    <!-- <div class="PVMdata1">
-      <div class="datain">
+    <div class="PVMdata1">
+      <!-- <div class="datain">
         <span style="font-size: 20px;">Installing...</span>
       </div>
       <div class="datain">
-        <span>Installed：</span><i>1</i>
+        <span>Installed：</span><i>9</i>
+      </div>
+      <div class="datain">
+        <span>Time：</span><i>{{time}}</i>
+      </div> -->
+      <!-- <div class="datain">
+        <span style="font-size: 24px;">Navigating...</span>
+      </div>
+      <div class="datain">
+        <span>Location ID：</span><i>X0Y0_1_1</i>
       </div>
       <div class="datain">
         <span>Time：</span><i>{{time}}</i>
       </div>
-    </div> -->
+      <div class="datain" style="display: flex; justify-content: center;">
+        <el-button>Cancel Nav</el-button>
+      </div> -->
+    </div>
 
     <!-- 未安装 -->
     <!-- <div class="PVMdata2">
@@ -151,7 +163,7 @@ import { mapState } from 'vuex';
 import Tips from "../tips";
 
 function timingTime(){
-      let start = '2023-08-28 20:36:00'
+      let start = '2023-09-14 10:05:00'
       let startTime = new Date(start).getTime()
       let currentTime = new Date().getTime()
       let difference = currentTime - startTime
@@ -392,7 +404,7 @@ export default {
   box-shadow: 5px 5px 20px 10px rgb(0 0 0 / 15%);
 
   .datain{
-    margin: 5px 20px;
+    margin: 8px 20px;
     display: flex;
     font-size: 14px;
     span{

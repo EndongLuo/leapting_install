@@ -2,6 +2,10 @@
   <div>
     <el-button type="primary" v-if="!isEdit" @click="isEdit = true">{{$t('mains.edit')}}</el-button>
     <el-button v-else  @click="isEdit = false">{{$t('mains.goback')}}</el-button>
+    <el-button   @click="inverter">开启逆变器</el-button>
+    <el-button v-if="!chargeSwitch" @click="openCharge">开启充电</el-button>
+    <el-button v-else @click="openCharge">关闭充电</el-button>
+
     <el-form ref="form" size="small" :model="form">
       <el-form-item v-for="(ros, k1, index) in rosCfg" :key="index">
         <el-divider content-position="center">{{ k1 }}</el-divider>
@@ -54,21 +58,44 @@ export default {
       isEdit:false,
       rosCfg: null,
       form:null,
+      chargeSwitch:false,
+      drive_sub:null,
     };
   },
   computed: {
     ...mapState("ros", ["ros"]),
   },
   mounted() {
-    this.getRoscfg()
+    this.getRoscfg();
     // this.getRoscfgs()
+    this.drive_sub = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/drive_request',
+        messageType: 'std_msgs/String'
+      });
   },
   methods: {
+    inverter(){
+      this.drive_sub.publish({data:"inverter_on"})
+      this.$message.success('开启成功！')
+    },
+    openCharge(){
+      if (this.chargeSwitch){
+        this.chargeSwitch = false;
+        console.log('charge_off');
+        this.drive_sub.publish({data:"charge_off"});
+      } 
+      else{
+        this.chargeSwitch = true;
+        console.log('charge_on');
+        this.drive_sub.publish({data:"charge_on"});
+      }
+    },
     saveCfg() {
       
       var msgJson = JSON.stringify(this.form);
       // console.log(this.form)
-      localStorage.setItem('pvm_param',msgJson)
+      localStorage.setItem('pvm_param',msgJson);
 
       this.$message({
         type: 'success',
