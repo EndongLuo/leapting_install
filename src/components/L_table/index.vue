@@ -89,29 +89,31 @@ export default {
       this.$emit('sendGoal',{behavior_name:row.behavior_name})
     },
     handleDelete(row,index,list) {
-      this.$confirm(`此操作将永久删除该文件: ${row.behavior_name}`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          center: true,
-          type: 'warning'
-        }).then(() => {
-          var trig_pub = new ROSLIB.Topic({
-            ros:this.ros,
-            name:'/trig',
-            messageType:'std_msgs/Header'
-          })
-          trig_pub.publish({frame_id:`flexbe_delete:${row.behavior_name}`});
-          list.splice(index,1)
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
+      // isCancel
+      this.$emit('isCancel')
+      // this.$confirm(`此操作将永久删除该文件: ${row.behavior_name}`, '提示', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     center: true,
+      //     type: 'warning'
+      //   }).then(() => {
+      //     var trig_pub = new ROSLIB.Topic({
+      //       ros:this.ros,
+      //       name:'/trig',
+      //       messageType:'std_msgs/Header'
+      //     })
+      //     trig_pub.publish({frame_id:`flexbe_delete:${row.behavior_name}`});
+      //     list.splice(index,1)
+      //     this.$message({
+      //       type: 'success',
+      //       message: '删除成功!'
+      //     });
+      //   }).catch(() => {
+      //     this.$message({
+      //       type: 'info',
+      //       message: '已取消删除'
+      //     });          
+      //   });
     },
     // 分页器
     handleSizeChange(val) {

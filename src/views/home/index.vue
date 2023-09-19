@@ -169,7 +169,8 @@ export default {
       });
 
       this.goal.on('result', (result) => {
-        this.$message(`result: ${JSON.stringify(result)}`);
+        // this.$message(`result: ${JSON.stringify(result)}`);
+        if(result.outcome=='preempted') this.$message(`任务结束！`);
         console.log('Final Result: ', result);
       });
     },
@@ -201,7 +202,8 @@ export default {
       });
 
       this.goal.on('result', (result) => {
-        this.$message(`result: ${JSON.stringify(result)}`);
+        // this.$message(`result: ${JSON.stringify(result)}`);
+        if(result.outcome=='preempted') this.$message(`任务结束！`);
         console.log('Final Result: ', result);
       });
     },
@@ -284,7 +286,8 @@ export default {
       });
 
       this.goal.on('result', (result) => {
-        this.$message(`result: ${JSON.stringify(result)}`);
+        if(result.outcome=='preempted') this.$message(`任务结束！`);
+        // this.$message(`result: ${JSON.stringify(result)}`);
         console.log('Final Result: ', result);
       });
     },

@@ -6,14 +6,15 @@
           v-model="goalMsg.behavior_name"
           clearable>
         </el-input>
-          <el-button type="primary" v-if="!flexbeSwitch" @click="sendGoal(goalMsg)">{{$t('table.send')}}</el-button>
-          <el-button type="primary" v-else @click="Pause(goalMsg)">{{$t('table.send')}}</el-button>
+          <el-button type="primary"  @click="sendGoal(goalMsg)">{{$t('table.send')}}</el-button>
+          <!-- <el-button type="warning"  @click="Pause(goalMsg)">{{$t('install.pause')}}</el-button> -->
           <el-button type="danger" @click="isCancel">{{$t('table.stop')}}</el-button>
       </div>
       <L_table 
       :tableData="filterData" 
       :column="column"
       @sendGoal="sendGoal()"
+      @isCancel="isCancel()"
       tableName="behaviorInfo"
       />
     </div>
@@ -124,7 +125,8 @@
         });
 
         this.goal.on('result', (result)=> {
-          this.$message(`result: ${JSON.stringify(result)}`);
+          // this.$message(`result: ${JSON.stringify(result)}`);
+          if(result.outcome=='preempted') this.$message(`任务结束！`);
           console.log('Final Result: ', result);
         });
         
