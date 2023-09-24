@@ -31,7 +31,7 @@
 
     <!-- 开始后 -->
     <div class="kuang" v-show="isShow">
-      <i class="el-icon-close" @click="closeWin"></i>
+      <i class="el-icon-close" @click="isShow = 0"></i>
       <!-- 机器人遥控 -->
       <div v-if="isShow == 3">
         <Telecontrol />
@@ -43,13 +43,13 @@
         </div>
        
         <div class="armContent ll" style="height: 168px;">
-          <span class="armin" style="width: 200px;"  @click="control('Y', -10)"><i class="el-icon-arrow-up"></i></span>
+          <span class="armin" style="width: 200px;"  @click="control('X', 10)"><i class="el-icon-arrow-up"></i></span>
             
            <div style="display: flex;">
-            <span class="armin"  @click="control('X', 10)"><i class="el-icon-arrow-left"></i></span>
-            <span class="armin"  @click="control('X', -10)"><i class="el-icon-arrow-right"></i></span>
+            <span class="armin"  @click="control('Y', 10)"><i class="el-icon-arrow-left"></i></span>
+            <span class="armin"  @click="control('Y', -10)"><i class="el-icon-arrow-right"></i></span>
             </div>
-            <span class="armin" style="width: 200px;"  @click="control('Y', 10)"><i class="el-icon-arrow-down"></i></span>
+            <span class="armin" style="width: 200px;"  @click="control('X', -10)"><i class="el-icon-arrow-down"></i></span>
           
         </div>
         <div>
@@ -63,10 +63,10 @@
       </div>
       <!-- 安装 -->
       <div class="l2" v-else>
-        <!-- <div class="in" :title="$t('install.monitor')" @click="videoRos()">
+        <div class="in" :title="$t('install.monitor')" @click="videoRos()">
           <img src="./img/video1.png" alt="">
           <span>{{ $t('install.monitor') }}</span>
-        </div> -->
+        </div>
 
         <div v-if="!flexbeSwitch" class="in" :title="$t('install.pause')" @click="Pause()">
           <img src="./img/pause1.png" alt="">
@@ -80,31 +80,30 @@
           <img src="./img/stop.png" alt="" @click="Stop()">
           <span>{{ $t('install.stop') }}</span>
         </div>
-        <!-- <div class="in" :title="$t('install.model')" @click="isThree = 1">
+        <div class="in" :title="$t('install.model')" @click="isThree = 1">
           <img src="./img/3d.png" alt="">
           <span>{{ $t('install.model') }}</span>
-        </div> -->
+        </div>
       </div>
     </div>
 
     <!-- 可拖拽框 -->
-    <div style="display: flex;" v-if="isVideo || isThree">
-      <div class="win" v-if="isVideo">
-          <div class="totitle" >
-            <span>{{ $t('install.monitor') }}</span>
-            <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos()"></i>
-          </div>
-          
+    <div style="position: absolute; top: 0;left: 0; width: 100%; height: 100%;" v-if="isVideo || isThree">
+      <Toast v-if="isVideo">
+        <template slot="title">
+          <span>{{ $t('install.monitor') }}</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos()"></i>
+        </template>
         <img v-if="!urlVideo" src="./img/empty.png" alt="">
         <img v-else :src="urlVideo" alt="">
-      </div>
-      <div class="win" v-if="isThree">
-        <div class="totitle">
+      </Toast>
+      <Toast v-if="isThree">
+        <template slot="title">
           <span>{{ $t('install.model') }}</span>
           <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
-        </div>
-        <Three v-if="isThree" style="width: 49%; height:50%;" />
-      </div>
+        </template>
+        <Three v-if="isThree" />
+      </Toast>
     </div>
   </div>
 </template>
@@ -209,10 +208,6 @@ export default {
 
     // 检查ros连接状态
     checkRos() {
-      if(this.isShow){
-        this.videoRos();
-        // this.isThree = 1;
-      } 
       if (!this.ros.isConnected) {
         // this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
@@ -360,8 +355,8 @@ export default {
       this.$message.success('Installation Stopped.');
       this.isInstall = 0;
       this.flexbeSwitch = true;
-      // this.isVideo = 0;
-      // this.isThree = 0;
+      this.isVideo = 0;
+      this.isThree = 0;
       // this.isShow = 0;
       this.goon = 0;
     },
@@ -388,13 +383,6 @@ export default {
       this.video_sub.unsubscribe();
       this.urlVideo = null;
     },
-
-    // 关闭窗口
-    closeWin(){
-      this.isShow = 0;
-      this.isThree = 0;
-      this.pauseRos();
-    }
   },
 };
 </script>
@@ -493,7 +481,7 @@ export default {
 
 
 .arml2 {
-  height: 240px;
+  height: 280px;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
@@ -559,23 +547,6 @@ export default {
   }
 }
 
-.win{
-  width: 50%;
-  height: 40%;
-  border: 1px solid #ddddddc5;
-  background: #ffffffe1;
-  font-size: 14px;
-  box-shadow: 5px 5px 20px #bdbdbd;
-  overflow: hidden;
-  z-index: 999;
-  border-radius: 5px;
-  .totitle{
-    display: flex;
-    justify-content: space-between;
-    margin: 5px;
-  }
-}
-
 .kuang {
   position: fixed;
   bottom: 0%;
@@ -585,7 +556,7 @@ export default {
   // border-radius: 10px;
   box-shadow: 0px 0px 20px 10px rgb(36 36 36 / 50%), inset 0px 5px 20px 10px rgb(100 100 100 / 50%);
   width: 100%;
-  height: 250px;
+  height: 280px;
   z-index: 1000;
 
   .el-icon-close{

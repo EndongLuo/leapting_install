@@ -55,6 +55,8 @@ const mutations = {
       // console.log(diag);
       var taskState = diag.STATUS.underling.TASK.underling.STATE.underling.task_state.message
       // console.log(taskState);
+      // console.log(ros.isConnected);
+      if (!ros.isConnected) taskState = null;
       state.taskState = taskState;
 
       state.wifi = wifiobj;

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div id="container"></div>
+  <div id="container">
+    <!-- <div id="container"></div> -->
     <!-- object区域 -->
     <object ref="objectRef" tabindex="-1" type="text/html" aria-hidden="true" data="about:blank" style="display: block; 
             position: absolute; 
@@ -196,11 +196,11 @@ export default {
   computed: {
     ...mapState("ros", ["ros"]),
   },
-  beforeDestory() {
-    console.log(1);
-    cancelAnimationFrame();
-    console.log(2);
-  },
+  // beforeDestory() {
+  //   console.log(1);
+  //   cancelAnimationFrame();
+  //   console.log(2);
+  // },
   methods: {
     rosAction() {
       var actionClient = new ROSLIB.ActionClient({
@@ -368,9 +368,9 @@ export default {
 
       this.ip = this.regexip(this.ros.socket.url)
       // 车子模型
-      if (this.ip == '10.168.5.251') this.selectModel('hc', loader)
-      else if (this.ip == '10.168.5.246') this.selectModel('dkk', loader)
-
+      // if (this.ip == '10.168.5.247') this.selectModel('hc', loader)
+      // else if (this.ip == '10.168.5.246') this.selectModel('dkk', loader)
+      this.selectModel('hc', loader)
     },
     // 选择
     selectModel(name, loader) {
@@ -447,7 +447,7 @@ export default {
         if (!link.mash || !that.ip) return;
         // if (that.ip == '10.168.5.251') {
         //   console.log(251);
-          if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1.2);
+          if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1.8);
           else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.30);
           else link.mash.position.set(translation.x, translation.y, translation.z);
         // }

@@ -67,7 +67,7 @@ export default {
   },
   mounted() {
     this.getRoscfg();
-    // this.getRoscfgs()
+    this.getRoscfgs()
     this.drive_sub = new ROSLIB.Topic({
         ros: this.ros,
         name: '/drive_request',
@@ -104,21 +104,22 @@ export default {
       this.isEdit = false;
     },
 
-    // getRoscfgs(){
-    //   var cfg_sub = new ROSLIB.Topic({
-    //     ros: this.ros,
-    //     name: '/cfg_ostring',
-    //     messageType: "std_msgs/String",
-    //   });
+    getRoscfgs(){
+      var cfg_sub = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/cfg_ostring',
+        messageType: "std_msgs/String",
+      });
+      console.log(cfg_sub);
 
-    //   cfg_sub.subscribe((msg)=> {
-    //     this.rosCfg = rosCfg;
-    //     var msgJson = `[${msg.data}]`;
-    //     // console.log(msg.data)
-    //     this.form =JSON.parse(msgJson)[0];
-    //     // console.log('sub',this.form);
-    //   })
-    // },
+      cfg_sub.subscribe((msg)=> {
+        this.rosCfg = rosCfg;
+        var msgJson = `[${msg.data}]`;
+        console.log(msg.data)
+        this.form =JSON.parse(msgJson)[0];
+        console.log('sub',this.form);
+      })
+    },
     async getRoscfg(){
       var res = await reqRoscfg();
       this.rosCfg = rosCfg;
@@ -127,11 +128,7 @@ export default {
       else{
         this.form= res.data.data;
         localStorage.setItem('pvm_param',JSON.stringify(res.data.data))
-      } 
-      
-      // localStorage.getItem('pvm_param')
-      // console.log(this.form)
-      // console.log(this.rosCfg)
+      }
     },
   },
 };

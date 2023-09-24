@@ -33,8 +33,11 @@
             <span style="color: #F56C6C;">删除</span>
           </el-button> -->
 
-          <el-button @click="handleDelete(scope.row,scope.$index,tableData)" type="text" size="small">
+          <el-button @click="handleStop()" type="text" size="small">
             <span style="color: #F56C6C;">{{$t('table.stop')}}</span>
+          </el-button>
+          <el-button @click="handleDelete(scope.row,scope.$index,tableData)" type="text" size="small">
+            <span style="color: #F56C6C;">删除</span>
           </el-button>
         </template>
       </el-table-column>
@@ -47,7 +50,7 @@
       @current-change="handleCurrentChange"
       :current-page="currentPage"
       :pager-count="pageCount"
-      :page-sizes="[10, 20, 30, 40]"
+      :page-sizes="[10, 20, 50, 100]"
       :page-size="pageSize"
       layout="total, sizes, prev, pager, next"
       :total="total"
@@ -60,7 +63,6 @@
 import { mapState } from 'vuex';
 export default {
   props: ["tableData", "column", "tableName"],
-
   data() {
     return {
       currentPage: 1,
@@ -85,35 +87,36 @@ export default {
       console.log(row);
     },
     handleSend(row) {
-      // console.log({behavior_name:row.behavior_name});
+      console.log({behavior_name:row.behavior_name});
       this.$emit('sendGoal',{behavior_name:row.behavior_name})
     },
+    handleStop(){
+      this.$emit('isCancel','aaa')
+    },
     handleDelete(row,index,list) {
-      // isCancel
-      this.$emit('isCancel')
-      // this.$confirm(`此操作将永久删除该文件: ${row.behavior_name}`, '提示', {
-      //     confirmButtonText: '确定',
-      //     cancelButtonText: '取消',
-      //     center: true,
-      //     type: 'warning'
-      //   }).then(() => {
-      //     var trig_pub = new ROSLIB.Topic({
-      //       ros:this.ros,
-      //       name:'/trig',
-      //       messageType:'std_msgs/Header'
-      //     })
-      //     trig_pub.publish({frame_id:`flexbe_delete:${row.behavior_name}`});
-      //     list.splice(index,1)
-      //     this.$message({
-      //       type: 'success',
-      //       message: '删除成功!'
-      //     });
-      //   }).catch(() => {
-      //     this.$message({
-      //       type: 'info',
-      //       message: '已取消删除'
-      //     });          
-      //   });
+      this.$confirm(`此操作将永久删除该文件: ${row.behavior_name}`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          center: true,
+          type: 'warning'
+        }).then(() => {
+          var trig_pub = new ROSLIB.Topic({
+            ros:this.ros,
+            name:'/trig',
+            messageType:'std_msgs/Header'
+          })
+          trig_pub.publish({frame_id:`flexbe_delete:${row.behavior_name}`});
+          list.splice(index,1)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
     },
     // 分页器
     handleSizeChange(val) {

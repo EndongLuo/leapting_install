@@ -13,8 +13,8 @@
       <L_table 
       :tableData="filterData" 
       :column="column"
-      @sendGoal="sendGoal()"
-      @isCancel="isCancel()"
+      @sendGoal="sendGoal"
+      @isCancel="isCancel"
       tableName="behaviorInfo"
       />
     </div>
@@ -157,7 +157,8 @@
       },
 
       // 取消行为
-      isCancel(){
+      isCancel(a){
+        console.log(a);
         if(this.goal){
           this.$message('行为取消！');
           this.goal.cancel();

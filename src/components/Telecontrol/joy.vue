@@ -1,6 +1,6 @@
 <template>
   <div class="joys">
-    <div class="bizhang">
+    <!-- <div class="bizhang">
     <el-tooltip :content="autocross ?'Avoidance' :'Avoidance' " placement="top">
       <el-switch
         class="switchStyle"
@@ -12,7 +12,7 @@
         inactive-text="Off">
         </el-switch>
       </el-tooltip>
-    </div>
+    </div> -->
     <!-- 前后 -->
     <div class="page">
     <div style="margin-top: 100px; margin-left: 50%; position: relative">

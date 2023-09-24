@@ -28,7 +28,6 @@
 
       </div>
       <span slot="footer" class="dialog-footer">
-        <!-- <el-button @click="putBack">放回</el-button> -->
         <el-button type="primary" @click="shibiePV">确认</el-button>
       </span>
     </el-dialog>
@@ -65,16 +64,18 @@ export default {
   },
   created() {
     this.timer = setInterval(() => {
-      // this.shibie();
-      // this.dialog();
-
       var taskState = this.$store.state.ros.taskState;
-      if (typeof taskState == 'undefined') return;
+      // console.log(this.ros.isConnected);
+      if (!this.ros.isConnected) taskState = null;
+      if (typeof taskState == 'undefined'|| !taskState) return;
       if (taskState.indexOf('checkPickupTF') != -1) {
         this.$message.success('抓取识别中。。。');
       }
-      if (taskState.indexOf('checkPlaceTF') != -1) {
+      else if (taskState.indexOf('checkPlaceTF') != -1) {
         this.$message.success('放置识别中。。。');
+      }
+      else if (taskState.indexOf('checkTF') != -1) {
+        this.$message.success('检测识别中。。。');
       }
       
     }, 3000);
@@ -87,8 +88,8 @@ export default {
       var _this = this;
       // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
-      this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
+      this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
+      // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
       // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.238:9090" }); // zeng
 
       this.$store.dispatch("ros/getRos", this.ros);
@@ -201,6 +202,7 @@ export default {
     },
     // 放回流程
     putBack() {
+      this.withDraw();
       this.dialogVisible = false;
       this.flag = false;
       this.$message({
@@ -214,6 +216,37 @@ export default {
       this.flag = false;
       this.uichoose("next");
       this.$message.success(`${this.toptip}`);
+    },
+
+    // 发送withDraw(放回光伏板)
+    withDraw() {
+      var goalMsg = new ROSLIB.Message({
+        behavior_name: 'WithdrawPVM',
+      });
+      // console.log(goalMsg);
+
+      var actionClient = new ROSLIB.ActionClient({
+        ros: this.ros,
+        actionName: 'flexbe_msgs/BehaviorExecutionAction',
+        serverName: '/flexbe/execute_behavior'
+      });
+      this.goal = new ROSLIB.Goal({
+        actionClient: actionClient,
+        goalMessage: goalMsg
+      });
+
+      this.goal.send();
+
+      this.goal.on('feedback', (feedback) => {
+        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
+        console.log('Feedback: ', feedback);
+      });
+
+      this.goal.on('result', (result) => {
+        if (result.outcome == 'preempted') this.$message(`任务结束！`);
+        // this.$message(`result: ${JSON.stringify(result)}`);
+        console.log('Final Result: ', result);
+      });
     },
 
     // 重新识别

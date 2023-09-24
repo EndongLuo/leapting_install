@@ -2,7 +2,7 @@
   <div>
     <div class="tacks"  @click="taskDialogVisible = true">
       <span><b>{{$t('task.task')}}：</b>{{ taskArr[1] }}</span>
-      <span><b>{{$t('task.step')}}：</b>{{ taskArr[0] }}</span>
+      <span class="taskbox"><b>{{$t('task.step')}}：</b>{{ taskArr[0] }}</span>
     </div>
 
     <!-- 机器人弹框 -->
@@ -68,9 +68,10 @@ export default {
   },
   methods:{
     tasking(){
-      var taskState = this.$store.state.ros.taskState
+      var taskState = this.$store.state.ros.taskState;
+      // console.log(taskState);
       if (typeof taskState == 'undefined') return;
-      if (taskState == ':') this.taskArr = ['None','None'];
+      if (taskState == ':' || !this.ros.isConnected) this.taskArr = ['None','None'];
       // else this.taskArr = taskState.replace(":InstallPVM","").split("/");
       else this.taskArr = taskState.split(":");
       // console.log(this.taskArr);
@@ -102,9 +103,10 @@ export default {
 }
 .tacks {
   display: flex;
-  justify-content: space-around;
+  // justify-content: space-around;
   font-size: 14px;
   margin: 5px 0;
+  flex-wrap: wrap;
   span {
     padding:0 7px;
     // width: 300px;
@@ -112,7 +114,6 @@ export default {
     overflow: hidden;
     border-radius: 5px;
     border: 1px solid #dbdbdb;
-    
   }
 
 }

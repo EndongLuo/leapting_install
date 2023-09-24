@@ -156,7 +156,7 @@ export default {
       battery_msg:{
         current:'0',
         voltage:'0',
-        soc:'0'
+        soc:'60'
       },
       angular:'0',
       linear:'0',
@@ -290,7 +290,9 @@ export default {
   justify-content: space-between;
   font-size: 14px;
   cursor: pointer;
+  flex-wrap: wrap;
   .left {
+    // min-width: 500px;
     display: flex;
     align-items: center;
     .map {
@@ -310,6 +312,8 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    flex-wrap: wrap;
   }
 }
 </style>
