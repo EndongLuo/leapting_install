@@ -110,10 +110,10 @@ export default {
   span {
     padding:0 7px;
     // width: 300px;
-    height: 22px;
-    overflow: hidden;
-    border-radius: 5px;
-    border: 1px solid #dbdbdb;
+    // height: 22px;
+    // overflow: hidden;
+    // border-radius: 5px;
+    // border: 1px solid #dbdbdb;
   }
 
 }

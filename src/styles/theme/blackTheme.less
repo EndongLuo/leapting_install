@@ -1,10 +1,11 @@
 @baseBackColor: #1f1f1f;
-@baseColor: #c0bfbf;
+@baseColor: #dddddd;
+@fontColor: #dddddd;
 
 @baseBackColor2: #121212;
 
 body.leapting-admin-blackTheme {
-    background-color: #fff !important;
+    background-color: @baseBackColor2 !important;
   .el-menu {
     border-right: solid 1px #e6e6e600 !important;
     background-color: @baseBackColor !important;
@@ -24,8 +25,12 @@ body.leapting-admin-blackTheme {
   .el-submenu__title:focus,
   .el-submenu__title:hover {
     outline: 0;
-    background-color: #363636 !important;
+    background-color: #dddddd !important;
   }
+  .el-menu--horizontal > .el-menu-item:not(.is-disabled):focus, .el-menu--horizontal > .el-menu-item:not(.is-disabled):hover, .el-menu--horizontal > .el-submenu .el-submenu__title:hover {
+    background-color: #ffffff21 !important;
+    color: #dddddd !important;
+}
 
   .el-main {
     background-color: @baseBackColor2;
@@ -79,7 +84,7 @@ body.leapting-admin-blackTheme {
 
   /* 表格字体颜色 */
   .el-table {
-    color: #c8cfdd;
+    color: @fontColor;
     border-spacing: 0;
   }
 
@@ -114,14 +119,14 @@ body.leapting-admin-blackTheme {
 
   .el-table td.el-table__cell,
   .el-table th.el-table__cell.is-leaf {
-    border-bottom: 1px solid @baseBackColor;
+    border-bottom: 0;
   }
 
   /* 表格悬浮 */
   .el-table--enable-row-hover .el-table__body tr:hover>td {
     // background-color: #29385e !important;
     background-color: #363636 !important;
-    color: @baseColor;
+    color: @fontColor;
     
     /* background-color: #1f3157 !important; */
   }
@@ -134,54 +139,97 @@ body.leapting-admin-blackTheme {
     height: 0px;
   }
 
+  .el-table--border::after, .el-table--group::after {
+    width: 0; 
+}
+
+.el-table__fixed-right::before, .el-table__fixed::before {
+   background-color: #ebeef500; 
+}
+
+  .el-dialog {
+    background: @baseBackColor;
+  }
+  .el-dialog__title {
+    color: @fontColor; 
+}
+.el-dialog__body {
+   color: @fontColor; 
+}
+
   /* 输入框 */
   input {
     border-color: @baseBackColor;
   }
 
-  input::-webkit-input-placeholder {
-    color: #93969e !important;
-  }
-
   .el-input__inner:hover {
-    border-color: #2f61df;
+    border-color: #2f61df88;
   }
 
   .el-input__inner {
     /* background-color: @baseBackColor; */
-    background-color: #213057;
+    background-color: #53535310;
     border-radius: 8px;
-    border-color: @baseBackColor;
-    color: aliceblue;
+    border-color: #808080c4;
+    color:  @fontColor;
   }
 
   /* 按钮 */
+
+  .el-button {
+    color: @fontColor;
+  }
   .el-button--primary {
     color: #409EFF;
-    // color: @baseColor;
-    background-color: #213057;
-    // background-color: #c38fff;
-    border-color: #213057;
-  }
+    background-color: #252525d2;
+    border-color: #3f3f3fde;
+}
 
-  .el-button--primary:focus,
-  .el-button--primary:hover {
-    background-color: #364b80;
-    border-color: #364b80;
-    color: #b0d6fc;
-  }
-
+.el-button--info {
+  color: @fontColor;
+  background-color: #252525d2;
+  border-color: #3f3f3fde;
+}
+ 
   .el-tabs--border-card>.el-tabs__header {
     background-color: #35373a;
     border-bottom: 1px solid #464646;
     margin: 0;
-  }
+  } 
+  .el-table, .el-table__expanded-cell {
+   background-color: #ffffff00 !important; 
+}
 
+.el-table--border {
+   border: 1px solid #2e2e2ecb;
+}
+.el-table--border .el-table__cell, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+  border-right: 1px solid #2e2e2ecb;
+}
   // tabs
   .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
     color: #409EFF;
     background-color: #424242;
     border-right-color: #464646;
     border-left-color: #464646;
+}
+.el-tabs--border-card {
+  background: #36363625;  
+  border: 1px solid #dcdfe600; 
+}
+.el-tabs--border-card>.el-tabs__header .el-tabs__item {
+  transition: all .3s cubic-bezier(.645,.045,.355,1);
+  border: 1px solid transparent;
+  margin-top: -1px;
+  color: @fontColor;
+}
+
+.el-pagination__total {
+  color: @fontColor;
+}
+.el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li {
+
+  background-color: #464646;
+  color:@fontColor;
 }
 }

@@ -184,14 +184,14 @@ export default {
       // });
     });
 
-    // 监听鼠标双击事件
-    addEventListener('dblclick', () => {
-      // 获取当前状态
-      const fullscreenElement = document.fullscreenElement
-      if (fullscreenElement) document.exitFullscreen();
-      // 请求画布全屏
-      else this.renderer.domElement.requestFullscreen()
-    })
+    // // 监听鼠标双击事件
+    // addEventListener('dblclick', () => {
+    //   // 获取当前状态
+    //   const fullscreenElement = document.fullscreenElement
+    //   if (fullscreenElement) document.exitFullscreen();
+    //   // 请求画布全屏
+    //   else this.renderer.domElement.requestFullscreen()
+    // })
   },
   computed: {
     ...mapState("ros", ["ros"]),
@@ -445,15 +445,12 @@ export default {
       function poselist(link, item) {
         var { rotation, translation } = item.transform;
         if (!link.mash || !that.ip) return;
-        // if (that.ip == '10.168.5.251') {
-        //   console.log(251);
-          if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1.8);
-          else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.30);
+        
+          if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1);
+          else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.35);
           else link.mash.position.set(translation.x, translation.y, translation.z);
-        // }
-        // else if (that.ip == '10.168.5.246') link.mash.position.set(translation.x, translation.y, translation.z);
-        // else link.mash.position.set(translation.x, translation.y, translation.z);
-        //  link.mash.position.set(translation.x, translation.y, translation.z);
+        
+          //  link.mash.position.set(translation.x, translation.y, translation.z);
 
         link.mash.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
       }

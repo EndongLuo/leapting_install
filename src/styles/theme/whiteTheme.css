@@ -1,20 +1,26 @@
 body.leapting-admin-whiteTheme .el-menu {
-  background-color: #ffffff !important;
+  /* background-color: #ffffff !important; */
 }
 body.leapting-admin-whiteTheme .el-menu .el-menu-item,
-body.leapting-admin-whiteTheme .el-menu .el-submenu__title {
-  color: #080808f5;
+body.leapting-admin-whiteTheme .el-menu .el-submenu__title,
+body.leapting-admin-whiteTheme .el-menu .el-menu-item i,
+body.leapting-admin-whiteTheme .el-menu .el-submenu__title i,
+body.leapting-admin-whiteTheme .el-header {
+  /* color: #080808f5; */
+  color: #dddddd;
 }
 body.leapting-admin-whiteTheme .el-menu .el-menu-item i,
 body.leapting-admin-whiteTheme .el-menu .el-submenu__title i {
+  /* color: #080808f5; */
   color: #080808f5;
 }
 body.leapting-admin-whiteTheme .el-header {
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
+  /* color: #080808f5; */
   color: #080808f5;
 }
 body.leapting-admin-whiteTheme .el-main {
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
 }
 body.leapting-admin-whiteTheme .map_left,
 body.leapting-admin-whiteTheme .map_right {

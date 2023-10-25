@@ -34,6 +34,7 @@ const en = {
     robotinfo:'Robot Info',
     robotid: 'Robot ID',
     connect:'Connect',
+    reconnect:'Reconnect',
     connected:'Connected',
     notconnect:'Not Connected',
     battery: 'Battery',
@@ -42,6 +43,7 @@ const en = {
   },
   map:{
     selectmap:'Select Map',
+    nomap:'No Map'
   },
   task:{
     taskinfo:'Task Info',
@@ -59,17 +61,49 @@ const en = {
     start:'Start',
     pause:'Pause',
     continue:'Continue',
-    stop:'Stop'
+    stop:'Stop',
+    withdraw:'Withdraw',
+    reset:'Reset',
+    check:'Check',
+  },
+  config:{
+    pducontrol:'PDU Control',
+    autoon:'Auto On',
+    chassis:'Chassis On',
+    inverter:'Inverter On',
+    charge:'Charge On',
+    basecontrol:'Base Control',
+    avoidance:'Avoidance',
+    reminder:'Power Reminder',
+    pvmsize:'PVM Size',
+    installgap:'Install Gap',
+    devicestatus:'Device status'
   },
   connPrompt:{
     success:'Connected to Install Robot.',
-    close:'Connection to Install Robot closed.'
+    close:'Connection to Install Robot closed.',
+    reconn:'Reconnect'
   },
   prompt:{
     switchMode: 'Task in progress, please end the task before switching modes.',
     inputErrorMessage: 'Incorrect format',
     inputNum:'Please enter the number of installed components',
     prompt:'Prompt'
+  },
+  identify:{
+    identifyOk:'Successfully Identified.',
+    identifyFail:'Failed Identified.',
+    identifyPick:'Please check if there are any components or if the components reflect light.',
+    identifyPut:'Please move the vehicle: the stake is 2m parallel to the inner track of the vehicle (with an error of ± 5cm).',
+    UI_dump:'Whether to release the suction cup',
+    UI_place:'Is the photovoltaic module placed on the bracket',
+    putting:'Put it back in...',
+    identifyagain:'Continue to identify',
+    checkPickupTF:'Grab recognition in progress...',
+    checkPlaceTF:'Placing recognition...',
+    checkTF:'Detecting and recognizing...',
+    close:'Confirm closing?',
+    taskover:'The task is over!'
   }
 }
 

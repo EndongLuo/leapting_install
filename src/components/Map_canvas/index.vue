@@ -4,7 +4,7 @@
     <div v-if="ros.isConnected">
       <div id="map" :style="height= mapHeight"></div>
     </div>
-    <el-empty v-else :image-size="mapHeight-200" description="暂无地图" image="/img/empty.png"></el-empty>
+    <el-empty v-else :image-size="mapHeight-200" :description="$t('map.nomap')" image="/img/empty.png"></el-empty>
 
     <!-- edit site dialog -->
     <el-dialog
@@ -65,9 +65,9 @@
         </el-col>
       </el-form-item>
       <el-form-item class="threeBtn" style="display: flex; justify-content: center;">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('mains.cancel') }}</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
-        <el-button type="primary" @click="editForm('ruleForm')">edit</el-button>
+        <el-button type="primary" @click="editForm('ruleForm')">{{ $t('mains.edit') }}</el-button>
       </el-form-item>
     </el-form>
     </el-dialog>
@@ -451,9 +451,9 @@ export default {
           // <button class="el-button" style="background=red" onclick="deleteSite('${key}')">删除</button>
           // <button class="el-button" onclick="NavSite('${key}')">到这里</button>
           // `);
-          this.siteMarker.bindPopup(`<b>${key}</b>
-          <button class="el-button" onclick="NavSite('${key}')">导 航</button>
-          `);
+          // this.siteMarker.bindPopup(`<b>${key}</b>
+          // <button class="el-button" onclick="NavSite('${key}')">导 航</button>
+          // `);
           newMarkers.push({
             id:key,
             pose: site[key].pose,
@@ -519,6 +519,7 @@ export default {
       });
 
       pose_sub.subscribe((msg)=> {
+        // console.log(msg);
         if(this.robotMarker) this.map.removeLayer(this.robotMarker);
         this.robotMarker = L.marker([0, 0],{ icon: this.markerRobot }).addTo(this.map);
         // Update the marker's position

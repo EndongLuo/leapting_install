@@ -18,7 +18,23 @@ const mutations = {
       messageType: "diagnostic_msgs/DiagnosticArray",
     });
 
-    rosTopic.subscribe((msg) => (state.diagnostics = msg.status));
+    rosTopic.subscribe((msg) => {
+      // console.log(msg.status);
+      state.diagnostics = msg.status;
+      var pdu = state.diagnostics.find(itme=>itme.name=='/DEVICES/PDU/rosbridge_pdu: Hardware status')
+      if (!pdu) return
+      
+      state.pduStatus = pdu.values.map(item=>{
+        // console.log(item.key);
+        // if(item.key.indexOf('fuse')!=-1||item.key.indexOf('contactor')!=-1){
+        //   console.log('fuse');
+        //   // return;
+        // } 
+        item.key = item.key.replaceAll("_"," ");
+        return item
+      }).filter(item => item.key.indexOf('fuse')==-1&&item.key.indexOf('contactor')==-1);
+      // console.log(state.pduStatus);
+    });
   },
 
   // 订阅诊断信息json_agg
@@ -30,7 +46,7 @@ const mutations = {
     });
 
     rosTopic.subscribe((msg) => {
-      // console.log(msg);
+      // console.log(msg.frame_id);
 
       var diag = JSON.parse(msg.frame_id);
       // var diag = msg;
@@ -267,6 +283,7 @@ const state = {
   mapName: "",
   jsonAgg: [],
   wifi: {},
+  pduStatus:[],
 };
 
 const getters = {

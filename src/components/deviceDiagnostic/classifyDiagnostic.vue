@@ -21,7 +21,7 @@
         <!-- 表格开始 -->
         <el-table
           :data="classifyDiagnostics"
-          style="width: 100%; margin-bottom: 20px"
+          style="width: 100%;"
           row-key="name"
           :height="tableHeight"
           size="small"
@@ -68,7 +68,7 @@ export default {
       deviceDiagnostic: [],
       index: 1,
       agg:'jsonAgg',
-      tableHeight: window.innerHeight - 180,
+      tableHeight: window.innerHeight - 160,
       // diag: `{"ALGORITHM": {"hardware_id": "", "level": 3, "message": "Stale", "name": "ALGORITHM", "underling": {"LOCALIZATION": {"hardware_id": "", "level": 3, "message": "Stale", "name": "LOCALIZATION"}}}, "DEVICES": {"hardware_id": "", "level": 3, "message": "Stale", "name": "DEVICES", "underling": {"DRIVE": {"hardware_id": "", "level": 3, "message": "Stale", "name": "DRIVE"}, "IMU": {"hardware_id": "", "level": 3, "message": "Stale", "name": "IMU"}, "LASER": {"hardware_id": "", "level": 3, "message": "Stale", "name": "LASER"}, "PLC": {"hardware_id": "", "level": 3, "message": "Stale", "name": "PLC"}}}, "STATUS": {"hardware_id": "", "level": 2, "message": "Error", "name": "STATUS", "underling": {"ACTION": {"hardware_id": "", "level": 0, "message": "OK", "name": "ACTION"}, "ESTOP": {"hardware_id": "", "level": 3, "message": "Stale", "name": "ESTOP", "underling": {"BASE": {"hardware_id": "", "level": 3, "message": "Stale", "name": "BASE"}}}, "MAINTENANCE": {"hardware_id": "", "level": 0, "message": "OK", "name": "MAINTENANCE"}, "MOTION": {"hardware_id": "", "level": 3, "message": "Stale", "name": "MOTION", "underling": {"BACK": {"hardware_id": "", "level": 3, "message": "Stale", "name": "BACK"}, "LEFT": {"hardware_id": "", "level": 3, "message": "Stale", "name": "LEFT"}, "RIGHT": {"hardware_id": "", "level": 3, "message": "Stale", "name": "RIGHT"}}}, "START": {"hardware_id": "", "level": 3, "message": "Stale", "name": "START", "underling": {"RELAY": {"hardware_id": "", "level": 3, "message": "Stale", "name": "RELAY"}}}, "TASK": {"hardware_id": "", "level": 0, "message": "OK", "name": "TASK", "underling": {"BEHAVIOR": {"hardware_id": "", "level": 0, "message": "OK", "name": "BEHAVIOR", "underling": {"task behavior": {"hardware_id": "", "level": 0, "message": ":", "name": "task behavior"}}}, "STATE": {"hardware_id": "", "level": 0, "message": "OK", "name": "STATE", "underling": {"task state": {"hardware_id": "", "level": 0, "message": ":", "name": "task state"}}}}}}}, "SYSTEM": {"hardware_id": "", "level": 0, "message": "OK", "name": "SYSTEM", "underling": {"NET": {"hardware_id": "", "level": 0, "message": "OK", "name": "NET", "underling": {"wifi": {"hardware_id": "", "level": 0, "message": "ssid:Leapting_Guest, signal(dbm):-48, upspeed(Mb/s):0, downspeed(Mb/s):0", "name": "wifi"}}}}}}`,      
     };
   },
@@ -83,7 +83,7 @@ export default {
   },
   mounted() {
     window.onresize = () => {
-      this.tableHeight = window.innerHeight - 180;
+      this.tableHeight = window.innerHeight - 160;
     };
     this.handleClick();
     // this.getDiag();

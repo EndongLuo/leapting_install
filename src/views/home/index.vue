@@ -38,27 +38,28 @@
       </div>
       <div v-else-if="isShow == 4" class="arml2">
         <div>
-            <span class="armin ll" @click="withDraw('WithdrawPVM')">撤回</span>
-            <span class="armin ll"  @click="withDraw('StartInstallCheck')">检测</span>
+          <span class="armin ll" @click="withDraw('WithdrawPVM')">{{ $t('install.withdraw') }}</span>
+          <span class="armin ll" @click="withDraw('StartInstallCheck')">{{ $t('install.check') }}</span>
         </div>
-       
+
         <div class="armContent ll" style="height: 168px;">
-          <span class="armin" style="width: 200px;"  @click="control('Y', -10)"><i class="el-icon-arrow-up"></i></span>
-            
-           <div style="display: flex;">
-            <span class="armin"  @click="control('X', 10)"><i class="el-icon-arrow-left"></i></span>
-            <span class="armin"  @click="control('X', -10)"><i class="el-icon-arrow-right"></i></span>
-            </div>
-            <span class="armin" style="width: 200px;"  @click="control('Y', 10)"><i class="el-icon-arrow-down"></i></span>
-          
+          <span class="armin" style="width: 200px;" @click="control('Y', -10)"><i class="el-icon-arrow-up"></i></span>
+
+          <div style="display: flex;">
+            <span class="armin" @click="control('X', 10)"><i class="el-icon-arrow-left"></i></span>
+            <span class="armin" @click="control('X', -10)"><i class="el-icon-arrow-right"></i></span>
+          </div>
+          <span class="armin" style="width: 200px;" @click="control('Y', 10)"><i class="el-icon-arrow-down"></i></span>
+
         </div>
         <div>
-            <span class="armin ll"  @click="control('Z', 10)"><i class="el-icon-top"></i></span>
-            <span class="armin ll "  @click="control('Z', -10)"><i class="el-icon-bottom"></i></span>
-          </div>
+          <span class="armin ll" @click="control('Z', 10)"><i class="el-icon-top"></i></span>
+          <span class="armin ll " @click="control('Z', -10)"><i class="el-icon-bottom"></i></span>
+        </div>
         <div>
-          <span class="armin ll "  @click="poseAction('armInitPose')">复位</span>
-          <span class="armin ll"  @click="Stop()">{{ $t('install.stop') }}</span>
+          <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
+          <span class="armin ll" @click="Stop()" style="background-color: #F56C6C;color: #ffffff;">{{ $t('install.stop')
+          }}</span>
         </div>
       </div>
       <!-- 安装 -->
@@ -90,20 +91,20 @@
     <!-- 可拖拽框 -->
     <div style="display: flex;" v-if="isVideo || isThree">
       <div class="win" v-if="isVideo">
-          <div class="totitle" >
-            <span>{{ $t('install.monitor') }}</span>
-            <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos()"></i>
-          </div>
-          
-        <img v-if="!urlVideo" src="./img/empty.png" alt="">
-        <img v-else :src="urlVideo" alt="">
+        <div class="totitle">
+          <span>{{ $t('install.monitor') }}</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos()"></i>
+        </div>
+
+        <img v-if="!urlVideo" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
+        <img v-else :src="urlVideo" alt="" style="width: 100%; height:100%; overflow: hidden;">
       </div>
       <div class="win" v-if="isThree">
         <div class="totitle">
           <span>{{ $t('install.model') }}</span>
           <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
         </div>
-        <Three v-if="isThree" style="width: 49%; height:50%;" />
+        <Three v-if="isThree" style="width: 49%; height:44%;" />
       </div>
     </div>
   </div>
@@ -141,82 +142,47 @@ export default {
     // this.$message.success('Installation Completed');
   },
   methods: {
-    // control
-    control(axis, offset) {
-      var goalMsg = new ROSLIB.Message({
-        behavior_name: 'TransManipulation',
-        arg_keys: ['axis', 'offset'],
-        arg_values: [`${axis}`, `${offset}`]
-      });
-      // console.log(goalMsg);
-
-      var actionClient = new ROSLIB.ActionClient({
-        ros: this.ros,
-        actionName: 'flexbe_msgs/BehaviorExecutionAction',
-        serverName: '/flexbe/execute_behavior'
-      });
-      this.goal = new ROSLIB.Goal({
-        actionClient: actionClient,
-        goalMessage: goalMsg
-      });
-
-      this.goal.send();
-
-      this.goal.on('feedback', (feedback) => {
-        this.$message(`feedback: ${JSON.stringify(feedback)}`);
-        console.log('Feedback: ', feedback);
-      });
-
-      this.goal.on('result', (result) => {
-        // this.$message(`result: ${JSON.stringify(result)}`);
-        if (result.outcome == 'preempted') this.$message(`任务结束！`);
-        console.log('Final Result: ', result);
-      });
-    },
-
-    // pose Action
-    poseAction(name) {
-      var goalMsg = new ROSLIB.Message({
-        behavior_name: 'SiteManipulation',
-        arg_keys: ['site_name'],
-        arg_values: [`${name}`,]
-      });
-      // console.log(goalMsg);
-
-      var actionClient = new ROSLIB.ActionClient({
-        ros: this.ros,
-        actionName: 'flexbe_msgs/BehaviorExecutionAction',
-        serverName: '/flexbe/execute_behavior'
-      });
-      this.goal = new ROSLIB.Goal({
-        actionClient: actionClient,
-        goalMessage: goalMsg
-      });
-
-      this.goal.send();
-
-      this.goal.on('feedback', (feedback) => {
-        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
-        console.log('Feedback: ', feedback);
-      });
-
-      this.goal.on('result', (result) => {
-        // this.$message(`result: ${JSON.stringify(result)}`);
-        if (result.outcome == 'preempted') this.$message(`任务结束！`);
-        console.log('Final Result: ', result);
-      });
-    },
-
     // 检查ros连接状态
     checkRos() {
-      if(this.isShow){
+      if (this.isShow) {
         this.videoRos();
-        // this.isThree = 1;
-      } 
+        this.isThree = 1;
+      }
       if (!this.ros.isConnected) {
         // this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
+    },
+
+    // control
+    control(axis, offset) {
+      var goalMessage = new ROSLIB.Message({
+        behavior_name: 'TransManipulation',
+        arg_keys: ['axis', 'offset'],
+        arg_values: [`${axis}`, `${offset}`]
+      });
+
+      this.actionClient(goalMessage);
+    },
+
+    // pose Action
+    poseAction(name) {
+      var goalMessage = new ROSLIB.Message({
+        behavior_name: 'SiteManipulation',
+        arg_keys: ['site_name'],
+        arg_values: [`${name}`,]
+      });
+
+      this.actionClient(goalMessage);
+    },
+
+    // withDraw
+    withDraw(name) {
+      var goalMessage = new ROSLIB.Message({
+        behavior_name: name,
+      });
+
+      this.actionClient(goalMessage);
     },
 
     // 开始第一次
@@ -231,7 +197,7 @@ export default {
         this.isInstall = id;
         var auto = id == 1 ? false : true;
         this.$message.success('Start Installation.');
-        this.sendGoal(auto, 50);
+        this.CommInstall(auto, 50);
       }
       else {
         this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
@@ -248,7 +214,7 @@ export default {
 
           // this.pvm_num = value;
           console.log(Number(value));
-          this.sendGoal(auto, value);
+          this.CommInstall(auto, value);
         }).catch(() => {
           this.isInstall = 0;
           this.flexbeSwitch = true;
@@ -259,60 +225,32 @@ export default {
     },
 
     // 发送goal
-    sendGoal(auto, pvm_num) {
+    CommInstall(auto, pvm_num) {
 
       var ls = localStorage.getItem('pvm_param')
-      const { pvm } = JSON.parse(ls);
+      const { pvm_width,install_gap } = JSON.parse(ls);
 
-      var goalMsg = new ROSLIB.Message({
+      var goalMessage = new ROSLIB.Message({
         behavior_name: 'CommInstallPVM',
         arg_keys: ['auto', 'pvm_num', 'pvm_width', 'install_gap'],
-        arg_values: [`${auto}`, `${pvm_num}`, pvm.pvm_width, pvm.install_gap]
-      });
-      // console.log(goalMsg);
-
-      var actionClient = new ROSLIB.ActionClient({
-        ros: this.ros,
-        actionName: 'flexbe_msgs/BehaviorExecutionAction',
-        serverName: '/flexbe/execute_behavior'
-      });
-      this.goal = new ROSLIB.Goal({
-        actionClient: actionClient,
-        goalMessage: goalMsg
+        arg_values: [`${auto}`, `${pvm_num}`, `${pvm_width}`, `${install_gap}`]
       });
 
-      this.goal.send();
+      console.log(goalMessage);
 
-      this.goal.on('feedback', (feedback) => {
-        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
-        console.log('Feedback: ', feedback);
-      });
-
-      this.goal.on('result', (result) => {
-        if (result.outcome == 'preempted') this.$message(`任务结束！`);
-        // this.$message(`result: ${JSON.stringify(result)}`);
-        console.log('Final Result: ', result);
-      });
+      this.actionClient(goalMessage);
     },
 
-    // 发送withDraw
-    withDraw(name) {
-      var goalMsg = new ROSLIB.Message({
-        behavior_name: name,
-      });
-      // console.log(goalMsg);
-
+    actionClient(goalMessage) {
       var actionClient = new ROSLIB.ActionClient({
         ros: this.ros,
         actionName: 'flexbe_msgs/BehaviorExecutionAction',
         serverName: '/flexbe/execute_behavior'
       });
-      this.goal = new ROSLIB.Goal({
-        actionClient: actionClient,
-        goalMessage: goalMsg
-      });
+      this.goal = new ROSLIB.Goal({ actionClient, goalMessage });
 
-      this.goal.send();
+      console.log(this.goal);
+      // this.goal.send();
 
       this.goal.on('feedback', (feedback) => {
         // this.$message(`feedback: ${JSON.stringify(feedback)}`);
@@ -320,8 +258,8 @@ export default {
       });
 
       this.goal.on('result', (result) => {
-        if (result.outcome == 'preempted') this.$message(`任务结束！`);
         // this.$message(`result: ${JSON.stringify(result)}`);
+        if (result.outcome == 'preempted') this.$message(`任务结束！`);
         console.log('Final Result: ', result);
       });
     },
@@ -369,16 +307,23 @@ export default {
     // 开始video
     videoRos() {
       this.isVideo = 1;
-      // 订阅 robot's site 
+      // 订阅 topic
       this.video_sub = new ROSLIB.Topic({
         ros: this.ros,
         name: '/camera/color/image_raw/compressed',
         messageType: 'sensor_msgs/CompressedImage'
       });
 
+      // this.video_sub = new ROSLIB.Topic({
+      //   ros: this.ros,
+      //   name: '/compressed_raw_base64',
+      //   messageType: 'std_msgs/String'
+      // });
+
       this.video_sub.subscribe((msg) => {
         // console.log(msg);
         this.urlVideo = `data:image/jpeg;base64,${msg.data}`;
+        // console.log(this.urlVideo);
       })
     },
 
@@ -390,7 +335,7 @@ export default {
     },
 
     // 关闭窗口
-    closeWin(){
+    closeWin() {
       this.isShow = 0;
       this.isThree = 0;
       this.pauseRos();
@@ -418,19 +363,23 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    font-weight: 700;
+
     .btn {
       width: 200px;
       height: 200px;
-      border: 1px solid #ececec;
+      // border: 1px solid #a0a0a03a;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      background: #f8f8f8;
+      background: rgba(255, 255, 255, 0.103);
+      border-radius: 5px;
+      margin: 1px;
 
       &:hover {
-        background: #e7e7e7;
+        background: rgba(255, 255, 255, 0.164);
       }
 
       i {
@@ -501,20 +450,21 @@ export default {
   align-items: center;
   margin: 10px;
 
-  .ll{
+  .ll {
     border-radius: 5px;
     background: #535353d3;
     box-shadow: 5px 5px 20px #212223;
     overflow: hidden;
   }
 
-  .armContent{
-    margin:0 10px;
+  .armContent {
+    margin: 0 10px;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    .armin{
+
+    .armin {
       border-radius: 0px;
       width: 100px;
       height: 56px;
@@ -551,25 +501,28 @@ export default {
   align-items: center;
   // width: 200px;
   // height: 200px;
+  cursor: pointer;
 
   &:active {
     // border-radius: 5px;
-    background: #3b3b3bd3;
+    // background: #3b3b3bd3;
+    opacity: 0.8;
     // box-shadow: 5px 5px 20px #212223;
   }
 }
 
-.win{
+.win {
   width: 50%;
-  height: 40%;
-  border: 1px solid #ddddddc5;
-  background: #ffffffe1;
+  height: 35%;
+  border: 1px solid #dddddd71;
+  // background: #ffffffe1;
   font-size: 14px;
-  box-shadow: 5px 5px 20px #bdbdbd;
+  box-shadow: 0px 0px 10px #bdbdbd61;
   overflow: hidden;
   z-index: 999;
   border-radius: 5px;
-  .totitle{
+
+  .totitle {
     display: flex;
     justify-content: space-between;
     margin: 5px;
@@ -580,7 +533,6 @@ export default {
   position: fixed;
   bottom: 0%;
   background: #000000bd;
-  color: #b9b9b9;
   margin-left: -10px;
   // border-radius: 10px;
   box-shadow: 0px 0px 20px 10px rgb(36 36 36 / 50%), inset 0px 5px 20px 10px rgb(100 100 100 / 50%);
@@ -588,7 +540,7 @@ export default {
   height: 250px;
   z-index: 1000;
 
-  .el-icon-close{
+  .el-icon-close {
     position: absolute;
     right: 10px;
     top: 10px;

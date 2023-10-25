@@ -2,11 +2,16 @@
   <div class="tips">
     <div class="left">
       <!-- 机器人id -->
-      <div @click="robotDialogVisible = true">
+      <div >
 
-        <div class="jqr_id" v-if="!ros.isConnected" style="color: #f56c6c;">{{ $t('robot.notconnect') }}</div>
+        <div class="jqr_id" v-if="!ros.isConnected" style="color: #f56c6c;">
+          {{ $t('robot.notconnect') }} 
+          <el-button  @click="reconnect()" type="info" size="small">
+            {{ $t('robot.reconnect') }} 
+          </el-button>
+        </div>
         
-        <div v-else class="left_info">
+        <div v-else class="left_info" @click="robotDialogVisible = true">
           <div class="jqr_id" >{{regexip(ros.socket.url)}}</div>
 
           <div class="jqr_id"  style="color: #34a94d;">{{ $t('robot.connected') }}</div>
@@ -67,7 +72,7 @@
         <!-- <div class="war_dialog">ID: 机器人001，电量：<Battery :quantity="10" />，连接状态：已连接</div>
         <div class="war_dialog">ID: 机器人005，电量：<Battery :quantity="60" />，连接状态：未连接</div> -->
         <span slot="footer" class="dialog-footer">
-          <el-button @click="robotDialogVisible = false">{{$t('mains.cancel')}}</el-button>
+          <el-button type="info" @click="robotDialogVisible = false">{{$t('mains.cancel')}}</el-button>
           <el-button type="primary" @click="robotDialogVisible = false">
             {{$t('mains.confirm')}}
           </el-button>
@@ -177,6 +182,11 @@ export default {
     this.speed()
   },
   methods: {
+
+    reconnect(){
+      this.$message(`${this.$t('connPrompt.reconn')}...`);
+      this.$bus.$emit('reconn')
+    },
     regexip(ws){
       const regex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
       return ws.match(regex)[1];

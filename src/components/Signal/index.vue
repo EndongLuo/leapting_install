@@ -67,7 +67,7 @@ export default {
     li {
       width: 15%;
       border-radius: 2px;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(190, 190, 190, 0.5);
       position: relative;
       span {
         position: absolute;
@@ -76,7 +76,7 @@ export default {
         display: inline-block;
         width: 100%;
         height: 100%;
-        background: limegreen;
+        background: #34a94d;
       }
       &:nth-child(1) {
         height: 4px;

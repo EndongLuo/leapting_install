@@ -34,6 +34,7 @@ const zh = {
     robotinfo:'机器人信息',
     robotid: '机器人ID',
     connect:'连接',
+    reconnect:'重连',
     connected:'已连接',
     notconnect:'未连接',
     battery: '电池',
@@ -42,6 +43,7 @@ const zh = {
   },
   map:{
     selectmap:'选择地图',
+    nomap:'暂无地图'
   },
   task:{
     taskinfo:'任务信息',
@@ -59,17 +61,49 @@ const zh = {
     pause:'暂停',
     start: '开始',
     continue:'继续',
-    stop:'停止'
+    stop:'停止',
+    withdraw:'撤回',
+    reset:'复位',
+    check:'检测',
+  },
+  config:{
+    pducontrol:'PDU 控制',
+    autoon:'自动上电',
+    chassis:'底盘上电',
+    inverter:'逆变器上电',
+    charge:'充电上电',
+    basecontrol:'基础控制',
+    avoidance:'避障',
+    reminder:'电量提醒',
+    pvmsize:'组件尺寸',
+    installgap:'安装间隙',
+    devicestatus:'设备状态'
   },
   connPrompt:{
     success:'安装机器人已连接。',
-    close:'安装机器人连接已关闭'
+    close:'安装机器人连接已关闭',
+    reconn:'重新连接'
   },
   prompt:{
     switchMode: '任务进行中，请先结束任务再切换模式。',
     inputErrorMessage: '格式不正确',
     inputNum:'请输入安装组件数量',
     prompt:'提示'
+  },
+  identify:{
+    identifyOk:'识别成功。',
+    identifyFail:'识别失败。',
+    identifyPick:'请检查是否有组件或者组件是否反光。',
+    identifyPut:'请移动车辆：桩子与车内侧履带2m平行（误差±5cm）。',
+    UI_dump:'是否释放吸盘',
+    UI_place:'是否放下光伏组件到支架上',
+    putting:'放回中。。。',
+    identifyagain:'继续识别',
+    checkPickupTF:'抓取识别中。。。',
+    checkPlaceTF:'放置识别中。。。',
+    checkTF:'检测识别中。。。',
+    close:'确认关闭？',
+    taskover:'任务结束！'
   }
 }
 

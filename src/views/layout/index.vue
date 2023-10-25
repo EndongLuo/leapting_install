@@ -9,17 +9,18 @@
           <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
             <div class="logo"><img src="@/assets/logo.png" alt="logo" /></div>
 
-            <el-menu-item index="1"><router-link to="/">{{$t('nav.index')}}</router-link></el-menu-item>
-            <el-menu-item index="2"><router-link to="/map">{{$t('nav.map')}}</router-link></el-menu-item>
-            <el-menu-item index="3"><router-link to="/behaviorInfo">{{$t('nav.task')}}</router-link></el-menu-item>
-            <el-menu-item index="4"><router-link to="/diagnostics">{{$t('nav.diagnostic')}}</router-link></el-menu-item>
+            <el-menu-item index="1" @click="activeIndex='1'"><router-link to="/">{{$t('nav.index')}}</router-link></el-menu-item>
+            <el-menu-item index="2" @click="activeIndex='2'"><router-link to="/map">{{$t('nav.map')}}</router-link></el-menu-item>
+            <el-menu-item index="3" @click="activeIndex='3'"><router-link to="/behaviorInfo">{{$t('nav.task')}}</router-link></el-menu-item>
+            <el-menu-item index="4" @click="activeIndex='4'"><router-link to="/diagnostics">{{$t('nav.diagnostic')}}</router-link></el-menu-item>
             <!-- <el-menu-item index="5"><router-link to="/ros_paramcfg">{{$t('nav.config')}}</router-link></el-menu-item> -->
           </el-menu>
 
           <div class="header_right">
+            <i class="iconfont icon-shezhi" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;"></i>
             <img src="/img/znen.png" alt="中/En" @click="changeLanguage()" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;">
             <Fullscreen />
-            <router-link to="/ros_paramcfg"><img src="/img/setting.png" :alt="$t('nav.config')" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;"></router-link>
+            <router-link to="/ros_paramcfg"><img src="/img/setting.png" :alt="$t('nav.config')"  @click="activeIndex='0'" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;"></router-link>
           </div>
 
         </div>
@@ -86,6 +87,9 @@ export default {
 </script>
 
 <style lang="less">
+.el-menu{
+  background-color: #ffffff00 !important;
+}
 .el-menu-demo {
   display: flex;
   align-items: center;
@@ -97,9 +101,12 @@ export default {
 }
 
 .el-menu.el-menu--horizontal {
-  border-bottom: solid 0px #e6e6e6;
+  border-bottom: solid 1px #66b1ff !important;
 }
 
+.el-menu--horizontal>.el-menu-item:not(.is-disabled):focus, .el-menu--horizontal>.el-menu-item:not(.is-disabled):hover, .el-menu--horizontal>.el-submenu .el-submenu__title:hover {
+    background-color: #ffffff85 !important;
+}
 .el-drawer__header {
   font-size: 18px;
   padding: 20px !important;
@@ -223,5 +230,5 @@ export default {
 .el-main {
   padding: 10px !important;
   // border-left: solid 2px #e6e6e667; 
-  background-color: #ffffff !important;
+  background-color: #ffffff00 !important;
 }</style>
