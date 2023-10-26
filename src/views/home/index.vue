@@ -146,7 +146,7 @@ export default {
     checkRos() {
       if (this.isShow) {
         this.videoRos();
-        this.isThree = 1;
+        // this.isThree = 1;
       }
       if (!this.ros.isConnected) {
         // this.isShow = 0;
@@ -219,6 +219,8 @@ export default {
           this.isInstall = 0;
           this.flexbeSwitch = true;
           this.isShow = 0;
+          this.isVideo = 0;
+          this.isThree = 0;
           this.$message(this.$t('mains.cancel'));
         });
       }
@@ -250,7 +252,7 @@ export default {
       this.goal = new ROSLIB.Goal({ actionClient, goalMessage });
 
       console.log(this.goal);
-      // this.goal.send();
+      this.goal.send();
 
       this.goal.on('feedback', (feedback) => {
         // this.$message(`feedback: ${JSON.stringify(feedback)}`);

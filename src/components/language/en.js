@@ -93,7 +93,7 @@ const en = {
   identify:{
     identifyOk:'Successfully Identified.',
     identifyFail:'Failed Identified.',
-    identifyPick:'Please check if there are any components or if the components reflect light.',
+    identifyPick:'Please check if there are any PVM or if the PVM reflect light.',
     identifyPut:'Please move the vehicle: the stake is 2m parallel to the inner track of the vehicle (with an error of ± 5cm).',
     UI_dump:'Whether to release the suction cup',
     UI_place:'Is the photovoltaic module placed on the bracket',

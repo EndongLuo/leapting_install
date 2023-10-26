@@ -14,7 +14,7 @@
         <span style="font-weight: 800;font-size: 32px;">{{ toptip }}？</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="putBack">{{$t('install.withdraw')}}</el-button>
+        <el-button type="info" @click="putBack">{{$t('install.withdraw')}}</el-button>
         <el-button type="primary" @click="installPV">{{$t('mains.confirm')}}</el-button>
       </span>
     </el-dialog>
@@ -119,8 +119,8 @@ export default {
       var _this = this;
 
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.104:9090" }); // 小库卡
-      this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
-      // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
+      this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.245:9090" }); // 印度库卡
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.4.240:9090" }); // 巡检 

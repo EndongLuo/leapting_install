@@ -190,3 +190,18 @@ body.leapting-admin-blackTheme .el-pagination.is-background .el-pager li {
   background-color: #464646;
   color: #dddddd;
 }
+body.leapting-admin-blackTheme .el-message-box {
+  background-color: #161616ef;
+  border: 1px solid #474747;
+  color: #dddddd;
+}
+body.leapting-admin-blackTheme .el-message-box .el-message-box__title {
+  color: #dddddd;
+}
+body.leapting-admin-blackTheme .el-message-box .el-message-box__content {
+  color: #dddddd;
+}
+body.leapting-admin-blackTheme .el-message-box .el-message-box__btns .el-button--small {
+  background-color: #252525d2;
+  border-color: #3f3f3fde;
+}

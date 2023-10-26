@@ -24,7 +24,7 @@
             分配角色
           </el-button> -->
           <el-button v-if="tableName=='behaviorInfo'" @click="handleSend(scope.row)" type="text" size="small">
-            {{$t('table.send')}}
+            <span style="color: #409EFF;">{{$t('table.send')}}</span>
           </el-button>
           <el-button v-else @click="handleClick(scope.row)" type="text" size="small">
             编 辑
