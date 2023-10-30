@@ -10,7 +10,7 @@
             <div class="logo"><img src="@/assets/logo.png" alt="logo" /></div>
 
             <el-menu-item index="1" @click="activeIndex='1'"><router-link to="/">{{$t('nav.index')}}</router-link></el-menu-item>
-            <el-menu-item index="2" @click="activeIndex='2'"><router-link to="/map">{{$t('nav.map')}}</router-link></el-menu-item>
+            <!-- <el-menu-item index="2" @click="activeIndex='2'"><router-link to="/map">{{$t('nav.map')}}</router-link></el-menu-item> -->
             <el-menu-item index="3" @click="activeIndex='3'"><router-link to="/behaviorInfo">{{$t('nav.task')}}</router-link></el-menu-item>
             <el-menu-item index="4" @click="activeIndex='4'"><router-link to="/diagnostics">{{$t('nav.diagnostic')}}</router-link></el-menu-item>
             <!-- <el-menu-item index="5"><router-link to="/ros_paramcfg">{{$t('nav.config')}}</router-link></el-menu-item> -->

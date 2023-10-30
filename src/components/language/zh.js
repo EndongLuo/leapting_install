@@ -88,6 +88,7 @@ const zh = {
     switchMode: '任务进行中，请先结束任务再切换模式。',
     inputErrorMessage: '格式不正确',
     inputNum:'请输入安装组件数量',
+    uninputNum:'请输入拆卸组件数量',
     prompt:'提示'
   },
   identify:{

@@ -118,9 +118,8 @@ export default {
     connect() {
       var _this = this;
 
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.104:9090" }); // 小库卡
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
-      this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
+      this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
+      // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.245:9090" }); // 印度库卡
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.4.240:9090" }); // 巡检 

@@ -8,7 +8,7 @@
 export default {
     data() {
     return {
-      isFullscreen: false // 管理全屏状态
+      isFullscreen: true // 管理全屏状态
     }
   },
   mounted() {

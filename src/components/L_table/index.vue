@@ -23,22 +23,22 @@
           <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">
             分配角色
           </el-button> -->
-          <el-button v-if="tableName=='behaviorInfo'" @click="handleSend(scope.row)" type="text" size="small">
+          <!-- <el-button v-if="tableName=='behaviorInfo'" @click="handleSend(scope.row)" type="text" size="small">
             <span style="color: #409EFF;">{{$t('table.send')}}</span>
+          </el-button> -->
+           <el-button v-if="tableName=='behaviorInfo'" @click="handleSend(scope.row)" type="primary" size="small">
+            <span >{{$t('table.send')}}</span>
           </el-button>
-          <el-button v-else @click="handleClick(scope.row)" type="text" size="small">
+          <el-button v-else @click="handleClick(scope.row)" type="primary" size="small">
             编 辑
           </el-button>
-          <!-- <el-button @click="handleDelete(scope.row,scope.$index,tableData)" type="text" size="small">
-            <span style="color: #F56C6C;">删除</span>
-          </el-button> -->
 
-          <el-button @click="handleStop()" type="text" size="small">
+          <!-- <el-button @click="handleStop()" type="text" size="small">
             <span style="color: #F56C6C;">{{$t('table.stop')}}</span>
-          </el-button>
-          <!-- <el-button @click="handleDelete(scope.row,scope.$index,tableData)" type="text" size="small">
-            <span style="color: #F56C6C;">删除</span>
           </el-button> -->
+          <el-button @click="handleStop()"  type="danger" size="small">
+            <span >{{$t('table.stop')}}</span>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -25,9 +25,9 @@
       <div class="outbox">
         <div class="inbox"><span>{{$t('config.autoon')}}：</span> <el-switch v-model="autoSwitch" @input="pduAuto" active-value="1"
             inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{$t('config.chassis')}}：</span> <el-switch v-model="inverterSwitch" @input="inverter" active-value="1"
+        <div class="inbox"><span>{{$t('config.chassis')}}：</span> <el-switch v-model="chassisSwitch" @input="chassis" active-value="1"
             inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{$t('config.inverter')}}：</span> <el-switch v-model="chassisSwitch" @input="chassis" active-value="1"
+        <div class="inbox"><span>{{$t('config.inverter')}}：</span> <el-switch v-model="inverterSwitch" @input="inverter"  active-value="1"
             inactive-value="0"></el-switch></div>
         <div class="inbox"><span>{{$t('config.charge')}}：</span> <el-switch v-model="chargeSwitch" @input="openCharge" active-value="1"
             inactive-value="0"></el-switch></div>
@@ -240,8 +240,8 @@ export default {
 
       pvsize_sub.subscribe((msg)=> {
         msg = JSON.parse(msg.data);
-        // console.log(msg);
-        this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
+        console.log(msg);
+        // this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
         this.pvm_length = msg.parameter.pvm_length;
         this.pvm_width = msg.parameter.pvm_width;
         this.install_gap = msg.parameter.install_gap;
@@ -252,6 +252,7 @@ export default {
     },
     // 修改避障状态
     upDataAvoidance(){
+      const {pvm_length,pvm_width,install_gap} =this;
       if (!this.autocross) {
         console.log(this.autocross);
         this.$confirm(`是否确认关闭避障`, '提示', {
@@ -260,7 +261,7 @@ export default {
             center: true,
             type: 'warning'
           }).then(() => {
-            this.updatasize_sub.publish({data:`{"dynparam": {"cmd_vel_filter": {"filter_enabled": ${this.autocross}}}`});
+            this.updatasize_pub();
 
             this.$message.success('避障已关闭!');
           }).catch(() => {
@@ -272,17 +273,21 @@ export default {
           });
       }else{
         if(!this.updatasize_sub) return
-        this.updatasize_sub.publish({data:`{"dynparam": {"cmd_vel_filter": {"filter_enabled": ${this.autocross}}}`});
+        this.updatasize_pub();
       } 
-      
     },
 
     // 修改PVM尺寸
     upDataPVM(){
       const {pvm_length,pvm_width,install_gap} =this;
-      this.updatasize_sub.publish({data:`{"parameter": {"pvm_length":  ${pvm_length},"pvm_width":  ${pvm_width},"install_gap":  ${install_gap}}}`});
+      this.updatasize_pub();
       var pvm_param = {pvm_width,install_gap};
       localStorage.setItem('pvm_param',JSON.stringify(pvm_param));
+    },
+
+    updatasize_pub(){
+      const {pvm_length,pvm_width,install_gap,autocross} =this;
+      this.updatasize_sub.publish({data:`{"parameter": {"pvm_length":  ${pvm_length},"pvm_width":  ${pvm_width},"install_gap":  ${install_gap}},"dynparam": {"cmd_vel_filter": {"filter_enabled": ${autocross}}}}`});
     }
   },
 };

@@ -58,7 +58,7 @@
         </div>
         <div>
           <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
-          <span class="armin ll" @click="Stop()" style="background-color: #F56C6C;color: #ffffff;">{{ $t('install.stop')
+          <span class="armin ll" id="stop" @click="Stop()">{{ $t('install.stop')
           }}</span>
         </div>
       </div>
@@ -89,7 +89,7 @@
     </div>
 
     <!-- 可拖拽框 -->
-    <div style="display: flex;" v-if="isVideo || isThree">
+    <div style="display: flex; justify-content: center;" v-if="isVideo || isThree">
       <div class="win" v-if="isVideo">
         <div class="totitle">
           <span>{{ $t('install.monitor') }}</span>
@@ -132,13 +132,17 @@ export default {
       flexbeSwitch: true,
       pvm_num: 50,
       goal: null,
-      goon: 0
+      goon: 0,
+      pvm_length:'2123',
+      pvm_width:'1123',
+      install_gap:10
     };
   },
   computed: {
     ...mapState("ros", ["ros",]),
   },
   mounted() {
+    this.avoidanceEcho();
     // this.$message.success('Installation Completed');
   },
   methods: {
@@ -226,15 +230,36 @@ export default {
       }
     },
 
+    avoidanceEcho(){
+      var pvsize_sub = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/robot_state',
+        messageType: 'std_msgs/String'
+      });
+
+      pvsize_sub.subscribe((msg)=> {
+        msg = JSON.parse(msg.data);
+        console.log(msg);
+        // this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
+        this.pvm_length = msg.parameter.pvm_length;
+        this.pvm_width = msg.parameter.pvm_width;
+        this.install_gap = msg.parameter.install_gap;
+
+        var pvm_param = {pvm_width:this.pvm_width,install_gap:this.install_gap};
+        localStorage.setItem('pvm_param',JSON.stringify(pvm_param));
+      })
+    },
+
     // 发送goal
     CommInstall(auto, pvm_num) {
 
       var ls = localStorage.getItem('pvm_param')
+      console.log(ls);
       const { pvm_width,install_gap } = JSON.parse(ls);
 
       var goalMessage = new ROSLIB.Message({
         behavior_name: 'CommInstallPVM',
-        arg_keys: ['auto', 'pvm_num', 'pvm_width', 'install_gap'],
+        arg_keys: ['auto', 'pvm_sum', 'pvm_width', 'install_gap'],
         arg_values: [`${auto}`, `${pvm_num}`, `${pvm_width}`, `${install_gap}`]
       });
 
@@ -261,7 +286,7 @@ export default {
 
       this.goal.on('result', (result) => {
         // this.$message(`result: ${JSON.stringify(result)}`);
-        if (result.outcome == 'preempted') this.$message(`任务结束！`);
+        if (result.outcome == 'preempted') this.$message(`task over！`);
         console.log('Final Result: ', result);
       });
     },
@@ -310,17 +335,17 @@ export default {
     videoRos() {
       this.isVideo = 1;
       // 订阅 topic
-      this.video_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/camera/color/image_raw/compressed',
-        messageType: 'sensor_msgs/CompressedImage'
-      });
-
       // this.video_sub = new ROSLIB.Topic({
       //   ros: this.ros,
-      //   name: '/compressed_raw_base64',
-      //   messageType: 'std_msgs/String'
+      //   name: '/camera/color/image_raw/compressed',
+      //   messageType: 'sensor_msgs/CompressedImage'
       // });
+
+      this.video_sub = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/compressed_raw_base64',
+        messageType: 'std_msgs/String'
+      });
 
       this.video_sub.subscribe((msg) => {
         // console.log(msg);
@@ -495,6 +520,13 @@ export default {
   }
 
 }
+#stop{
+  background-color: #F56C6C;
+  color: #ffffff;
+  &:active{
+    background-color: #f73333;
+  }
+}
 
 .armin {
   display: flex;
@@ -507,8 +539,8 @@ export default {
 
   &:active {
     // border-radius: 5px;
-    // background: #3b3b3bd3;
-    opacity: 0.8;
+    background: #3b3b3bd3;
+    // opacity: 1.5;
     // box-shadow: 5px 5px 20px #212223;
   }
 }

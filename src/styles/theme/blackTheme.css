@@ -69,7 +69,7 @@ body.leapting-admin-blackTheme .tips {
   color: #dddddd;
 }
 body.leapting-admin-blackTheme .el-table thead {
-  color: #c8cfdd;
+  color: #dddddd;
 }
 body.leapting-admin-blackTheme .el-table {
   color: #dddddd;
@@ -105,6 +105,9 @@ body.leapting-admin-blackTheme .el-table::before {
   bottom: 0;
   width: 100%;
   height: 0px;
+}
+body.leapting-admin-blackTheme .el-table__body tr.hover-row > td.el-table__cell {
+  background-color: #292929;
 }
 body.leapting-admin-blackTheme .el-table--border::after,
 body.leapting-admin-blackTheme .el-table--group::after {

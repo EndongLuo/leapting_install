@@ -10,7 +10,7 @@ module.exports = defineConfig({
     // 自动打开浏览器
     // host: localhost,
     port: 8888,
-    open: true,
+    // open: true,
     
     //代理跨域
     proxy: {

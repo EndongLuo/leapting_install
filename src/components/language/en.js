@@ -53,7 +53,7 @@ const en = {
   },
   install:{
     control:'Chassis Control',
-    armcontrol:'Chassis armControl',
+    armcontrol:'Arm Control',
     fai: 'Fully-Auto',
     sai: 'Semi-Auto',
     monitor:'Monitor',
@@ -87,7 +87,8 @@ const en = {
   prompt:{
     switchMode: 'Task in progress, please end the task before switching modes.',
     inputErrorMessage: 'Incorrect format',
-    inputNum:'Please enter the number of installed components',
+    inputNum:'Please enter the number of PVM installations',
+    uninputNum:'Please enter the number of PVM disassembled',
     prompt:'Prompt'
   },
   identify:{

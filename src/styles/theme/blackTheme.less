@@ -84,7 +84,7 @@ body.leapting-admin-blackTheme {
 
   /* 表头字体颜色 */
   .el-table thead {
-    color: #c8cfdd;
+    color: @fontColor;
   }
 
   /* 表格字体颜色 */
@@ -142,6 +142,9 @@ body.leapting-admin-blackTheme {
     bottom: 0;
     width: 100%;
     height: 0px;
+  }
+  .el-table__body tr.hover-row>td.el-table__cell {
+    background-color:#292929;
   }
 
   .el-table--border::after,
