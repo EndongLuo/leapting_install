@@ -22,6 +22,8 @@ const zh = {
   table:{
     send: '发送',
     stop: '停止',
+    delete: '删除',
+    edit:'编辑'
   },
   diagnostics:{
     complete: '完成',
@@ -68,7 +70,7 @@ const zh = {
   },
   config:{
     pducontrol:'PDU 控制',
-    autoon:'自动上电',
+    chargeStatus:'充电状态',
     chassis:'底盘上电',
     inverter:'逆变器上电',
     charge:'充电上电',
@@ -89,7 +91,8 @@ const zh = {
     inputErrorMessage: '格式不正确',
     inputNum:'请输入安装组件数量',
     uninputNum:'请输入拆卸组件数量',
-    prompt:'提示'
+    prompt:'提示',
+    lowBattery: '电量过低'
   },
   identify:{
     identifyOk:'识别成功。',

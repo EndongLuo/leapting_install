@@ -30,11 +30,11 @@
             <span >{{$t('table.send')}}</span>
           </el-button>
           <el-button v-else @click="handleClick(scope.row)" type="primary" size="small">
-            编 辑
+            {{$t('table.edit')}}
           </el-button>
 
-          <!-- <el-button @click="handleStop()" type="text" size="small">
-            <span style="color: #F56C6C;">{{$t('table.stop')}}</span>
+          <!-- <el-button @click="handleDelete(scope.row,scope.$index,tableData)" type="danger" size="small">
+            <span >{{$t('table.delete')}}</span>
           </el-button> -->
           <el-button @click="handleStop()"  type="danger" size="small">
             <span >{{$t('table.stop')}}</span>

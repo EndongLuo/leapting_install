@@ -1,19 +1,23 @@
 <template>
-  <div style="background-color: #ffffff0a; overflow: hidden; width: 70%;min-width: 580px;min-height: 90vh; margin: 0 auto;">
+  <div
+    style="background-color: #ffffff0a; overflow: hidden; width: 70%;min-width: 580px;min-height: 90vh; margin: 0 auto;">
     <!-- <el-button type="primary" v-if="!isEdit" @click="isEdit = true">{{ $t('mains.edit') }}</el-button>
     <el-button v-else @click="isEdit = false">{{ $t('mains.goback') }}</el-button> -->
 
-      <!-- 电量，避障，组件尺寸 -->
-      <div class="pduControl">
-      <h1 class="title">{{$t('config.basecontrol')}}</h1>
+    <!-- 电量，避障，组件尺寸 -->
+    <div class="pduControl">
+      <h1 class="title">{{ $t('config.basecontrol') }}</h1>
       <div class="outbox">
-        <div class="inbox"><span>{{$t('config.avoidance')}}：</span> <el-switch v-model="autocross" @input="upDataAvoidance"></el-switch></div>
-        <div class="inbox"><span>{{$t('config.reminder')}}：</span><div style="width: 100px;"><el-slider v-model="value2" :step="5"></el-slider></div></div>
-        <div class="inbox"><span style="width: 386px;">{{$t('config.pvmsize')}}(mm)：</span>
+        <div class="inbox"><span>{{ $t('config.avoidance') }}：</span> <el-switch v-model="autocross"
+            @input="upDataAvoidance"></el-switch></div>
+        <div class="inbox"><span>{{ $t('config.reminder') }}：</span>
+          <div style="width: 100px;"><el-slider v-model="reminder" :step="5"></el-slider></div>
+        </div>
+        <div class="inbox"><span style="width: 386px;">{{ $t('config.pvmsize') }}(mm)：</span>
           <el-input v-model="pvm_length" @blur="upDataPVM"></el-input>
           <el-input v-model="pvm_width" @blur="upDataPVM"></el-input>
         </div>
-        <div class="inbox"><span style="width: 232px;">{{$t('config.installgap')}}(mm)：</span>
+        <div class="inbox"><span style="width: 232px;">{{ $t('config.installgap') }}(mm)：</span>
           <el-input v-model="install_gap" @blur="upDataPVM" style="width: 100%;"></el-input>
         </div>
       </div>
@@ -21,27 +25,27 @@
 
     <!-- pdu控制 -->
     <div class="pduControl">
-      <h1 class="title">{{$t('config.pducontrol')}}</h1>
+      <h1 class="title">{{ $t('config.pducontrol') }}</h1>
       <div class="outbox">
-        <div class="inbox"><span>{{$t('config.autoon')}}：</span> <el-switch v-model="autoSwitch" @input="pduAuto" active-value="1"
-            inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{$t('config.chassis')}}：</span> <el-switch v-model="chassisSwitch" @input="chassis" active-value="1"
-            inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{$t('config.inverter')}}：</span> <el-switch v-model="inverterSwitch" @input="inverter"  active-value="1"
-            inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{$t('config.charge')}}：</span> <el-switch v-model="chargeSwitch" @input="openCharge" active-value="1"
-            inactive-value="0"></el-switch></div>
+        <div class="inbox"><span>{{ $t('config.chassis') }}：</span> <el-switch v-model="chassisSwitch" @input="chassis"
+            active-value="1" inactive-value="0"></el-switch></div>
+        <div class="inbox"><span>{{ $t('config.inverter') }}：</span> <el-switch v-model="inverterSwitch" @input="inverter"
+            active-value="1" inactive-value="0"></el-switch></div>
+        <div class="inbox"><span>{{ $t('config.charge') }}：</span> <el-switch v-model="chargeSwitch" @input="openCharge"
+            active-value="1" inactive-value="0"></el-switch></div>
+        <div class="inbox"><span>{{ $t('config.chargeStatus') }}：</span> <el-switch disabled v-model="chargeStatus"
+            active-value="1" inactive-value="0"></el-switch></div>
       </div>
     </div>
 
 
     <!-- 设备状态 -->
     <div class="pduControl" v-if="pduStatus != null">
-      <h1 class="title">{{$t('config.devicestatus')}}</h1>
+      <h1 class="title">{{ $t('config.devicestatus') }}</h1>
       <div class="outbox1">
         <div v-for="i in pduStatus" :key="i.key" style="margin: 5px;">
-        {{ i.key }}: <span style="font-weight: 300;">{{ i.value }}</span>
-      </div>
+          {{ i.key }}: <span style="font-weight: 300;">{{ i.value }}</span>
+        </div>
       </div>
     </div>
 
@@ -94,16 +98,16 @@ export default {
       rosCfg: null,
       form: null,
       chargeSwitch: false, // 充电开关
+      chargeStatus: false, // 充电状态
       inverterSwitch: 0, // 逆变器开关
       chassisSwitch: false, // 底盘开关
-      autoSwitch: false, // pdu自动
       pdu_sub: null,
-      updatasize_sub:null,
-      value2:20,
-      pvm_length:'2123',
-      pvm_width:'1123',
-      autocross:false,
-      install_gap:10
+      updatasize_sub: null,
+      reminder: 20,
+      pvm_length: '2123',
+      pvm_width: '1123',
+      autocross: false,
+      install_gap: 10
     };
   },
   computed: {
@@ -113,6 +117,8 @@ export default {
     // this.getRoscfg();
     // this.getRoscfgs();
     this.avoidanceEcho();
+    this.reminder =JSON.parse(localStorage.getItem('reminder'));
+    this.battery();
 
     this.pdu_sub = new ROSLIB.Topic({
       ros: this.ros,
@@ -121,60 +127,50 @@ export default {
     });
 
     this.updatasize_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/robot_command',
-        messageType: 'std_msgs/String'
-      });
-
-    // setInterval(()=>{
-    //   console.log(this.pduStatus);
-    //   this.pduStatus.filter(o => {
-    //     if (o.key == 'chassis status') this.chassisSwitch = o.value;
-    //     else if (o.key == 'inverter status') this.inverterSwitch = o.value;
-    //     else if (o.key == 'charger status') this.chargeSwitch = o.value;
-    //   })
-    // },3000)
+      ros: this.ros,
+      name: '/robot_command',
+      messageType: 'std_msgs/String'
+    });
   },
   watch: {
     pduStatus(val) {
       // console.log(val);
       val.filter(o => {
-        // if(o.value=='0'||o.value=='1') o.value = Number(o.value)
         // console.log(o.value);
-        if (o.key == 'chassis status') this.chassisSwitch = o.value;
-        else if (o.key == 'inverter status') this.inverterSwitch = o.value;
-        else if (o.key == 'charger status') this.chargeSwitch = o.value;
+        if (o.key == 'chassis contactor') this.chassisSwitch = o.value;
+        else if (o.key == 'inverter contactor') this.inverterSwitch = o.value;
+        else if (o.key == 'charger contactor') this.chargeSwitch = o.value;
+        else if (o.key == 'charger status') this.chargeStatus = o.value;
       })
+    },
+    reminder(val){
+      localStorage.setItem('reminder', val);
     }
   },
   methods: {
     // 逆变器开关
     inverter() {
-      if(!this.pdu_sub) return;
-      if (this.inverterSwitch =='1') this.pdu_sub.publish({ data: "inverter_on" });
+      if (!this.pdu_sub) return;
+      if (this.inverterSwitch == '1') {
+        if (this.battery_soc <= this.reminder) this.$message.error(`${this.$t('prompt.lowBattery')}`);
+        else this.pdu_sub.publish({ data: "inverter_on" });
+      }
       else this.pdu_sub.publish({ data: "inverter_off" });
     },
 
     // 充电开关
     openCharge() {
-      if(!this.pdu_sub) return;
+      if (!this.pdu_sub) return;
       console.log(this.chargeSwitch);
-      if (this.chargeSwitch =='1') this.pdu_sub.publish({ data: "charge_on" }); 
+      if (this.chargeSwitch == '1') this.pdu_sub.publish({ data: "charge_on" });
       else this.pdu_sub.publish({ data: "charge_off" });
     },
 
     // 底盘开关
     chassis() {
-      if(!this.pdu_sub) return;
-      if (this.chassisSwitch =='1') this.pdu_sub.publish({ data: "chassis_on" });
+      if (!this.pdu_sub) return;
+      if (this.chassisSwitch == '1') this.pdu_sub.publish({ data: "chassis_on" });
       else this.pdu_sub.publish({ data: "chassis_off" });
-    },
-
-    // 自动开关
-    pduAuto() {
-      if(!this.pdu_sub) return;
-      if (this.autoSwitch =='1') this.pdu_sub.publish({ data: "auto_on" });
-      else this.pdu_sub.publish({ data: "auto_off" });
     },
 
     saveCfg() {
@@ -201,6 +197,26 @@ export default {
         message: 'Save Success!'
       });
       this.isEdit = false;
+    },
+
+    // 电池信息：电量
+    battery() {
+      var rosTopic = new ROSLIB.Topic({
+        ros: this.ros,
+        name: "diagnostics",
+        messageType: "diagnostic_msgs/DiagnosticArray",
+      });
+
+      rosTopic.subscribe((msg) => {
+        var b = msg.status[0]
+        if (b.message == 'battery_msg' && b.values[2]) {
+          this.battery_soc = b.values[2].value;
+          if (b.values[2].value <= this.reminder && this.inverterSwitch === '1') {
+            this.$message.error(`${this.$t('prompt.lowBattery')}`);
+            this.pdu_sub.publish({ data: "inverter_off" });
+          }
+        }
+      });
     },
 
     getRoscfgs() {
@@ -231,14 +247,14 @@ export default {
     },
 
     // robot_state数据回显
-    avoidanceEcho(){
+    avoidanceEcho() {
       var pvsize_sub = new ROSLIB.Topic({
         ros: this.ros,
         name: '/robot_state',
         messageType: 'std_msgs/String'
       });
 
-      pvsize_sub.subscribe((msg)=> {
+      pvsize_sub.subscribe((msg) => {
         msg = JSON.parse(msg.data);
         console.log(msg);
         // this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
@@ -246,48 +262,48 @@ export default {
         this.pvm_width = msg.parameter.pvm_width;
         this.install_gap = msg.parameter.install_gap;
 
-        var pvm_param = {pvm_width:this.pvm_width,install_gap:this.install_gap};
-        localStorage.setItem('pvm_param',JSON.stringify(pvm_param));
+        var pvm_param = { pvm_width: this.pvm_width, install_gap: this.install_gap };
+        localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
       })
     },
     // 修改避障状态
-    upDataAvoidance(){
-      const {pvm_length,pvm_width,install_gap} =this;
+    upDataAvoidance() {
+      const { pvm_length, pvm_width, install_gap } = this;
       if (!this.autocross) {
         console.log(this.autocross);
         this.$confirm(`是否确认关闭避障`, '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            center: true,
-            type: 'warning'
-          }).then(() => {
-            this.updatasize_pub();
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          center: true,
+          type: 'warning'
+        }).then(() => {
+          this.updatasize_pub();
 
-            this.$message.success('避障已关闭!');
-          }).catch(() => {
-            this.autocross = true
-            this.$message({
-              type: 'info',
-              message: '取消关闭'
-            });
+          this.$message.success('避障已关闭!');
+        }).catch(() => {
+          this.autocross = true
+          this.$message({
+            type: 'info',
+            message: '取消关闭'
           });
-      }else{
-        if(!this.updatasize_sub) return
+        });
+      } else {
+        if (!this.updatasize_sub) return
         this.updatasize_pub();
-      } 
+      }
     },
 
     // 修改PVM尺寸
-    upDataPVM(){
-      const {pvm_length,pvm_width,install_gap} =this;
+    upDataPVM() {
+      const { pvm_length, pvm_width, install_gap } = this;
       this.updatasize_pub();
-      var pvm_param = {pvm_width,install_gap};
-      localStorage.setItem('pvm_param',JSON.stringify(pvm_param));
+      var pvm_param = { pvm_width, install_gap };
+      localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
     },
 
-    updatasize_pub(){
-      const {pvm_length,pvm_width,install_gap,autocross} =this;
-      this.updatasize_sub.publish({data:`{"parameter": {"pvm_length":  ${pvm_length},"pvm_width":  ${pvm_width},"install_gap":  ${install_gap}},"dynparam": {"cmd_vel_filter": {"filter_enabled": ${autocross}}}}`});
+    updatasize_pub() {
+      const { pvm_length, pvm_width, install_gap, autocross } = this;
+      this.updatasize_sub.publish({ data: `{"parameter": {"pvm_length":  ${pvm_length},"pvm_width":  ${pvm_width},"install_gap":  ${install_gap}},"dynparam": {"cmd_vel_filter": {"filter_enabled": ${autocross}}}}` });
     }
   },
 };
@@ -314,7 +330,8 @@ export default {
     font-size: 20px;
     font-weight: 700;
   }
-  .outbox1{
+
+  .outbox1 {
     font-size: 16px;
   }
 
@@ -330,7 +347,7 @@ export default {
       // font-size: 16px;
       // font-weight: 700;
       // span{
-        // width: 80px;
+      // width: 80px;
       // }
     }
   }
@@ -347,4 +364,5 @@ export default {
   justify-content: center;
   margin-top: 15px;
   margin-left: 0 !important;
-}</style>
+}
+</style>

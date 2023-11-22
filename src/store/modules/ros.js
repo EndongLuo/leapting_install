@@ -32,7 +32,7 @@ const mutations = {
         // } 
         item.key = item.key.replaceAll("_"," ");
         return item
-      }).filter(item => item.key.indexOf('fuse')==-1&&item.key.indexOf('contactor')==-1);
+      }).filter(item => item.key.indexOf('fuse')==-1);
       // console.log(state.pduStatus);
     });
   },

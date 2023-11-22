@@ -33,7 +33,7 @@ import "leaflet/dist/leaflet.css";
 
 // 移动端打印
 import vConsole from 'vconsole';
-// Vue.prototype.$vConsole = new vConsole();
+Vue.prototype.$vConsole = new vConsole();
 
 // import VForm from 'vform-builds'  //引入VForm库
 // import 'vform-builds/dist/VFormDesigner.css'  //引入VForm样式

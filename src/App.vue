@@ -211,7 +211,7 @@ export default {
       });
     },
 
-    // 开启弹框
+    // 半自动弹框
     dialog() {
       var trig_sub = new ROSLIB.Topic({
         ros: this.ros,
@@ -224,16 +224,15 @@ export default {
         console.log(msg);
         var fid = msg.frame_id;
         if (fid.indexOf('UI_dump') != -1) {
-          this.toptip = this.$t('identify.UI_dump')
+          this.toptip = this.$t('identify.UI_dump');
           this.dialogVisible = true;
         }
         else if (fid.indexOf('UI_place') != -1) {
-          this.toptip = this.$t('identify.UI_place')
+          this.toptip = this.$t('identify.UI_place');
           this.dialogVisible = true;
         }
+        console.log(this.toptip);
       })
-
-
     },
     // 放回流程
     putBack() {

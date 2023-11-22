@@ -22,6 +22,8 @@ const en = {
   table:{
     send: 'Start',
     stop: 'Stop',
+    delete: 'Delete',
+    edit:'Edit'
   },
   diagnostics:{
     complete: 'Complete',
@@ -68,7 +70,7 @@ const en = {
   },
   config:{
     pducontrol:'PDU Control',
-    autoon:'Auto On',
+    chargeStatus:'Charge Status',
     chassis:'Chassis On',
     inverter:'Inverter On',
     charge:'Charge On',
@@ -77,7 +79,7 @@ const en = {
     reminder:'Power Reminder',
     pvmsize:'PVM Size',
     installgap:'Install Gap',
-    devicestatus:'Device status'
+    devicestatus:'Device Status'
   },
   connPrompt:{
     success:'Connected to Install Robot.',
@@ -89,7 +91,8 @@ const en = {
     inputErrorMessage: 'Incorrect format',
     inputNum:'Please enter the number of PVM installations',
     uninputNum:'Please enter the number of PVM disassembled',
-    prompt:'Prompt'
+    prompt:'Prompt',
+    lowBattery:'Battery too low'
   },
   identify:{
     identifyOk:'Successfully Identified.',
