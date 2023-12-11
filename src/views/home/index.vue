@@ -153,7 +153,7 @@ export default {
         // this.isThree = 1;
       }
       if (!this.ros.isConnected) {
-        // this.isShow = 0;
+        this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
     },
@@ -197,20 +197,20 @@ export default {
       // this.isInstall = id;
       // if (this.isInstall) this.$message(this.$t('prompt.switchMode'));
       if (id == 1) {
-        this.isShow = id;
+        // this.isShow = id;
         this.isInstall = id;
-        var auto = id == 1 ? false : true;
+        var isauto = id == 1 ? false : true;
         this.$message.success('Start Installation.');
-        this.CommInstall(auto, 50);
+        this.CommInstall(isauto, 50);
       }
-      else {
+      else if(id == 2) {
         this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
           confirmButtonText: this.$t('mains.confirm'),
           cancelButtonText: this.$t('mains.cancel'),
-          inputPattern: /[1-9]{1}\d{0,3}/,
+          inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
           inputErrorMessage: this.$t('prompt.inputErrorMessage')
         }).then(({ value }) => {
-          this.isShow = id;
+          // this.isShow = id;
           this.isInstall = id;
           var auto = id == 1 ? false : true;
 

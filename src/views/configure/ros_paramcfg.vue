@@ -20,6 +20,13 @@
         <div class="inbox"><span style="width: 232px;">{{ $t('config.installgap') }}(mm)：</span>
           <el-input v-model="install_gap" @blur="upDataPVM" style="width: 100%;"></el-input>
         </div>
+
+        <div class="inbox">
+          <span style="width: 100px;">{{ $t('config.handeye') }}：</span>
+          <el-button type="primary" @click="HandEye(false)">{{ $t('config.noautohandeye') }}</el-button>
+          <el-button type="primary" @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
+        </div>
+        
       </div>
     </div>
 
@@ -117,7 +124,7 @@ export default {
     // this.getRoscfg();
     // this.getRoscfgs();
     this.avoidanceEcho();
-    this.reminder =JSON.parse(localStorage.getItem('reminder'));
+    this.reminder = JSON.parse(localStorage.getItem('reminder'));
     this.battery();
 
     this.pdu_sub = new ROSLIB.Topic({
@@ -143,11 +150,46 @@ export default {
         else if (o.key == 'charger status') this.chargeStatus = o.value;
       })
     },
-    reminder(val){
+    reminder(val) {
       localStorage.setItem('reminder', val);
     }
   },
   methods: {
+    // 发送goal
+    HandEye(b) {
+      var goalMessage = new ROSLIB.Message({
+        behavior_name: 'HandEyeCalibration',
+        arg_keys: ['if_auto_all'],
+        arg_values: [`${b}`]
+      });
+
+      console.log(goalMessage);
+
+      this.actionClient(goalMessage);
+    },
+
+    actionClient(goalMessage) {
+      var actionClient = new ROSLIB.ActionClient({
+        ros: this.ros,
+        actionName: 'flexbe_msgs/BehaviorExecutionAction',
+        serverName: '/flexbe/execute_behavior'
+      });
+      this.goal = new ROSLIB.Goal({ actionClient, goalMessage });
+
+      console.log(this.goal);
+      this.goal.send();
+
+      this.goal.on('feedback', (feedback) => {
+        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
+        console.log('Feedback: ', feedback);
+      });
+
+      this.goal.on('result', (result) => {
+        // this.$message(`result: ${JSON.stringify(result)}`);
+        if (result.outcome == 'preempted') this.$message(`task over！`);
+        console.log('Final Result: ', result);
+      });
+    },
     // 逆变器开关
     inverter() {
       if (!this.pdu_sub) return;

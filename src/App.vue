@@ -11,7 +11,7 @@
         <span style="font-weight: 1000; font-size: 48px;">{{$t('prompt.prompt')}}</span><br />
         <!-- <span style="font-weight: 800;font-size: 32px;" >Install QTY： 9</span><br/>
         <span style="font-weight: 800;font-size: 32px;" >TIME：00:11:18</span> -->
-        <span style="font-weight: 800;font-size: 32px;">{{ toptip }}？</span>
+        <span style="font-weight: 800;font-size: 32px;">{{ toptip }}</span>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="info" @click="putBack">{{$t('install.withdraw')}}</el-button>
@@ -118,13 +118,13 @@ export default {
     connect() {
       var _this = this;
 
-      this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
       // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.245:9090" }); // 印度库卡
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.4.240:9090" }); // 巡检 
       // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
-      // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.238:9090" }); // zeng
+      this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.13:9090" }); // zeng
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)
@@ -229,6 +229,14 @@ export default {
         }
         else if (fid.indexOf('UI_place') != -1) {
           this.toptip = this.$t('identify.UI_place');
+          this.dialogVisible = true;
+        }
+        else if (fid.indexOf('UI_handeye_arm') != -1) {
+          this.toptip = this.$t('identify.UI_handeye_arm');
+          this.dialogVisible = true;
+        }
+        else if (fid.indexOf('UI_handeye_take') != -1) {
+          this.toptip = this.$t('identify.UI_handeye_take');
           this.dialogVisible = true;
         }
         console.log(this.toptip);

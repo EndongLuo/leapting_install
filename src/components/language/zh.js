@@ -79,7 +79,10 @@ const zh = {
     reminder:'电量提醒',
     pvmsize:'组件尺寸',
     installgap:'安装间隙',
-    devicestatus:'设备状态'
+    devicestatus:'设备状态',
+    handeye:'手眼标定',
+    autohandeye:'自动标定',
+    noautohandeye:'手动标定'
   },
   connPrompt:{
     success:'安装机器人已连接。',
@@ -107,7 +110,9 @@ const zh = {
     checkPlaceTF:'放置识别中。。。',
     checkTF:'检测识别中。。。',
     close:'确认关闭？',
-    taskover:'任务结束！'
+    taskover:'任务结束！',
+    UI_handeye_arm:'移动机械臂',
+    UI_handeye_take:'采集数据',
   }
 }
 

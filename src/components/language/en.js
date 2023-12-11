@@ -79,7 +79,10 @@ const en = {
     reminder:'Power Reminder',
     pvmsize:'PVM Size',
     installgap:'Install Gap',
-    devicestatus:'Device Status'
+    devicestatus:'Device Status',
+    handeye:'HandEye Calibration',
+    autohandeye:'Auto Calibration',
+    noautohandeye:'Manual Calibration'
   },
   connPrompt:{
     success:'Connected to Install Robot.',
@@ -107,7 +110,9 @@ const en = {
     checkPlaceTF:'Placing recognition...',
     checkTF:'Detecting and recognizing...',
     close:'Confirm closing?',
-    taskover:'The task is over!'
+    taskover:'The task is over!',
+    UI_handeye_arm:'mobile manipulator',
+    UI_handeye_take:'collect data',
   }
 }
 
