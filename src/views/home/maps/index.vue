@@ -162,56 +162,56 @@ import Map_canvas from "@/components/Map_canvas";
 import { mapState } from 'vuex';
 import Tips from "../tips";
 
-function timingTime(){
-      let start = '2023-09-14 10:05:00'
-      let startTime = new Date(start).getTime()
-      let currentTime = new Date().getTime()
-      let difference = currentTime - startTime
-      let m =  Math.floor(difference / (1000))
-      let mm = m % 60  // 秒
-      let f = Math.floor(m / 60)
-      let ff = f % 60 // 分钟
-      let s = Math.floor(f/ 60) // 小时
+function timingTime() {
+  let start = '2023-09-14 10:05:00'
+  let startTime = new Date(start).getTime()
+  let currentTime = new Date().getTime()
+  let difference = currentTime - startTime
+  let m = Math.floor(difference / (1000))
+  let mm = m % 60  // 秒
+  let f = Math.floor(m / 60)
+  let ff = f % 60 // 分钟
+  let s = Math.floor(f / 60) // 小时
 
-       s = s < 10 ? '0' + s : s
-      ff = ff < 10 ? '0' + ff : ff;
-      mm = mm < 10 ? '0' + mm : mm;
-      return  s + ":" + ff + ":" + mm
-    }
+  s = s < 10 ? '0' + s : s
+  ff = ff < 10 ? '0' + ff : ff;
+  mm = mm < 10 ? '0' + mm : mm;
+  return s + ":" + ff + ":" + mm
+}
 export default {
-  components: { Map_canvas, Telecontrol, armcontrol,Tips },
+  components: { Map_canvas, Telecontrol, armcontrol, Tips },
   data() {
     return {
-      flexbeSwitch:false,
-      flag:false,
-      isShow:false,
-      isShowArm:false,
+      flexbeSwitch: false,
+      flag: false,
+      isShow: false,
+      isShowArm: false,
       isDraw: false,
       notifyPromise: Promise.resolve(),
       dialogFormVisible: false,
       pvSize: {
-        length:0,
-        width:0
+        length: 0,
+        width: 0
       },
       formLabelWidth: '120px',
-      time:null,
-      num1:0
+      time: null,
+      num1: 0
     };
   },
-  mounted(){
-    setInterval(()=>{
+  mounted() {
+    setInterval(() => {
       this.time = timingTime()
-    },100)
-    setInterval(()=>{
-      this.num1 +=1 
-    },60000)
+    }, 100)
+    setInterval(() => {
+      this.num1 += 1
+    }, 60000)
   },
   computed: {
-    ...mapState('ros',['ros']),
-    notify(){
+    ...mapState('ros', ['ros']),
+    notify() {
       var data = this.$store.state.ros.diagnostics
       data.forEach(item => {
-        if(item.level == 2){
+        if (item.level == 2) {
           this.notifyPromise = this.notifyPromise.then(() => {
             return this.$notify.error({
               title: "错误",
@@ -224,9 +224,9 @@ export default {
       });
     },
   },
-  methods:{
+  methods: {
     // 暂停
-    Pause(){
+    Pause() {
       var pause_sub = new ROSLIB.Topic({
         ros: this.ros,
         name: '/flexbe/command/pause',
@@ -235,19 +235,19 @@ export default {
 
       if (this.flexbeSwitch) this.flexbeSwitch = false;
       else this.flexbeSwitch = true;
-      
-      pause_sub.publish({"data":this.flexbeSwitch});
+
+      pause_sub.publish({ "data": this.flexbeSwitch });
     },
 
     // 光伏尺寸数据回显
-    PVSize(){
+    PVSize() {
       var pvsize_sub = new ROSLIB.Topic({
         ros: this.ros,
         name: '/robot_state',
         messageType: 'std_msgs/String'
       });
 
-      pvsize_sub.subscribe((msg)=> {
+      pvsize_sub.subscribe((msg) => {
         msg = JSON.parse(msg.data);
         this.pvSize.width = msg.parameter.pvm_width;
         this.pvSize.length = msg.parameter.pvm_length;
@@ -256,88 +256,88 @@ export default {
       this.dialogFormVisible = true;
     },
     // 修改光伏尺寸
-    upDataSize(){
+    upDataSize() {
       this.$confirm(`是否确认修改光伏尺寸`, '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            center: true,
-            type: 'warning'
-          }).then(() => {
-            var updatasize_sub = new ROSLIB.Topic({
-              ros: this.ros,
-              name: '/robot_command',
-              messageType: 'std_msgs/String'
-            });
-            const {width,length} = this.pvSize;
-            updatasize_sub.publish({data:`{"parameter": {"pvm_length": ${Number(length)}, "pvm_width": ${Number(width)}}}`});
-
-            this.$message.success('修改成功!');
-            // console.log(this.pvSize);
-            
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消修改'
-            });
-          });
-    },
-    setSize(){
-      this.$message({
-          showClose: true,
-          duration:0,
-          message: '识别失败！请把机器调整至平行光伏支架0.1米的位置。',
-          type: 'error'
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        center: true,
+        type: 'warning'
+      }).then(() => {
+        var updatasize_sub = new ROSLIB.Topic({
+          ros: this.ros,
+          name: '/robot_command',
+          messageType: 'std_msgs/String'
         });
+        const { width, length } = this.pvSize;
+        updatasize_sub.publish({ data: `{"parameter": {"pvm_length": ${Number(length)}, "pvm_width": ${Number(width)}}}` });
+
+        this.$message.success('修改成功!');
+        // console.log(this.pvSize);
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消修改'
+        });
+      });
+    },
+    setSize() {
+      this.$message({
+        showClose: true,
+        duration: 0,
+        message: '识别失败！请把机器调整至平行光伏支架0.1米的位置。',
+        type: 'error'
+      });
     },
     // 修改图层
-    trimLayer(){
-      if(this.isDraw) this.isDraw = false;
+    trimLayer() {
+      if (this.isDraw) this.isDraw = false;
       else this.isDraw = true;
       console.log(this.isDraw)
       this.$bus.$emit('drawLayer', this.isDraw)
     },
 
     // 添加站点
-    addSite(value){
+    addSite(value) {
       var add_site = new ROSLIB.Topic({
         ros: this.ros,
         name: '/trig',
-        messageType : 'std_msgs/Header'
+        messageType: 'std_msgs/Header'
       })
 
-      add_site.publish({frame_id:`create_site:${value}`});
+      add_site.publish({ frame_id: `create_site:${value}` });
     },
 
     //设置站点
-    setSite(){
+    setSite() {
       this.$prompt('请输入site name()', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          inputPattern: /^[A-Za-z0-9_]+/,
-          inputErrorMessage: 'name格式不正确'
-        }).then(({ value }) => {
-          this.addSite(value)
-          this.$message({
-            type: 'success',
-            message: '你的site name是: ' + value
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });       
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^[A-Za-z0-9_]+/,
+        inputErrorMessage: 'name格式不正确'
+      }).then(({ value }) => {
+        this.addSite(value)
+        this.$message({
+          type: 'success',
+          message: '你的site name是: ' + value
         });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        });
+      });
     },
 
     // 显示图层
-    viewLayers(){
-      if(this.flag) this.flag = false;
+    viewLayers() {
+      if (this.flag) this.flag = false;
       else this.flag = true;
       this.$bus.$emit('pathLayers', this.flag)
     },
 
     // 底盘车操控台
-    carControl(){
+    carControl() {
       if (this.isShow) this.isShow = false;
       else {
         this.isShow = true;
@@ -346,7 +346,7 @@ export default {
     },
 
     // 机械臂操控台
-    armControl(){
+    armControl() {
       if (this.isShowArm) this.isShowArm = false;
       else {
         this.isShowArm = true;
@@ -358,7 +358,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-.kuang{
+.kuang {
   position: absolute;
   bottom: 0%;
   background: #000000bd;
@@ -369,27 +369,28 @@ export default {
   z-index: 1000;
 }
 
-.PVMdata{
+.PVMdata {
   position: fixed;
   top: 110px;
   right: 10px;
   z-index: 1002;
   height: 120px;
-  
+
   box-shadow: 5px 5px 20px 10px rgb(0 0 0 / 15%);
 
-  .datain{
+  .datain {
     margin: 5px 20px;
     display: flex;
     font-size: 16px;
-    span{
+
+    span {
       font-weight: 700;
     }
   }
 }
 
 
-.PVMdata1{
+.PVMdata1 {
   position: fixed;
   // top: 110px;
   // right: 10px;
@@ -399,21 +400,22 @@ export default {
   border-radius: 10px 0 0 10px;
   right: 0;
   bottom: 100px;
-  
+
 
   box-shadow: 5px 5px 20px 10px rgb(0 0 0 / 15%);
 
-  .datain{
+  .datain {
     margin: 8px 20px;
     display: flex;
     font-size: 14px;
-    span{
+
+    span {
       font-weight: 700;
     }
   }
 }
 
-.PVMdata2{
+.PVMdata2 {
   position: fixed;
   // top: 110px;
   // right: 10px;
@@ -424,15 +426,16 @@ export default {
   right: 500px;
   bottom: 500px;
   background-color: #fff;
-  
+
 
   box-shadow: 5px 5px 20px 10px rgb(0 0 0 / 15%);
 
-  .datain{
+  .datain {
     margin: 10px 40px;
     display: flex;
     font-size: 16px;
-    span{
+
+    span {
       font-weight: 700;
     }
   }
@@ -448,24 +451,27 @@ export default {
   // border: 1px solid #ddd;
   border-radius: 4px;
   overflow: hidden;
+
   .map_left,
   .map_right {
     position: absolute;
     opacity: 0.8;
     top: 3%;
-    width:40px;
+    width: 40px;
     // border-radius: 0 10px 10px 0;
     border-radius: 10px;
     // padding: 0.1rem 0;
     left: 10px;
     font-size: 32px;
     z-index: 1000;
+
     .left_list {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.1);
+
       .l_icon {
         display: flex;
         flex-direction: column;
@@ -473,16 +479,18 @@ export default {
         align-items: center;
         width: 100%;
         height: 100%;
-        img{
+
+        img {
           max-width: 80%;
           height: auto;
           margin: 0 auto !important;
         }
+
         span {
           opacity: 0.7;
           // color: #007efc;
           // color: #ffffff;
-          
+
           &:hover {
             opacity: 1;
           }
@@ -490,9 +498,9 @@ export default {
       }
     }
   }
+
   .map_right {
     right: 0;
     border-radius: 10px 0 0 10px;
   }
-}
-</style>
+}</style>

@@ -133,16 +133,17 @@ export default {
       pvm_num: 50,
       goal: null,
       goon: 0,
-      pvm_length:'2123',
-      pvm_width:'1123',
-      install_gap:10
+      pvm_length: '2123',
+      pvm_width: '1123',
+      install_gap: 10
     };
   },
   computed: {
-    ...mapState("ros", ["ros",]),
+    ...mapState("ros", ["ros", 'flexbeParams']),
   },
   mounted() {
     this.avoidanceEcho();
+    // this.test()
     // this.$message.success('Installation Completed');
   },
   methods: {
@@ -157,6 +158,30 @@ export default {
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
     },
+
+    // 筛选flexbe参数
+    filterParam(name) {
+      try {
+        var params = this.flexbeParams[name];
+        if (!params) return;
+
+        return { arg_keys: Object.keys(params), arg_values: Object.values(params) }
+      } catch (error) {
+        return null;
+      }
+    },
+    // test
+    // test() {
+    //   var {arg_keys, arg_values} = this.filterParam('test_flexbe_param2');
+    //   var goalMessage = new ROSLIB.Message({
+    //     behavior_name: 'test_flexbe_param2',
+    //     arg_keys,
+    //     arg_values
+    //   });
+    //   console.log(goalMessage);
+
+    //   this.actionClient(goalMessage);
+    // },
 
     // control
     control(axis, offset) {
@@ -203,7 +228,7 @@ export default {
         this.$message.success('Start Installation.');
         this.CommInstall(isauto, 50);
       }
-      else if(id == 2) {
+      else if (id == 2) {
         this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
           confirmButtonText: this.$t('mains.confirm'),
           cancelButtonText: this.$t('mains.cancel'),
@@ -230,14 +255,14 @@ export default {
       }
     },
 
-    avoidanceEcho(){
+    avoidanceEcho() {
       var pvsize_sub = new ROSLIB.Topic({
         ros: this.ros,
         name: '/robot_state',
         messageType: 'std_msgs/String'
       });
 
-      pvsize_sub.subscribe((msg)=> {
+      pvsize_sub.subscribe((msg) => {
         msg = JSON.parse(msg.data);
         console.log(msg);
         // this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
@@ -245,22 +270,19 @@ export default {
         this.pvm_width = msg.parameter.pvm_width;
         this.install_gap = msg.parameter.install_gap;
 
-        var pvm_param = {pvm_width:this.pvm_width,install_gap:this.install_gap};
-        localStorage.setItem('pvm_param',JSON.stringify(pvm_param));
+        var pvm_param = { pvm_width: this.pvm_width, install_gap: this.install_gap };
+        localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
       })
     },
 
     // 发送goal
     CommInstall(auto, pvm_num) {
-
-      var ls = localStorage.getItem('pvm_param')
-      console.log(ls);
-      const { pvm_width,install_gap } = JSON.parse(ls);
+      var {arg_keys, arg_values} = this.filterParam('CommInstallPVM');
 
       var goalMessage = new ROSLIB.Message({
         behavior_name: 'CommInstallPVM',
-        arg_keys: ['auto', 'pvm_sum', 'pvm_width', 'install_gap'],
-        arg_values: [`${auto}`, `${pvm_num}`, `${pvm_width}`, `${install_gap}`]
+        arg_keys: ['auto', 'pvm_sum', ...arg_keys],
+        arg_values: [`${auto}`, `${pvm_num}`, ...arg_values]
       });
 
       console.log(goalMessage);
@@ -520,10 +542,12 @@ export default {
   }
 
 }
-#stop{
+
+#stop {
   background-color: #F56C6C;
   color: #ffffff;
-  &:active{
+
+  &:active {
     background-color: #f73333;
   }
 }

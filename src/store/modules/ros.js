@@ -6,6 +6,7 @@ const actions = {
     state.ros = ros;
     commit("GETDIAGNOSTIC", ros);
     commit("JSONAGG", ros);
+    commit("GETFLEXBEPARAMS", ros);
   },
 };
 
@@ -25,11 +26,6 @@ const mutations = {
       if (!pdu) return
       
       state.pduStatus = pdu.values.map(item=>{
-        // console.log(item.key);
-        // if(item.key.indexOf('fuse')!=-1||item.key.indexOf('contactor')!=-1){
-        //   console.log('fuse');
-        //   // return;
-        // } 
         item.key = item.key.replaceAll("_"," ");
         return item
       }).filter(item => item.key.indexOf('fuse')==-1);
@@ -86,12 +82,27 @@ const mutations = {
   GETMAPNAME(state, mapName) {
     state.mapName = mapName;
   },
+
+  // 获取flexbe静态参数
+  GETFLEXBEPARAMS(state, ros) {
+    var rosTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: "/robot_state",
+      messageType: "std_msgs/String",
+    });
+
+    rosTopic.subscribe((msg) => {
+      var flexbeParams = JSON.parse(msg.data).flexbe;
+      state.flexbeParams = flexbeParams;
+    })
+  }
 };
 
 
 const state = {
   ros: null,
   diagnostics: [],
+  flexbeParams: {},
   elTabPane: [
     {
       id: "0",

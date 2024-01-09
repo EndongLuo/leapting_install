@@ -187,6 +187,7 @@ export default {
       this.goal.on('result', (result) => {
         // this.$message(`result: ${JSON.stringify(result)}`);
         if (result.outcome == 'preempted') this.$message(`task over！`);
+        if (result.outcome == 'finished') this.$message(`task over！`);
         console.log('Final Result: ', result);
       });
     },

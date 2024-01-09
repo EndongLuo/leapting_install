@@ -67,7 +67,17 @@ export default {
     // this.getBehaviorList();
   },
   methods: {
+    // 筛选flexbe参数
+    filterParam(name) {
+      try {
+        var params = this.flexbeParams[name];
+        if (!params) return;
 
+        return { arg_keys: Object.keys(params), arg_values: Object.values(params) }
+      } catch (error) {
+        return { arg_keys: [], arg_values: [] }
+      }
+    },
     // 行为列表
     behaviorList() {
       // 订阅该主题
@@ -97,31 +107,40 @@ export default {
     // 发送goal
     sendGoal(goalMsg) {
       console.log(goalMsg);
-      if(goalMsg.behavior_name == 'CommUninstallPVM'){
+      if (goalMsg.behavior_name == 'CommUninstallPVM') {
         this.$prompt(this.$t('prompt.uninputNum'), this.$t('prompt.prompt'), {
-        confirmButtonText: this.$t('mains.confirm'),
-        cancelButtonText: this.$t('mains.cancel'),
-        inputPattern: /[1-9]{1}\d{0,3}/,
-        inputErrorMessage: this.$t('prompt.inputErrorMessage')
-      }).then(({ value }) => {
+          confirmButtonText: this.$t('mains.confirm'),
+          cancelButtonText: this.$t('mains.cancel'),
+          inputPattern: /[1-9]{1}\d{0,3}/,
+          inputErrorMessage: this.$t('prompt.inputErrorMessage')
+        }).then(({ value }) => {
 
-        this.$message.success('success: ' + value);
+          this.$message.success('success: ' + value);
 
-        // this.pvm_num = value;
-        console.log(Number(value));
-        this.CommInstall( value);
-      }).catch(() => {
-        this.$message(this.$t('mains.cancel'));
-      });
+          // this.pvm_num = value;
+          console.log(Number(value));
+          this.CommInstall(value);
+        }).catch(() => {
+          this.$message(this.$t('mains.cancel'));
+        });
       }
-      else this.actionClient(goalMsg);
+      else {
+        console.log('goalMsg',goalMsg);
+        var { arg_keys, arg_values } = this.filterParam(goalMsg.behavior_name);
+        var goalMessage = new ROSLIB.Message({
+          behavior_name: goalMsg.behavior_name,
+          arg_keys,
+          arg_values
+        });
+        this.actionClient(goalMessage);
+      }
     },
     // 发送goal
-    CommInstall( pvm_num) {
+    CommInstall(pvm_num) {
       var goalMessage = new ROSLIB.Message({
         behavior_name: 'CommUninstallPVM',
-        arg_keys: [ 'pvm_sum'],
-        arg_values: [ `${pvm_num}`]
+        arg_keys: ['pvm_sum'],
+        arg_values: [`${pvm_num}`]
       });
 
       console.log(goalMessage);

@@ -8,9 +8,9 @@ module.exports = defineConfig({
   
   devServer: {
     // 自动打开浏览器
-    // host: localhost,
+    host: '192.168.147.9',
     port: 8888,
-    // open: true,
+    open: true,
     
     //代理跨域
     proxy: {
