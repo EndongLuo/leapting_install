@@ -26,7 +26,13 @@
           <el-button type="primary" @click="HandEye(false)">{{ $t('config.noautohandeye') }}</el-button>
           <el-button type="primary" @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
         </div>
-        
+
+        <div class="inbox">
+          <span style="width: 100px;">{{ $t('config.git') }}：
+          </span>
+          <el-button type="primary" @click="gitPull">{{ $t('config.update') }}</el-button>
+        </div>
+
       </div>
     </div>
 
@@ -138,12 +144,29 @@ export default {
       name: '/robot_command',
       messageType: 'std_msgs/String'
     });
+
+    this.trig_pub = new ROSLIB.Topic({
+      ros: this.ros,
+      name: '/trig',
+      messageType: 'std_msgs/Header',
+    });
+
   },
   watch: {
-    pduStatus(val) {
+    pduStatus(val, old) {
       // console.log(val);
+      if (val[17].value !== old[17].value) {
+        if (val[17].value == '1') this.launchSwitch(0, 'pdu');
+        else if (val[17].value == '0') this.launchSwitch(1, 'pdu');
+      }
+
+      if (val[19].value !== old[19].value) {
+        if (val[19].value == '1') this.launchSwitch(1, 'arm');
+        else if (val[19].value == '0') this.launchSwitch(0, 'arm');
+      }
+
+      // 控制逆变器
       val.filter(o => {
-        // console.log(o.value);
         if (o.key == 'chassis contactor') this.chassisSwitch = o.value;
         else if (o.key == 'inverter contactor') this.inverterSwitch = o.value;
         else if (o.key == 'charger contactor') this.chargeSwitch = o.value;
@@ -155,6 +178,13 @@ export default {
     }
   },
   methods: {
+    gitPull() {
+      this.updatasize_sub.publish({ data: '{"git": {"op": "pull"}}' });
+    },
+    launchSwitch(s, n) {
+      var msg = new ROSLIB.Message({ seq: s, frame_id: `launch:${n}` });
+      this.trig_pub.publish(msg);
+    },
     // 发送goal
     HandEye(b) {
       var goalMessage = new ROSLIB.Message({

@@ -38,11 +38,15 @@
       </div>
       <div v-else-if="isShow == 4" class="arml2">
         <div>
+          <el-switch v-model="gtoa" active-color="#ff4949" inactive-color="#13ce66"> </el-switch>
+        </div>
+        <div>
           <span class="armin ll" @click="withDraw('WithdrawPVM')">{{ $t('install.withdraw') }}</span>
           <span class="armin ll" @click="withDraw('StartInstallCheck')">{{ $t('install.check') }}</span>
         </div>
 
-        <div class="armContent ll" style="height: 168px;">
+        <!-- 机械臂全局操控 -->
+        <div class="armContent ll" v-if="gtoa" style="height: 168px;">
           <span class="armin" style="width: 200px;" @click="control('Y', -10)"><i class="el-icon-arrow-up"></i></span>
 
           <div style="display: flex;">
@@ -52,10 +56,21 @@
           <span class="armin" style="width: 200px;" @click="control('Y', 10)"><i class="el-icon-arrow-down"></i></span>
 
         </div>
-        <div>
+        <div v-if="gtoa">
           <span class="armin ll" @click="control('Z', 10)"><i class="el-icon-top"></i></span>
           <span class="armin ll " @click="control('Z', -10)"><i class="el-icon-bottom"></i></span>
         </div>
+        <!-- -------- -->
+
+        <!-- 机械臂轴控制 -->
+        <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
+          <span class="armin" @mousedown="arm(i, 0.1)" @mouseup="arm(1)" @touchstart.prevent="arm(i, 0.1)"
+            @touchend="arm(1)"><i class="el-icon-arrow-up"></i></span>
+          <span class="armin">{{ i }}</span>
+          <span class="armin" @mousedown="arm(i, -0.1)" @mouseup="arm(1)" @touchstart.prevent="arm(i, -0.1)"
+            @touchend="arm(1)"><i class="el-icon-arrow-down"></i></span>
+        </div>
+
         <div>
           <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
           <span class="armin ll" id="stop" @click="Stop()">{{ $t('install.stop')
@@ -123,6 +138,7 @@ export default {
   components: { Tips, Telecontrol, Toast, Three },
   data() {
     return {
+      gtoa: false,
       isShow: 0,
       isInstall: 0,
       isVideo: 0,
@@ -135,7 +151,13 @@ export default {
       goon: 0,
       pvm_length: '2123',
       pvm_width: '1123',
-      install_gap: 10
+      install_gap: 10,
+      message: {
+        header: { frame_id: 'jtc' },
+        axes: [0, 0, 0, 0, 0, 0, 0, 0],
+        buttons: [0, 0, 0, 0, 0, 0, 0, 0],
+      },
+      publisher: null,
     };
   },
   computed: {
@@ -143,10 +165,23 @@ export default {
   },
   mounted() {
     this.avoidanceEcho();
+
+    this.publisher = new ROSLIB.Topic({
+      ros: this.ros,
+      name: "joy",
+      messageType: "sensor_msgs/Joy",
+    });
     // this.test()
     // this.$message.success('Installation Completed');
   },
   methods: {
+    arm(axle, rot = 0) {
+      console.log(axle, rot);
+      this.message.axes = Array(8).fill(0);
+      this.message.axes[axle - 1] = rot;
+      console.log(this.message);
+      this.publisher.publish(this.message);
+    },
     // 检查ros连接状态
     checkRos() {
       if (this.isShow) {
@@ -167,7 +202,7 @@ export default {
 
         return { arg_keys: Object.keys(params), arg_values: Object.values(params) }
       } catch (error) {
-        return null;
+        return { arg_keys: [], arg_values: [] };
       }
     },
     // test
@@ -277,7 +312,7 @@ export default {
 
     // 发送goal
     CommInstall(auto, pvm_num) {
-      var {arg_keys, arg_values} = this.filterParam('CommInstallPVM');
+      var { arg_keys, arg_values } = this.filterParam('CommInstallPVM');
 
       var goalMessage = new ROSLIB.Message({
         behavior_name: 'CommInstallPVM',
@@ -400,7 +435,6 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
-
 }
 
 .h_outer {
@@ -502,7 +536,7 @@ export default {
   .ll {
     border-radius: 5px;
     background: #535353d3;
-    box-shadow: 5px 5px 20px #212223;
+    // box-shadow: 5px 5px 20px #212223;
     overflow: hidden;
   }
 
@@ -518,6 +552,29 @@ export default {
       width: 100px;
       height: 56px;
       margin: 0;
+
+      &:active {
+        background: #3b3b3bd3;
+      }
+    }
+  }
+
+  .armContent1 {
+    margin: 0 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .armin {
+      border-radius: 0px;
+      width: 60px;
+      height: 56px;
+      margin: 0;
+
+      &:active {
+        background: #3b3b3bd3;
+      }
     }
   }
 

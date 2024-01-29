@@ -82,7 +82,9 @@ const zh = {
     devicestatus:'设备状态',
     handeye:'手眼标定',
     autohandeye:'自动标定',
-    noautohandeye:'手动标定'
+    noautohandeye:'手动标定',
+    git:'版本更新',
+    update:'更新',
   },
   connPrompt:{
     success:'安装机器人已连接。',

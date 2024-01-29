@@ -82,7 +82,9 @@ const en = {
     devicestatus:'Device Status',
     handeye:'HandEye Calibration',
     autohandeye:'Auto Calibration',
-    noautohandeye:'Manual Calibration'
+    noautohandeye:'Manual Calibration',
+    git:'Update Version',
+    update:'Update',
   },
   connPrompt:{
     success:'Connected to Install Robot.',
