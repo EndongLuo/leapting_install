@@ -48,6 +48,7 @@ const mutations = {
       // var diag = msg;
       // console.log(diag);
       
+      
       var wifi = diag.SYSTEM.underling.NET.underling.wifi.message;
       // console.log(wifi);
       let wifiobj = {};
@@ -65,7 +66,11 @@ const mutations = {
 
       if(!diag) return
       // console.log(diag);
-      var taskState = diag.STATUS.underling.TASK.underling.STATE.underling.task_state.message
+      try {
+        var taskState = diag.STATUS.underling.TASK.underling.STATE.underling.task_state.message
+      } catch (error) {
+        var taskState = {}
+      }
       // console.log(taskState);
       // console.log(ros.isConnected);
       if (!ros.isConnected) taskState = null;

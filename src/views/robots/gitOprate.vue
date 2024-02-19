@@ -78,6 +78,8 @@ export default {
     git_send() {
       this.git_pub.publish(this.gitMsgs());
     },
+
+
   },
 };
 </script>

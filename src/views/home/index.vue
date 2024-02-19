@@ -158,6 +158,7 @@ export default {
         buttons: [0, 0, 0, 0, 0, 0, 0, 0],
       },
       publisher: null,
+      zAixs: 0
     };
   },
   computed: {
@@ -245,8 +246,38 @@ export default {
       var goalMessage = new ROSLIB.Message({
         behavior_name: name,
       });
+      if (name == 'StartInstallCheck') this.checkZaixs(goalMessage)
+      else this.actionClient(goalMessage);
 
-      this.actionClient(goalMessage);
+
+    },
+
+    checkZaixs(goalMessage) {
+      var f = 1
+      // console.log(1);
+      var publisher = new ROSLIB.Topic({
+        ros: this.ros,
+        name: "arm_pose",
+        messageType: "geometry_msgs/Pose",
+      });
+
+      publisher.subscribe((msg) => {
+        this.zAixs = msg.position.z;
+        if (f == 1) {
+
+          if (this.zAixs > 1) this.actionClient(goalMessage);
+          else this.$message('请抬高机械臂,末端高度为：' + this.zAixs);
+        }
+        f = 0
+      })
+
+      // this.$nextTick(()=>{
+      //   if (this.zAixs > 1) this.actionClient(goalMessage);
+      //   else this.$message('请抬高机械臂,末端高度为：'+this.zAixs);
+      // })
+
+
+
     },
 
     // 开始第一次
