@@ -65,6 +65,7 @@ const en = {
     continue:'Continue',
     stop:'Stop',
     withdraw:'Withdraw',
+    isback:'Go Back',
     reset:'Reset',
     check:'Check',
   },

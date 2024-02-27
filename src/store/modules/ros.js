@@ -97,8 +97,12 @@ const mutations = {
     });
 
     rosTopic.subscribe((msg) => {
-      var flexbeParams = JSON.parse(msg.data).flexbe;
-      state.flexbeParams = flexbeParams;
+      var data = JSON.parse(msg.data);
+      
+      state.flexbeParams = data.flexbe;
+      if(data.git){
+        state.gitParams = data.git.res;
+      }
     })
   }
 };
@@ -108,6 +112,7 @@ const state = {
   ros: null,
   diagnostics: [],
   flexbeParams: {},
+  gitParams:false,
   elTabPane: [
     {
       id: "0",

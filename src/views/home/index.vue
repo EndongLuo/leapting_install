@@ -199,7 +199,7 @@ export default {
     filterParam(name) {
       try {
         var params = this.flexbeParams[name];
-        if (!params) return;
+        if (!params) return { arg_keys: [], arg_values: [] };
 
         return { arg_keys: Object.keys(params), arg_values: Object.values(params) }
       } catch (error) {

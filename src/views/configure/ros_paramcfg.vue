@@ -150,21 +150,9 @@ export default {
       name: '/trig',
       messageType: 'std_msgs/Header',
     });
-
   },
   watch: {
     pduStatus(val, old) {
-      // console.log(val);
-      if (val[17].value !== old[17].value) {
-        if (val[17].value == '1') this.launchSwitch(0, 'pdu');
-        else if (val[17].value == '0') this.launchSwitch(1, 'pdu');
-      }
-
-      if (val[19].value !== old[19].value) {
-        if (val[19].value == '1') this.launchSwitch(1, 'arm');
-        else if (val[19].value == '0') this.launchSwitch(0, 'arm');
-      }
-
       // 控制逆变器
       val.filter(o => {
         if (o.key == 'chassis contactor') this.chassisSwitch = o.value;
@@ -180,10 +168,22 @@ export default {
   methods: {
     gitPull() {
       this.updatasize_sub.publish({ data: '{"git": {"op": "pull"}}' });
-    },
-    launchSwitch(s, n) {
-      var msg = new ROSLIB.Message({ seq: s, frame_id: `launch:${n}` });
-      this.trig_pub.publish(msg);
+
+      const loading = this.$loading({
+        lock: true,
+        text: 'Updating...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+
+      this.trig_pub.subscribe((msg) => {
+        // console.log(msg);
+        if (msg.frame_id == 'git_pull_res') {
+          if (msg.seq == 1) this.$message.success(`Update success!`);
+          else this.$message(`Update failed!`);
+          loading.close();
+        }
+      });
     },
     // 发送goal
     HandEye(b) {
@@ -437,5 +437,4 @@ export default {
   justify-content: center;
   margin-top: 15px;
   margin-left: 0 !important;
-}
-</style>
+}</style>

@@ -36,7 +36,8 @@ VueRouter.prototype.replace = function (location, resolve, reject) {
 };
 
 let router = new VueRouter({
-  mode: 'history',
+  // mode: 'history',
+  mode: 'hash',
   routes,
   scrollBehavior(to, from, savedPosition) {
     // 始终滚动到顶部

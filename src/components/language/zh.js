@@ -65,6 +65,7 @@ const zh = {
     continue:'继续',
     stop:'停止',
     withdraw:'撤回',
+    isback:'返回',
     reset:'复位',
     check:'检测',
   },

@@ -14,7 +14,8 @@
         <span style="font-weight: 800;font-size: 32px;">{{ toptip }}</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="info" @click="putBack">{{$t('install.withdraw')}}</el-button>
+        <el-button v-if="isback" type="info" @click="goBack" >{{$t('install.isback')}}</el-button>
+        <el-button v-else type="info" @click="putBack">{{$t('install.withdraw')}}</el-button>
         <el-button type="primary" @click="installPV">{{$t('mains.confirm')}}</el-button>
       </span>
     </el-dialog>
@@ -36,6 +37,7 @@
 <script>
 import layout from "./views/layout";
 var num = 0;
+import { mapState } from 'vuex';
 export default {
   name: "App",
   components: {
@@ -52,18 +54,38 @@ export default {
       shibieDialog: false,
       shibiePick: null,
       flag: false,
-      trig_sub: null,
+      trig_pub: null,
       toptip: null,
       timer1: null,
-      num: 1
+      num: 1,
+      isback:false,
     };
+  },
+  computed: {
+    ...mapState('ros', ['pdustatus','taskState']),
   },
   mounted() {
     this.connect();
+
+    this.pdu_sub = new ROSLIB.Topic({
+      ros: this.ros,
+      name: '/pdu_request',
+      messageType: 'std_msgs/String'
+    });
+
+    this.trig_pub = new ROSLIB.Topic({
+      ros: this.ros,
+      name: '/trig',
+      messageType: 'std_msgs/Header',
+    });
+
     this.shibie();
     this.dialog();
 
-    this.$bus.$on( 'reconn' , ()=>this.connect())
+    this.$bus.$on( 'reconn' , ()=>this.connect());
+
+    // if(this.gitParams) this.$message.success('git pull success!');
+    // else this.$message.error('git pull failed!');
   },
   created() {
     
@@ -105,8 +127,26 @@ export default {
         clearInterval(this.timer1);
         this.timer1 = null;
       }
+    },
+    pduStatus(val, old) {
+      if (val[17].value !== old[17].value) {
+        if (val[17].value == '1') {
+          this.pdu_sub.publish({ data: "inverter_off" });
+          this.pdu_sub.publish({ data: "chassis_off" });
+        }
+        else if (val[17].value == '0') {
+          this.pdu_sub.publish({ data: "inverter_on" });
+          this.pdu_sub.publish({ data: "chassis_on" });
+        }
+      }
+
+      if (val[19].value !== old[19].value) {
+        if (val[19].value == '1') this.launchSwitch(1, 'arm');
+        else if (val[19].value == '0') this.launchSwitch(0, 'arm');
+      }
     }
   },
+  
   methods: {
     jishiqi() {
       this.$notify({
@@ -115,15 +155,19 @@ export default {
         duration: 30000
       });
     },
+    launchSwitch(s, n) {
+      var msg = new ROSLIB.Message({ seq: s, frame_id: `launch:${n}` });
+      this.trig_pub.publish(msg);
+    },
     connect() {
       var _this = this;
 
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
-      this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
+      // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.245:9090" }); // 印度库卡
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.4.240:9090" }); // 巡检 
-      //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
+       this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
       // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.13:9090" }); // zeng
 
       this.$store.dispatch("ros/getRos", this.ros);
@@ -185,12 +229,7 @@ export default {
     },
 
     shibie() {
-      var trig_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/trig',
-        messageType: 'std_msgs/Header',
-      });
-      trig_sub.subscribe((msg) => {
+      this.trig_pub.subscribe((msg) => {
         // console.log(msg);
         if (msg.frame_id == 'install_detect_pick') {
           if (msg.seq == 1) this.$message.success(`${this.$t('identify.identifyOk')}`);
@@ -213,14 +252,9 @@ export default {
 
     // 半自动弹框
     dialog() {
-      var trig_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/trig',
-        messageType: 'std_msgs/Header',
-      });
       this.toptip = ''
 
-      trig_sub.subscribe((msg) => {
+      this.trig_pub.subscribe((msg) => {
         console.log(msg);
         var fid = msg.frame_id;
         if (fid.indexOf('UI_dump') != -1) {
@@ -239,8 +273,20 @@ export default {
           this.toptip = this.$t('identify.UI_handeye_take');
           this.dialogVisible = true;
         }
+        else if (fid.indexOf('UI_continue') != -1) {
+          // this.toptip = this.$t('identify.UI_handeye_take');
+          this.toptip = '是否继续安装';
+          this.isback = true;
+          this.dialogVisible = true;
+        }
         console.log(this.toptip);
       })
+    },
+    // 最后一步是否前进 （不继续）
+    goBack(){
+      this.trig_pub.publish({frame_id:"goback"})
+      this.isback = false;
+      this.dialogVisible = false;
     },
     // 放回流程
     putBack() {
