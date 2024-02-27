@@ -163,7 +163,6 @@ export default {
 }
 
 .logo {
-  padding: 8px;
   height: 50px;
   display: flex;
   justify-content: center;
