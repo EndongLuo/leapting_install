@@ -129,6 +129,7 @@ export default {
       }
     },
     pduStatus(val, old) {
+      console.log('pduStatus');
       if (val[17].value !== old[17].value) {
         if (val[17].value == '1') {
           this.pdu_sub.publish({ data: "inverter_off" });
@@ -161,14 +162,8 @@ export default {
     },
     connect() {
       var _this = this;
-
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 小库卡
-      // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.246:9090" }); // 杭叉
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.245:9090" }); // 印度库卡
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.4.240:9090" }); // 巡检 
-       this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
-      // this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.13:9090" }); // zeng
+      this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
+      //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)
@@ -274,8 +269,7 @@ export default {
           this.dialogVisible = true;
         }
         else if (fid.indexOf('UI_continue') != -1) {
-          // this.toptip = this.$t('identify.UI_handeye_take');
-          this.toptip = '是否继续安装';
+          this.toptip = this.$t('identify.UI_continue');
           this.isback = true;
           this.dialogVisible = true;
         }

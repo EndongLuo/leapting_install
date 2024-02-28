@@ -37,7 +37,6 @@ VueRouter.prototype.replace = function (location, resolve, reject) {
 
 let router = new VueRouter({
   // mode: 'history',
-  mode: 'hash',
   routes,
   scrollBehavior(to, from, savedPosition) {
     // 始终滚动到顶部
@@ -48,7 +47,6 @@ let router = new VueRouter({
 // 全局前置路由守卫
 router.beforeEach(async (to, from, next) => {
     next()
-  
 });
 
 //全局后置路由守卫————初始化的时候被调用、每次路由切换之后被调用

@@ -38,7 +38,11 @@
       </div>
       <div v-else-if="isShow == 4" class="arml2">
         <div>
-          <el-switch v-model="gtoa" active-color="#ff4949" inactive-color="#13ce66"> </el-switch>
+          <!-- <el-switch v-model="gtoa" active-color="#ff4949" inactive-color="#13ce66"> </el-switch> -->
+          <span class="armin ll" v-if="gtoa" @click="gtoa = false">{{ $t('install.axis') }}</span>
+          <span class="armin ll" v-else @click="gtoa = true">{{ $t('install.global') }}</span>
+          <span class="armin ll" v-if="ctof" @click="ctof = false">{{ $t('install.majoradjust') }}</span>
+          <span class="armin ll" v-else @click="ctof = true">{{ $t('install.minoradjust') }}</span>
         </div>
         <div>
           <span class="armin ll" @click="withDraw('WithdrawPVM')">{{ $t('install.withdraw') }}</span>
@@ -64,11 +68,11 @@
 
         <!-- 机械臂轴控制 -->
         <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
-          <span class="armin" @mousedown="arm(i, 0.1)" @mouseup="arm(1)" @touchstart.prevent="arm(i, 0.1)"
-            @touchend="arm(1)"><i class="el-icon-arrow-up"></i></span>
+          <span class="armin" @mousedown="arm(i, 0.1)" @touchstart.prevent="arm(i, 0.1)"><i
+              class="el-icon-arrow-up"></i></span>
           <span class="armin">{{ i }}</span>
-          <span class="armin" @mousedown="arm(i, -0.1)" @mouseup="arm(1)" @touchstart.prevent="arm(i, -0.1)"
-            @touchend="arm(1)"><i class="el-icon-arrow-down"></i></span>
+          <span class="armin" @mousedown="arm(i, -0.1)" @touchstart.prevent="arm(i, -0.1)"><i
+              class="el-icon-arrow-down"></i></span>
         </div>
 
         <div>
@@ -138,7 +142,8 @@ export default {
   components: { Tips, Telecontrol, Toast, Three },
   data() {
     return {
-      gtoa: false,
+      gtoa: false, // 全局-轴 （机械臂）
+      ctof: false, // 粗调-微调（机械臂）
       isShow: 0,
       isInstall: 0,
       isVideo: 0,
@@ -177,10 +182,11 @@ export default {
   },
   methods: {
     arm(axle, rot = 0) {
+      if (rot && this.ctof) rot /= 5;
       console.log(axle, rot);
       this.message.axes = Array(8).fill(0);
       this.message.axes[axle - 1] = rot;
-      console.log(this.message);
+      // console.log(this.message);
       this.publisher.publish(this.message);
     },
     // 检查ros连接状态
@@ -221,6 +227,7 @@ export default {
 
     // control
     control(axis, offset) {
+      if (offset && this.ctof) offset /= 5;
       var goalMessage = new ROSLIB.Message({
         behavior_name: 'TransManipulation',
         arg_keys: ['axis', 'offset'],
@@ -248,8 +255,6 @@ export default {
       });
       if (name == 'StartInstallCheck') this.checkZaixs(goalMessage)
       else this.actionClient(goalMessage);
-
-
     },
 
     checkZaixs(goalMessage) {
@@ -375,7 +380,12 @@ export default {
       this.goal.on('result', (result) => {
         // this.$message(`result: ${JSON.stringify(result)}`);
         if (result.outcome == 'preempted') this.$message(`task over！`);
+        if (result.outcome == 'finished'){
+          this.isInstall = 0;
+          this.$message.success(`task finished !`);
+        } 
         console.log('Final Result: ', result);
+
       });
     },
 

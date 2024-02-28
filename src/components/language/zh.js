@@ -68,6 +68,10 @@ const zh = {
     isback:'返回',
     reset:'复位',
     check:'检测',
+    axis:'轴',
+    global:'全局',
+    majoradjust:'粗调',
+    minoradjust:'微调'
   },
   config:{
     pducontrol:'PDU 控制',
@@ -116,6 +120,7 @@ const zh = {
     taskover:'任务结束！',
     UI_handeye_arm:'移动机械臂',
     UI_handeye_take:'采集数据',
+    UI_continue:'是否继续安装',
   }
 }
 

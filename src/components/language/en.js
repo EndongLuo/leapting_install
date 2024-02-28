@@ -68,6 +68,10 @@ const en = {
     isback:'Go Back',
     reset:'Reset',
     check:'Check',
+    axis:'Axis',
+    global:'Global',
+    majoradjust:'Adjust-M',
+    minoradjust:'Adjust-S'
   },
   config:{
     pducontrol:'PDU Control',
@@ -116,6 +120,7 @@ const en = {
     taskover:'The task is over!',
     UI_handeye_arm:'mobile manipulator',
     UI_handeye_take:'collect data',
+    UI_continue:'Whether to continue the installation',
   }
 }
 
