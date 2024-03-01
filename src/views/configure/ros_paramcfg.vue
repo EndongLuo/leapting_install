@@ -30,7 +30,8 @@
         <div class="inbox">
           <span style="width: 100px;">{{ $t('config.git') }}：
           </span>
-          <el-button type="primary" @click="gitPull">{{ $t('config.update') }}</el-button>
+          <el-button type="primary" @click="gitPull">{{ $t('config.update') }}</el-button> 
+          <span v-if="gitNum">(当前版本：{{gitNum}})</span>
         </div>
 
       </div>
@@ -120,7 +121,8 @@ export default {
       pvm_length: '2123',
       pvm_width: '1123',
       autocross: false,
-      install_gap: 10
+      install_gap: 10,
+      gitNum:null,
     };
   },
   computed: {
@@ -334,6 +336,8 @@ export default {
         this.pvm_length = msg.parameter.pvm_length;
         this.pvm_width = msg.parameter.pvm_width;
         this.install_gap = msg.parameter.install_gap;
+
+        this.gitNum = msg.git.info.date;
 
         var pvm_param = { pvm_width: this.pvm_width, install_gap: this.install_gap };
         localStorage.setItem('pvm_param', JSON.stringify(pvm_param));

@@ -62,7 +62,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('ros', ['pdustatus','taskState']),
+    ...mapState('ros', ['pduStatus','taskState']),
   },
   mounted() {
     this.connect();
