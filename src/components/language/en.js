@@ -85,10 +85,10 @@ const en = {
     pvmsize:'PVM Size',
     installgap:'Install Gap',
     devicestatus:'Device Status',
-    handeye:'HandEye Calibration',
+    handeye:'Calibration',
     autohandeye:'Auto Calibration',
     noautohandeye:'Manual Calibration',
-    git:'Update Version',
+    git:'Version',
     update:'Update',
   },
   connPrompt:{

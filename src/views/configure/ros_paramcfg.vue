@@ -29,9 +29,9 @@
 
         <div class="inbox">
           <span style="width: 100px;">{{ $t('config.git') }}：
+            <span v-if="gitNum" style="margin-left: 10px;color: #666666; font-size: 13px;"> {{gitNum}} </span>
           </span>
           <el-button type="primary" @click="gitPull">{{ $t('config.update') }}</el-button> 
-          <span v-if="gitNum">(当前版本：{{gitNum}})</span>
         </div>
 
       </div>
@@ -123,12 +123,14 @@ export default {
       autocross: false,
       install_gap: 10,
       gitNum:null,
+      // gitNum:'V1.0.3/n',
     };
   },
   computed: {
     ...mapState("ros", ["ros", "pduStatus"]),
   },
   mounted() {
+    // this.gitNum = this.gitNum.slice(0, -2);
     // this.getRoscfg();
     // this.getRoscfgs();
     this.avoidanceEcho();
@@ -337,7 +339,7 @@ export default {
         this.pvm_width = msg.parameter.pvm_width;
         this.install_gap = msg.parameter.install_gap;
 
-        this.gitNum = msg.git.info.date;
+        this.gitNum = msg.git.info.msg.slice(0, -2);
 
         var pvm_param = { pvm_width: this.pvm_width, install_gap: this.install_gap };
         localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
