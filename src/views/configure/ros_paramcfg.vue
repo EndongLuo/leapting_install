@@ -130,7 +130,6 @@ export default {
     ...mapState("ros", ["ros", "pduStatus"]),
   },
   mounted() {
-    // this.gitNum = this.gitNum.slice(0, -2);
     // this.getRoscfg();
     // this.getRoscfgs();
     this.avoidanceEcho();
