@@ -146,7 +146,7 @@ export default {
       var _this = this;
       this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
-      //  this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 服务器
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); 
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)

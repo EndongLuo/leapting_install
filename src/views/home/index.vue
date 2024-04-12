@@ -135,14 +135,30 @@
 
     <!-- 可拖拽框 -->
     <div style="display: flex; justify-content: center;" v-if="isVideo || isThree">
-      <div class="win" v-if="isVideo">
+      <div class="win" v-if="urlVideo">
         <div class="totitle">
-          <span>{{ $t('install.monitor') }}</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos()"></i>
+          <!-- <span>{{ $t('install.monitor') }}</span> -->
+          <span>RGB</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(1)"></i>
         </div>
 
         <img v-if="!urlVideo" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
         <img v-else :src="urlVideo" alt="" style="width: 100%; height:100%; overflow: hidden;">
+      </div>
+      <div class="win" v-if="urlDep">
+        <div class="totitle">
+          <span>Depth</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(2)"></i>
+        </div>
+        <img v-if="!urlDep" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
+        <img v-else :src="urlDep" alt="" style="width: 100%; height:100%; overflow: hidden;">
+      </div>
+      <div class="win" v-if="urlRes">
+        <div class="totitle">
+          <span>Segmentation</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(3)"></i>
+        </div>
+        <img :src="urlRes" alt="" style="width: 100%; height:100%; overflow: hidden;">
       </div>
       <div class="win" v-if="isThree">
         <div class="totitle">
@@ -190,7 +206,11 @@ export default {
       },
       publisher: null,
       pubTool: null,
-      zAixs: 0
+      zAixs: 0,
+      dep_sub:null,
+      res_sub:null,
+      urlDep:null,
+      urlRes:null
     };
   },
   computed: {
@@ -211,16 +231,22 @@ export default {
       messageType: "geometry_msgs/Pose",
     });
 
-    // this.video_sub = new ROSLIB.Topic({
-    //   ros: this.ros,
-    //   name: "/camera/image_raw",
-    //   messageType: "sensor_msgs/Image",
-    // });
+    this.video_sub = new ROSLIB.Topic({
+      ros: this.ros,
+      name: '/compressed_raw_base64',
+      messageType: 'std_msgs/String'
+    });
 
-    // this.video_sub.subscribe((msg) => {
-
-    // this.test()
-    // this.$message.success('Installation Completed');
+    this.dep_sub = new ROSLIB.Topic({
+      ros: this.ros,
+      name: '/compressed_dep_base64',
+      messageType: 'std_msgs/String'
+    });
+    this.res_sub = new ROSLIB.Topic({
+      ros: this.ros,
+      name: '/compressed_res_base64',
+      messageType: 'std_msgs/String'
+    });
   },
   methods: {
     arm(axle, rot = 0) {
@@ -235,7 +261,7 @@ export default {
     checkRos() {
       if (this.isShow) {
         this.videoRos();
-        this.isThree = 1;
+        // this.isThree = 1;
       }
       if (!this.ros.isConnected) {
         // this.isShow = 0;
@@ -485,30 +511,41 @@ export default {
     videoRos() {
       this.isVideo = 1;
       // 订阅 topic
-      // this.video_sub = new ROSLIB.Topic({
-      //   ros: this.ros,
-      //   name: '/camera/color/image_raw/compressed',
-      //   messageType: 'sensor_msgs/CompressedImage'
-      // });
-
-      this.video_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/compressed_raw_base64',
-        messageType: 'std_msgs/String'
-      });
-
       this.video_sub.subscribe((msg) => {
-        // console.log(msg);
         this.urlVideo = `data:image/jpeg;base64,${msg.data}`;
-        // console.log(this.urlVideo);
+      })
+      this.dep_sub.subscribe(msg=>{
+        // console.log(msg);
+        this.urlDep = `data:image/jpeg;base64,${msg.data}`;
+      })
+      this.res_sub.subscribe(msg=>{
+        // console.log(msg);
+        if (!msg.data) this.urlRes = null;
+        else this.urlRes = `data:image/jpeg;base64,${msg.data}`;
       })
     },
 
     // 停止video
-    pauseRos() {
+    pauseRos(id) {
       this.isVideo = 0;
-      this.video_sub.unsubscribe();
-      this.urlVideo = null;
+      if(id == 1){
+        this.video_sub.unsubscribe();
+        this.urlVideo = null;
+      }
+      if(id == 2){
+        this.dep_sub.unsubscribe();
+        this.urlDep = null;
+      }
+      if(id == 3){
+        this.res_sub.unsubscribe();
+        this.urlRes = null;
+      }
+      // this.video_sub.unsubscribe();
+      // this.urlVideo = null;
+      // this.dep_sub.unsubscribe();
+      // this.urlDep = null;
+      // this.res_sub.unsubscribe();
+      // this.urlRes = null;
     },
 
     // 关闭窗口
