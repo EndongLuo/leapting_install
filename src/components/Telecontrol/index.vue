@@ -19,7 +19,7 @@ export default {
         header: {
           frame_id: '/web'
         },
-        axes: [0, 0, 1.0, 0, 0, 1.0, 0, 0],
+        axes: [0, 0, 1.0, 0, 0, 0, 0, 0],
         buttons: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       },
       timer: null,
@@ -41,13 +41,13 @@ export default {
     },
     velocity(lin = 0, ang = 0){
       console.log("线速度：", lin,'---角速度：', ang);
-      this.message.axes = [0, lin, 0.5, ang, 0, 1.0, 0, 0];
+      this.message.axes = [0, lin, 0.5, ang, 0, 0, 0, 0];
       this.publisher.publish(this.message);
     },
     stop() {
       // console.log("停止");
       if(!this.publisher) return;
-      this.message.axes = [0, 0, 1.0, 0, 0, 1.0, 0, 0];
+      this.message.axes = [0, 0, 1.0, 0, 0, 0, 0, 0];
       this.publisher.publish(this.message);
     },
   },

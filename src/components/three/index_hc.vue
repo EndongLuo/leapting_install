@@ -135,6 +135,8 @@ let list = {
   tool: { color: 0x96999e },
 };
 
+const modelAxesHelper = new THREE.AxesHelper(1); // 参数表示坐标轴的长度
+modelAxesHelper.setColors(0xff0000, 0x00ff00, 0x0000ff); // 设置坐标轴的显示颜色（红、绿、蓝）
 
 let angle = 0; //用于圆周运动计算的角度值
 const R = 50; //相机圆周运动的半径
@@ -320,50 +322,51 @@ export default {
       const THIS = this
       //加载PCD文件
       // PCDLoader1.load('/three/map_filter.pcd',(points)=> {
-      PCDLoader1.load('/three/GlobalMap.pcd', (points) => {
-        points.geometry.rotateZ((3.5 / 180) * Math.PI);//旋转模型，可调
-        // points.position.set(7.5,-23,17.5);//旋转模型，可调
-        points.position.set(6, -24, 18);//旋转模型，可调
-        points.material.color = new THREE.Color(0x9cceca); // 模型颜色
-        THIS.scene.add(points);
-        var middle = new THREE.Vector3();
-        // console.log(points);
-        // console.log(points.geometry);
-        points.geometry.computeBoundingBox();
-        points.geometry.boundingBox.getCenter(middle);
-        points.applyMatrix4(
-          new THREE.Matrix4().makeTranslation(
-            -middle.x,
-            -middle.y,
-            -middle.z
-          )
-        );
-        // 比例
-        var largestDimension = Math.max(
-          points.geometry.boundingBox.max.x,
-          points.geometry.boundingBox.max.y,
-          points.geometry.boundingBox.max.z
-        );
-        // THIS.camera.position.y = largestDimension * 3;//相机位置，可调
-        THIS.animate();
-        //轨道控制器 旋转、平移、缩放
-        THIS.controls = new OrbitControls(
-          THIS.camera,
-          THIS.renderer.domElement
-        );
-        THIS.controls.enableDamping = true;//旋转、平移开启阻尼
-        THIS.controls.addEventListener("change", THIS.render); // 监听鼠标、键盘事件 放大缩小等
-      },
-        function (xhr) {
-          let load = xhr.loaded / xhr.total
-          if (load == 1) {
-            THIS.loading = false
-          }
-        },
-        function (error) {
-          console.log(error);
-        }
-      );
+
+      // PCDLoader1.load('/three/GlobalMap.pcd', (points) => {
+      //   points.geometry.rotateZ((3.5 / 180) * Math.PI);//旋转模型，可调
+      //   // points.position.set(7.5,-23,17.5);//旋转模型，可调
+      //   points.position.set(6, -24, 18);//旋转模型，可调
+      //   points.material.color = new THREE.Color(0x9cceca); // 模型颜色
+      //   THIS.scene.add(points);
+      //   var middle = new THREE.Vector3();
+      //   // console.log(points);
+      //   // console.log(points.geometry);
+      //   points.geometry.computeBoundingBox();
+      //   points.geometry.boundingBox.getCenter(middle);
+      //   points.applyMatrix4(
+      //     new THREE.Matrix4().makeTranslation(
+      //       -middle.x,
+      //       -middle.y,
+      //       -middle.z
+      //     )
+      //   );
+      //   // 比例
+      //   var largestDimension = Math.max(
+      //     points.geometry.boundingBox.max.x,
+      //     points.geometry.boundingBox.max.y,
+      //     points.geometry.boundingBox.max.z
+      //   );
+      //   // THIS.camera.position.y = largestDimension * 3;//相机位置，可调
+      //   THIS.animate();
+      //   //轨道控制器 旋转、平移、缩放
+      //   THIS.controls = new OrbitControls(
+      //     THIS.camera,
+      //     THIS.renderer.domElement
+      //   );
+      //   THIS.controls.enableDamping = true;//旋转、平移开启阻尼
+      //   THIS.controls.addEventListener("change", THIS.render); // 监听鼠标、键盘事件 放大缩小等
+      // },
+      //   function (xhr) {
+      //     let load = xhr.loaded / xhr.total
+      //     if (load == 1) {
+      //       THIS.loading = false
+      //     }
+      //   },
+      //   function (error) {
+      //     console.log(error);
+      //   }
+      // );
       this.scene.add(group);
 
       this.ip = this.regexip(this.ros.socket.url)
@@ -372,13 +375,19 @@ export default {
       // else if (this.ip == '10.168.5.246') this.selectModel('dkk', loader)
       this.selectModel('hc', loader)
     },
+
     // 选择
     selectModel(name, loader) {
+
       for (const key in list) {
         loader.load(`/${name}/${key}.STL`, (geometry) => {
           const material = new THREE.MeshLambertMaterial({ color: list[key].color });
           list[key].mash = new THREE.Mesh(geometry, material);
 
+          if (key == 'tool') {
+            console.log(key);
+            list[key].mash.add(modelAxesHelper); // 将坐标轴添加到模型的坐标系中
+          }
           list[key].mash.castShadow = true;
           group.add(list[key].mash);
         });
@@ -440,17 +449,17 @@ export default {
       //   // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
       //   this.camera.lookAt(this.carPosition.x, this.carPosition.y, 0);
       // }
-      var that =this
+      var that = this
 
       function poselist(link, item) {
         var { rotation, translation } = item.transform;
         if (!link.mash || !that.ip) return;
-        
-          if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1);
-          else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.35);
-          else link.mash.position.set(translation.x, translation.y, translation.z);
-        
-          //  link.mash.position.set(translation.x, translation.y, translation.z);
+
+        if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1);
+        else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.35);
+        else link.mash.position.set(translation.x, translation.y, translation.z);
+
+        //  link.mash.position.set(translation.x, translation.y, translation.z);
 
         link.mash.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
       }

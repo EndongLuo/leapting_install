@@ -51,6 +51,32 @@
 
         <!-- 机械臂全局操控 -->
         <div class="armContent ll" v-if="gtoa" style="height: 168px;">
+          <span class="armin" style="width: 200px;" @click="control(0, -0.005)"><i style="color: #41ae3c;"
+              class="el-icon-arrow-up"></i></span>
+
+          <div style="display: flex;">
+            <span class="armin" @click="control(0.005)"><i style="color: #eb261a;"
+                class="el-icon-arrow-left"></i></span>
+            <span class="armin" @click="control(-0.005)"><i style="color: #eb261a;"
+                class="el-icon-arrow-right"></i></span>
+          </div>
+          <span class="armin" style="width: 200px;" @click="control(0, 0.005)"><i style="color: #41ae3c;"
+              class="el-icon-arrow-down"></i></span>
+
+        </div>
+        <div v-if="gtoa">
+          <span class="armin ll" @click="control(0, 0, 0.005)"><i style="color: #15559a;"
+              class="el-icon-top"></i></span>
+          <span class="armin ll " @click="control(0, 0, -0.005)"><i style="color: #15559a;"
+              class="el-icon-bottom"></i></span>
+        </div>
+        <div v-if="gtoa">
+          <span class="armin ll" @click="control(0, 0, 0, -1)"><i style="transform: rotate(100deg)"
+              class="el-icon-refresh-right"></i></span>
+          <span class="armin ll " @click="control(0, 0, 0, 1)"><i style="transform: rotate(250deg)"
+              class="el-icon-refresh-left"></i></span>
+        </div>
+        <!-- <div class="armContent ll" v-if="gtoa" style="height: 168px;">
           <span class="armin" style="width: 200px;" @click="control('Y', -10)"><i class="el-icon-arrow-up"></i></span>
 
           <div style="display: flex;">
@@ -63,7 +89,7 @@
         <div v-if="gtoa">
           <span class="armin ll" @click="control('Z', 10)"><i class="el-icon-top"></i></span>
           <span class="armin ll " @click="control('Z', -10)"><i class="el-icon-bottom"></i></span>
-        </div>
+        </div>-->
         <!-- -------- -->
 
         <!-- 机械臂轴控制 -->
@@ -78,7 +104,7 @@
         <div>
           <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
           <span class="armin ll" id="stop" @click="Stop()">{{ $t('install.stop')
-          }}</span>
+            }}</span>
         </div>
       </div>
       <!-- 安装 -->
@@ -163,6 +189,7 @@ export default {
         buttons: [0, 0, 0, 0, 0, 0, 0, 0],
       },
       publisher: null,
+      pubTool: null,
       zAixs: 0
     };
   },
@@ -177,6 +204,21 @@ export default {
       name: "joy",
       messageType: "sensor_msgs/Joy",
     });
+
+    this.pubTool = new ROSLIB.Topic({
+      ros: this.ros,
+      name: "tool0_goal",
+      messageType: "geometry_msgs/Pose",
+    });
+
+    // this.video_sub = new ROSLIB.Topic({
+    //   ros: this.ros,
+    //   name: "/camera/image_raw",
+    //   messageType: "sensor_msgs/Image",
+    // });
+
+    // this.video_sub.subscribe((msg) => {
+
     // this.test()
     // this.$message.success('Installation Completed');
   },
@@ -193,10 +235,10 @@ export default {
     checkRos() {
       if (this.isShow) {
         this.videoRos();
-        // this.isThree = 1;
+        this.isThree = 1;
       }
       if (!this.ros.isConnected) {
-        this.isShow = 0;
+        // this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
     },
@@ -226,15 +268,34 @@ export default {
     // },
 
     // control
-    control(axis, offset) {
-      if (offset && this.ctof) offset /= 5;
+    // control(axis, offset) {
+    //   if (offset && this.ctof) offset /= 5;
+    //   var goalMessage = new ROSLIB.Message({
+    //     behavior_name: 'TransManipulation',
+    //     arg_keys: ['axis', 'offset'],
+    //     arg_values: [`${axis}`, `${offset}`]
+    //   });
+
+    //   this.actionClient(goalMessage);
+    // },
+    control(px = 0, py = 0, pz = 0, o = 0) {
+      if (o == 0) var qx = 0, qy = 0, qz = 0, qw = 1;
+      else var qx = 0, qy = 0, qz = 0.0043633 * o, qw = 0.9999905;
+
       var goalMessage = new ROSLIB.Message({
-        behavior_name: 'TransManipulation',
-        arg_keys: ['axis', 'offset'],
-        arg_values: [`${axis}`, `${offset}`]
+        header: { frame_id: 'tool0' },
+        pose: {
+          position: { x: px, y: py, z: pz },
+          orientation: { x: qx, y: qy, z: qz, w: qw }
+        },
+      });
+      var pubTool = new ROSLIB.Topic({
+        ros: this.ros,
+        name: "tool0_goal",
+        messageType: "geometry_msgs/PoseStamped",
       });
 
-      this.actionClient(goalMessage);
+      pubTool.publish(goalMessage);
     },
 
     // pose Action
@@ -269,20 +330,11 @@ export default {
       publisher.subscribe((msg) => {
         this.zAixs = msg.position.z;
         if (f == 1) {
-
           if (this.zAixs > 1) this.actionClient(goalMessage);
           else this.$message('请抬高机械臂,末端高度为：' + this.zAixs);
         }
         f = 0
       })
-
-      // this.$nextTick(()=>{
-      //   if (this.zAixs > 1) this.actionClient(goalMessage);
-      //   else this.$message('请抬高机械臂,末端高度为：'+this.zAixs);
-      // })
-
-
-
     },
 
     // 开始第一次
@@ -380,10 +432,10 @@ export default {
       this.goal.on('result', (result) => {
         // this.$message(`result: ${JSON.stringify(result)}`);
         if (result.outcome == 'preempted') this.$message(`task over！`);
-        if (result.outcome == 'finished'){
+        if (result.outcome == 'finished') {
           this.isInstall = 0;
           this.$message.success(`task finished !`);
-        } 
+        }
         console.log('Final Result: ', result);
 
       });

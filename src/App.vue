@@ -128,24 +128,6 @@ export default {
         this.timer1 = null;
       }
     },
-    pduStatus(val, old) {
-      console.log('pduStatus');
-      if (val[17].value !== old[17].value) {
-        if (val[17].value == '1') {
-          this.pdu_sub.publish({ data: "inverter_off" });
-          this.pdu_sub.publish({ data: "chassis_off" });
-        }
-        else if (val[17].value == '0') {
-          this.pdu_sub.publish({ data: "inverter_on" });
-          this.pdu_sub.publish({ data: "chassis_on" });
-        }
-      }
-
-      if (val[19].value !== old[19].value) {
-        if (val[19].value == '1') this.launchSwitch(1, 'arm');
-        else if (val[19].value == '0') this.launchSwitch(0, 'arm');
-      }
-    }
   },
   
   methods: {
@@ -164,6 +146,7 @@ export default {
       var _this = this;
       this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
+      //  this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); // 服务器
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)
