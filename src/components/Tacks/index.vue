@@ -25,7 +25,7 @@
           
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="taskDialogVisible = false">{{$t('mains.cancel')}}</el-button>
+          <el-button  type="info" @click="taskDialogVisible = false">{{$t('mains.cancel')}}</el-button>
           <el-button type="primary" @click="taskDialogVisible = false">
             {{$t('mains.confirm')}}
           </el-button>

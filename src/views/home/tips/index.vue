@@ -102,7 +102,7 @@
         </div>
 
         <span slot="footer" class="dialog-footer">
-          <el-button @click="mapDialogVisible = false">{{$t('mains.cancel')}}</el-button>
+          <el-button  type="info" @click="mapDialogVisible = false">{{$t('mains.cancel')}}</el-button>
           <el-button type="primary" @click="map_name()">{{$t('mains.confirm')}}</el-button>
         </span>
       </el-dialog>

@@ -6,7 +6,7 @@
     <!-- <router-view /> -->
 
     <!-- 交互弹框 -->
-    <el-dialog :visible.sync="dialogVisible" width="80%" :before-close="handleClose" center :append-to-body='true'>
+    <el-dialog :visible.sync="dialogVisible" width="80%" :close-on-click-modal="false" :show-close="false" :before-close="handleClose" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
         <span style="font-weight: 1000; font-size: 48px;">{{$t('prompt.prompt')}}</span><br />
         <!-- <span style="font-weight: 800;font-size: 32px;" >Install QTY： 9</span><br/>

@@ -51,23 +51,21 @@
 
         <!-- 机械臂全局操控 -->
         <div class="armContent ll" v-if="gtoa" style="height: 168px;">
-          <span class="armin" style="width: 200px;" @click="control(0, -0.005)"><i style="color: #41ae3c;"
+          <span class="armin" style="width: 200px;" @click="control(0, -0.02)"><i style="color: #41ae3c;"
               class="el-icon-arrow-up"></i></span>
 
           <div style="display: flex;">
-            <span class="armin" @click="control(0.005)"><i style="color: #eb261a;"
-                class="el-icon-arrow-left"></i></span>
-            <span class="armin" @click="control(-0.005)"><i style="color: #eb261a;"
+            <span class="armin" @click="control(0.02)"><i style="color: #eb261a;" class="el-icon-arrow-left"></i></span>
+            <span class="armin" @click="control(-0.02)"><i style="color: #eb261a;"
                 class="el-icon-arrow-right"></i></span>
           </div>
-          <span class="armin" style="width: 200px;" @click="control(0, 0.005)"><i style="color: #41ae3c;"
+          <span class="armin" style="width: 200px;" @click="control(0, 0.02)"><i style="color: #41ae3c;"
               class="el-icon-arrow-down"></i></span>
 
         </div>
         <div v-if="gtoa">
-          <span class="armin ll" @click="control(0, 0, 0.005)"><i style="color: #15559a;"
-              class="el-icon-top"></i></span>
-          <span class="armin ll " @click="control(0, 0, -0.005)"><i style="color: #15559a;"
+          <span class="armin ll" @click="control(0, 0, 0.02)"><i style="color: #15559a;" class="el-icon-top"></i></span>
+          <span class="armin ll " @click="control(0, 0, -0.02)"><i style="color: #15559a;"
               class="el-icon-bottom"></i></span>
         </div>
         <div v-if="gtoa">
@@ -76,21 +74,7 @@
           <span class="armin ll " @click="control(0, 0, 0, 1)"><i style="transform: rotate(250deg)"
               class="el-icon-refresh-left"></i></span>
         </div>
-        <!-- <div class="armContent ll" v-if="gtoa" style="height: 168px;">
-          <span class="armin" style="width: 200px;" @click="control('Y', -10)"><i class="el-icon-arrow-up"></i></span>
 
-          <div style="display: flex;">
-            <span class="armin" @click="control('X', 10)"><i class="el-icon-arrow-left"></i></span>
-            <span class="armin" @click="control('X', -10)"><i class="el-icon-arrow-right"></i></span>
-          </div>
-          <span class="armin" style="width: 200px;" @click="control('Y', 10)"><i class="el-icon-arrow-down"></i></span>
-
-        </div>
-        <div v-if="gtoa">
-          <span class="armin ll" @click="control('Z', 10)"><i class="el-icon-top"></i></span>
-          <span class="armin ll " @click="control('Z', -10)"><i class="el-icon-bottom"></i></span>
-        </div>-->
-        <!-- -------- -->
 
         <!-- 机械臂轴控制 -->
         <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
@@ -135,7 +119,16 @@
 
     <!-- 可拖拽框 -->
     <div style="display: flex; justify-content: center;" v-if="isVideo || isThree">
-      <div class="win" v-if="urlVideo">
+
+
+      <div class="win" v-if="gtoa && isShow == 4">
+        <div class="totitle">
+          <span>{{ $t('install.model') }}</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
+        </div>
+        <Three v-if="isThree" style="width: 49%; height:44%;" />
+      </div>
+      <div class="win" v-if="urlVideo && !gtoa">
         <div class="totitle">
           <!-- <span>{{ $t('install.monitor') }}</span> -->
           <span>RGB</span>
@@ -145,7 +138,7 @@
         <img v-if="!urlVideo" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
         <img v-else :src="urlVideo" alt="" style="width: 100%; height:100%; overflow: hidden;">
       </div>
-      <div class="win" v-if="urlDep">
+      <div class="win" v-if="urlDep && !gtoa">
         <div class="totitle">
           <span>Depth</span>
           <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(2)"></i>
@@ -153,19 +146,12 @@
         <img v-if="!urlDep" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
         <img v-else :src="urlDep" alt="" style="width: 100%; height:100%; overflow: hidden;">
       </div>
-      <div class="win" v-if="urlRes">
+      <div class="win" v-if="urlRes && !gtoa">
         <div class="totitle">
           <span>Segmentation</span>
           <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(3)"></i>
         </div>
         <img :src="urlRes" alt="" style="width: 100%; height:100%; overflow: hidden;">
-      </div>
-      <div class="win" v-if="isThree">
-        <div class="totitle">
-          <span>{{ $t('install.model') }}</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
-        </div>
-        <Three v-if="isThree" style="width: 49%; height:44%;" />
       </div>
     </div>
   </div>
@@ -178,6 +164,7 @@ import { number } from "echarts";
 import { mapState } from "vuex";
 import Toast from "@/components/toast";
 import Three from '@/components/three/index_hc.vue'
+import { debounce } from 'lodash';
 
 export default {
   name: "home",
@@ -207,10 +194,10 @@ export default {
       publisher: null,
       pubTool: null,
       zAixs: 0,
-      dep_sub:null,
-      res_sub:null,
-      urlDep:null,
-      urlRes:null
+      dep_sub: null,
+      res_sub: null,
+      urlDep: null,
+      urlRes: null
     };
   },
   computed: {
@@ -261,10 +248,10 @@ export default {
     checkRos() {
       if (this.isShow) {
         this.videoRos();
-        // this.isThree = 1;
+        this.isThree = 1;
       }
       if (!this.ros.isConnected) {
-        // this.isShow = 0;
+        this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
     },
@@ -305,24 +292,37 @@ export default {
     //   this.actionClient(goalMessage);
     // },
     control(px = 0, py = 0, pz = 0, o = 0) {
-      if (o == 0) var qx = 0, qy = 0, qz = 0, qw = 1;
-      else var qx = 0, qy = 0, qz = 0.0043633 * o, qw = 0.9999905;
+      let qw, qz;
 
-      var goalMessage = new ROSLIB.Message({
+      if (this.ctof) {
+        px /= 4; py /= 4; pz /= 4;
+        qw = o === 0 ? 1 : 0.9999905;
+        qz = o === 0 ? 0 : 0.0043633 * o;
+      } else {
+        qw = o === 0 ? 1 : 0.9999619;
+        qz = o === 0 ? 0 : 0.0087265 * o;
+      }
+
+      const goalMessage = new ROSLIB.Message({
         header: { frame_id: 'tool0' },
         pose: {
           position: { x: px, y: py, z: pz },
-          orientation: { x: qx, y: qy, z: qz, w: qw }
+          orientation: { x: 0, y: 0, z: qz, w: qw }
         },
       });
-      var pubTool = new ROSLIB.Topic({
+
+      this.debouncedPublish(goalMessage);
+
+    },
+    debouncedPublish: debounce(function (goalMessage) {
+      const pubTool = new ROSLIB.Topic({
         ros: this.ros,
         name: "tool0_goal",
         messageType: "geometry_msgs/PoseStamped",
       });
 
       pubTool.publish(goalMessage);
-    },
+    }, 500),
 
     // pose Action
     poseAction(name) {
@@ -457,9 +457,13 @@ export default {
 
       this.goal.on('result', (result) => {
         // this.$message(`result: ${JSON.stringify(result)}`);
-        if (result.outcome == 'preempted') this.$message(`task over！`);
+        if (result.outcome == 'preempted') {
+          this.flexbeSwitch = true;
+          this.$message(`task over！`);
+        }
         if (result.outcome == 'finished') {
           this.isInstall = 0;
+          this.flexbeSwitch = true;
           this.$message.success(`task finished !`);
         }
         console.log('Final Result: ', result);
@@ -514,11 +518,11 @@ export default {
       this.video_sub.subscribe((msg) => {
         this.urlVideo = `data:image/jpeg;base64,${msg.data}`;
       })
-      this.dep_sub.subscribe(msg=>{
+      this.dep_sub.subscribe(msg => {
         // console.log(msg);
         this.urlDep = `data:image/jpeg;base64,${msg.data}`;
       })
-      this.res_sub.subscribe(msg=>{
+      this.res_sub.subscribe(msg => {
         // console.log(msg);
         if (!msg.data) this.urlRes = null;
         else this.urlRes = `data:image/jpeg;base64,${msg.data}`;
@@ -528,15 +532,15 @@ export default {
     // 停止video
     pauseRos(id) {
       this.isVideo = 0;
-      if(id == 1){
+      if (id == 1) {
         this.video_sub.unsubscribe();
         this.urlVideo = null;
       }
-      if(id == 2){
+      if (id == 2) {
         this.dep_sub.unsubscribe();
         this.urlDep = null;
       }
-      if(id == 3){
+      if (id == 3) {
         this.res_sub.unsubscribe();
         this.urlRes = null;
       }
