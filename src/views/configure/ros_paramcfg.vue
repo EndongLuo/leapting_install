@@ -393,7 +393,8 @@ export default {
   margin: 15px auto;
   padding: 30px 40px;
   border-radius: 5px;
-  background: #cccccc10;
+  // background: #cccccc10;
+  background: #cccccc30;
   // box-shadow: 5px 5px 20px #64646499;
   box-shadow: 0px 0px 10px #7f7f7f69;
   overflow: hidden;

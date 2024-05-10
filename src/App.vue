@@ -145,7 +145,7 @@ export default {
     connect() {
       var _this = this;
       this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
-      //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.25:9090" }); // 服务器
+      //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.40:9090" }); // 服务器
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); 
 
       this.$store.dispatch("ros/getRos", this.ros);
@@ -345,7 +345,7 @@ export default {
   background-size: cover;
 } */
 
-#app {
+/* #app { */
   /* position: absolute;
   top: 0;
   left: 0;
@@ -354,6 +354,6 @@ export default {
   background: rgba(255, 255, 255, 0.123);
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px); */
-  color: #dddddd;
-}
+  /* color: #dddddd; */
+/* } */
 </style>

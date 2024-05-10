@@ -251,7 +251,7 @@ export default {
         this.isThree = 1;
       }
       if (!this.ros.isConnected) {
-        this.isShow = 0;
+        // this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
     },
@@ -591,12 +591,15 @@ export default {
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      background: rgba(255, 255, 255, 0.103);
+      // background: rgba(0, 0, 0, 0.075);
+      background: #cccccc30;
+      // background: rgba(255, 255, 255, 0.103);
       border-radius: 5px;
       margin: 1px;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.164);
+        background: #cccccc50;
+        // background: rgba(255, 255, 255, 0.164);
       }
 
       i {
@@ -788,6 +791,7 @@ export default {
   width: 100%;
   height: 250px;
   z-index: 1000;
+  color: #e9e9e9;
 
   .el-icon-close {
     position: absolute;

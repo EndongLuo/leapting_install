@@ -101,11 +101,16 @@ export default {
 }
 
 .el-menu.el-menu--horizontal {
+  
   border-bottom: solid 1px #66b1ff !important;
+  a{
+    color: #0e0e0eec !important;
+  }
 }
 
 .el-menu--horizontal>.el-menu-item:not(.is-disabled):focus, .el-menu--horizontal>.el-menu-item:not(.is-disabled):hover, .el-menu--horizontal>.el-submenu .el-submenu__title:hover {
-    background-color: #ffffff85 !important;
+    background-color: #3994fc85 !important;
+    // background-color: #222222 !important;
 }
 .el-drawer__header {
   font-size: 18px;
