@@ -25,47 +25,13 @@ import { PCDLoader } from "three/examples/jsm/loaders/PCDLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import gsap from "gsap"; // 导入动画库
+import ROSLIB from "roslib/src/RosLib";
 let transforms = [
-  {
-    child_frame_id: "base_footprint",
-    transform: {
-      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-      translation: { y: 0.22960672748231425, x: -0.9876049593204282, z: -0.03639902950190259 }
-    }
-  },
   {
     child_frame_id: "base_arm",
     transform: {
       rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
       translation: { y: 0.22960672748231425, x: -0.9876049593204282, z: -0.33639902950190259 }
-    }
-  },
-  {
-    child_frame_id: "front_left_link",
-    transform: {
-      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-      translation: { y: 0.5707992483490187, x: 0.031302915974368864, z: -0.9818859503881016 }
-    }
-  },
-  {
-    child_frame_id: "back_left_link",
-    transform: {
-      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-      translation: { y: 0.9549944760017427, x: -1.6363529780620216, z: -1.0386257145271873 }
-    }
-  },
-  {
-    child_frame_id: "front_right_link",
-    transform: {
-      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-      translation: { y: -0.5691167115074701, x: -0.23973535871944426, z: -0.958943694277141 }
-    }
-  },
-  {
-    child_frame_id: "back_right_link",
-    transform: {
-      rotation: { y: -0.023953751815756746, x: -0.01263971765023428, z: -0.11616840271765423, w: 0.9928601903197148 },
-      translation: { y: -0.16770409839755607, x: -1.9033050219505354, z: -1.0160796349228087 }
     }
   },
   {
@@ -119,12 +85,22 @@ let transforms = [
   },
 ];
 
+// let list = {
+//   base: { color: 0x659e1b },
+//   front_left: { color: 0x58596b },
+//   front_right: { color: 0x58596b },
+//   back_left: { color: 0x58596b },
+//   back_right: { color: 0x58596b },
+//   base_arm: { color: 0xfd8d3a },
+//   link_1: { color: 0xfd8d3a },
+//   link_2: { color: 0xfd8d3a },
+//   link_3: { color: 0xfd8d3a },
+//   link_4: { color: 0xfd8d3a },
+//   link_5: { color: 0xfd8d3a },
+//   link_6: { color: 0xfd8d3a },
+//   tool: { color: 0x96999e },
+// };
 let list = {
-  base: { color: 0x659e1b },
-  front_left: { color: 0x58596b },
-  front_right: { color: 0x58596b },
-  back_left: { color: 0x58596b },
-  back_right: { color: 0x58596b },
   base_arm: { color: 0xfd8d3a },
   link_1: { color: 0xfd8d3a },
   link_2: { color: 0xfd8d3a },
@@ -143,6 +119,15 @@ const R = 50; //相机圆周运动的半径
 
 const group = new THREE.Object3D();
 group.position.set(0, 0);
+
+function poselist(link, item) {
+  // console.log(link, item);
+
+  var { rotation, translation } = item.transform;
+  if (!link.mash) return;
+  link.mash.position.set(translation.x, translation.y, translation.z);
+  link.mash.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+}
 export default {
   data() {
     return {
@@ -205,23 +190,29 @@ export default {
   // },
   methods: {
     rosAction() {
+
+      // var cancel = new ROSLIB.Topic({
+      //   ros: this.ros,
+      //   name: "/tf2_web_republisher/cancel",
+      //   messageType: "actionlib_msgs/GoalID",
+      // });
+
+      // cancel.publish({ id: ""})
+
+
       var actionClient = new ROSLIB.ActionClient({
         ros: this.ros,
         actionName: "/tf2_web_republisher/TFSubscriptionAction",
         serverName: "/tf2_web_republisher",
       });
 
+
       // create a goal
       var Goal = new ROSLIB.Goal({
         actionClient: actionClient,
         goalMessage: {
           source_frames: [
-            "base_footprint",
-            "base_arm",
-            "front_left_link",
-            "back_left_link",
-            "front_right_link",
-            "back_right_link",
+            'base_arm',
             "link_1",
             "link_2",
             "link_3",
@@ -230,7 +221,7 @@ export default {
             "link_6",
             "tool0",
           ],
-          target_frame: "map",
+          target_frame: "base_arm",
           angular_thres: 0.001,
           trans_thres: 0.001,
           rate: 10,
@@ -243,20 +234,9 @@ export default {
         // console.log("feedback: ", feedback);
         transforms = feedback.transforms;
         // if (transforms.length == 13) localStorage.setItem('p', JSON.stringify(transforms))
-        // console.log("transforms: ", transforms);
-        // var flag = 1;
-        // var dit = transforms[0]
-        // if (dit.child_frame_id == "base_footprint") {
+        console.log("transforms: ", transforms);
 
-        //   if (dit.transform.translation.y < -20 && dit.transform.translation.y > -40) flag = 2;
-        //   else if (dit.transform.translation.y < -40) flag = 3;
-        //   else flag = 1;
-        //   // console.log(flag);
-        //   this.carPosition = dit.transform.translation;
-        //   // console.log(this.carPosition);
 
-        //   this.$bus.$emit('ditChange', flag)
-        // }
 
       });
 
@@ -313,72 +293,29 @@ export default {
       // this.scene.add(plane);
       // this.scene.add(new THREE.GridHelper(20,20))
     },
+    // 清理group中的所有子对象
+    clearGroup() {
+      console.log(group.children.length);
+      while (group.children.length) {
+        group.remove(group.children[0]);
+      }
+    },
 
     // 加载STL模型
     loadSTL() {
+      this.clearGroup(); // 清理group中的所有子对象
       const loader = new STLLoader();
-      const PCDLoader1 = new PCDLoader(); //PCD加载器
-
-      const THIS = this
-      //加载PCD文件
-      // PCDLoader1.load('/three/map_filter.pcd',(points)=> {
-
-      // PCDLoader1.load('/three/GlobalMap.pcd', (points) => {
-      //   points.geometry.rotateZ((3.5 / 180) * Math.PI);//旋转模型，可调
-      //   // points.position.set(7.5,-23,17.5);//旋转模型，可调
-      //   points.position.set(6, -24, 18);//旋转模型，可调
-      //   points.material.color = new THREE.Color(0x9cceca); // 模型颜色
-      //   THIS.scene.add(points);
-      //   var middle = new THREE.Vector3();
-      //   // console.log(points);
-      //   // console.log(points.geometry);
-      //   points.geometry.computeBoundingBox();
-      //   points.geometry.boundingBox.getCenter(middle);
-      //   points.applyMatrix4(
-      //     new THREE.Matrix4().makeTranslation(
-      //       -middle.x,
-      //       -middle.y,
-      //       -middle.z
-      //     )
-      //   );
-      //   // 比例
-      //   var largestDimension = Math.max(
-      //     points.geometry.boundingBox.max.x,
-      //     points.geometry.boundingBox.max.y,
-      //     points.geometry.boundingBox.max.z
-      //   );
-      //   // THIS.camera.position.y = largestDimension * 3;//相机位置，可调
-      //   THIS.animate();
-      //   //轨道控制器 旋转、平移、缩放
-      //   THIS.controls = new OrbitControls(
-      //     THIS.camera,
-      //     THIS.renderer.domElement
-      //   );
-      //   THIS.controls.enableDamping = true;//旋转、平移开启阻尼
-      //   THIS.controls.addEventListener("change", THIS.render); // 监听鼠标、键盘事件 放大缩小等
-      // },
-      //   function (xhr) {
-      //     let load = xhr.loaded / xhr.total
-      //     if (load == 1) {
-      //       THIS.loading = false
-      //     }
-      //   },
-      //   function (error) {
-      //     console.log(error);
-      //   }
-      // );
-      this.scene.add(group);
-
-      this.ip = this.regexip(this.ros.socket.url)
       // 车子模型
+      // this.ip = this.regexip(this.ros.socket.url)
       // if (this.ip == '10.168.5.247') this.selectModel('hc', loader)
       // else if (this.ip == '10.168.5.246') this.selectModel('dkk', loader)
-      this.selectModel('hc', loader)
+      this.selectModel('hc', loader);
+
+      this.scene.add(group);
     },
 
     // 选择
     selectModel(name, loader) {
-
       for (const key in list) {
         loader.load(`/${name}/${key}.STL`, (geometry) => {
           const material = new THREE.MeshLambertMaterial({ color: list[key].color });
@@ -413,10 +350,10 @@ export default {
       // PerspectiveCamera( fov, aspect, near, far )
       this.camera = new THREE.PerspectiveCamera(70, k, 0.1, 1000);
       // this.camera.position.set(30, -30, 20); // 设置相机位置
-      this.camera.position.set(3, 3, 3); // 设置相机位置
+      this.camera.position.set(3, 3, 10); // 设置相机位置
       this.camera.up.set(0, 0, 1);
 
-      this.camera.lookAt({ x: 0, y: -30, z: 0 }); // 设置相机方向
+      this.camera.lookAt({ x: 0, y: -10, z: 0 }); // 设置相机方向
       this.scene.add(this.camera);
     },
     // 创建渲染器
@@ -433,38 +370,7 @@ export default {
 
     render() {
       requestAnimationFrame(this.render);
-
-      // if (!this.farScreen) {
-      //   angle += 0.0005;
-      //   this.camera.position.x = R * Math.cos(angle) + 15;
-      //   this.camera.position.y = R * Math.sin(angle) - 20;
-      //   // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
-      //   this.camera.lookAt(15, -20, 0);
-      // } else {
-      //   // console.log(this.carPosition);
-      //   // this.camera.position.x = this.carPosition.x+20;
-      //   // this.camera.position.y = this.carPosition.y-20;
-      //   // this.camera.position.z = 10;
-
-      //   // .position改变，重新执行lookAt(0,0,0)计算相机视线方向
-      //   this.camera.lookAt(this.carPosition.x, this.carPosition.y, 0);
-      // }
-      var that = this
-
-      function poselist(link, item) {
-        var { rotation, translation } = item.transform;
-        if (!link.mash || !that.ip) return;
-
-        if (link.mash == list.base.mash) link.mash.position.set(translation.x, translation.y, translation.z - 1);
-        else if (link.mash == list.tool.mash) link.mash.position.set(translation.x, translation.y, translation.z + 0.35);
-        else link.mash.position.set(translation.x, translation.y, translation.z);
-
-        //  link.mash.position.set(translation.x, translation.y, translation.z);
-
-        link.mash.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
-      }
       if (transforms) {
-        // console.log(transforms);
         transforms.forEach((item) => {
           var name = item.child_frame_id;
 
@@ -477,16 +383,9 @@ export default {
             case "link_5": poselist(list.link_5, item); break;
             case "link_6": poselist(list.link_6, item); break;
             case "tool0": poselist(list.tool, item); break;
-            case "base_footprint": poselist(list.base, item); break;
-            case "front_left_link": poselist(list.front_left, item); break;
-            case "front_right_link": poselist(list.front_right, item); break;
-            case "back_left_link": poselist(list.back_left, item); break;
-            case "back_right_link": poselist(list.back_right, item); break;
           }
         });
       }
-      // }
-
       this.renderer.render(this.scene, this.camera);
     },
     // 创建控件对象

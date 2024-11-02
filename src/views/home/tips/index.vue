@@ -2,90 +2,95 @@
   <div class="tips">
     <div class="left">
       <!-- 机器人id -->
-      <div >
+      <div>
 
         <div class="jqr_id" v-if="!ros.isConnected" style="color: #f56c6c;">
-          {{ $t('robot.notconnect') }} 
-          <el-button  @click="reconnect()" type="info" size="small">
-            {{ $t('robot.reconnect') }} 
+          {{ $t('robot.notconnect') }}
+          <el-button @click="reconnect()" type="info" size="small">
+            {{ $t('robot.reconnect') }}
           </el-button>
         </div>
-        
-        <div v-else class="left_info" @click="robotDialogVisible = true">
-          <div class="jqr_id" >{{regexip(ros.socket.url)}}</div>
 
-          <div class="jqr_id"  style="color: #34a94d;">{{ $t('robot.connected') }}</div>
-          
+        <div v-else class="left_info" @click="robotDialogVisible = true">
+          <div class="jqr_id">{{ regexip(ros.socket.url) }}</div>
+
+          <div class="jqr_id" style="color: #34a94d;">{{ $t('robot.connected') }}</div>
+
           <!-- 电池 -->
           <Battery :quantity="Number(battery_msg.soc)" />
 
           <!-- 信号 -->
           <Signal :num="Number(wifi.signal)" />
 
-          <div class="jqr_id">{{$t('robot.speed')}}：{{linear}} m/s</div>
-          <div class="jqr_id">{{angular}} rad/s</div>
+          <div style="margin-right: 10px">
+            <!-- {{ diagnosticstatus }} -->
+            <i class="el-icon-question" v-if="diagnosticstatus == 3" style="color: #f56c6c"></i>
+            <i class="el-icon-error" v-else-if="diagnosticstatus == 2" style="color: #f56c6c"></i>
+            <i class="el-icon-warning" v-else-if="diagnosticstatus == 1" style="color: #e6a23c"></i>
+            <i class="el-icon-success" v-else style="color: #67c23a"></i>
+          </div>
+          <div class="jqr_id">{{ $t('robot.speed') }}：{{ linear }} m/s</div>
+          <div class="jqr_id">{{ angular }} rad/s</div>
         </div>
       </div>
 
       <!-- 机器人弹框 -->
-      <el-dialog
-        :title="$t('robot.robotinfo')"
-        :visible.sync="robotDialogVisible"
-        width="80%"
-        center
-      >
+      <el-dialog :title="$t('robot.robotinfo')" :visible.sync="robotDialogVisible" width="80%" center :close-on-click-modal ="true">
         <!-- <span @click="allDevice">全部诊断>></span> -->
+
         <el-table stripe :data="robotData" border style="width: 100%">
-          <el-table-column type="selection" width="50"></el-table-column>
+          <!-- <el-table-column type="selection" width="50"></el-table-column> -->
           <el-table-column prop="id" :label="$t('robot.robotid')">
-            <div class="jqr_id">{{regexip(ros.socket.url)}}</div>
+            <div class="jqr_id">{{ regexip(ros.socket.url) }}</div>
           </el-table-column>
           <el-table-column prop="state" :label="$t('robot.connect')">
             <div class="jqr_id" v-if="ros.isConnected" style="color: #34a94d;">{{ $t('robot.connected') }}</div>
-            <div class="jqr_id" v-else style="color: #f56c6c;">{{ $t('robot.notconnect') }}</div></el-table-column>
-          <el-table-column
-            prop="battery"
-            :label="$t('robot.battery')"
-            sortable
-          >
-          <div class="signal-div">
-            <Battery :quantity="Number(battery_msg.soc)" rotate="-90" />
-            <div>
-                <i style="color: #64b4ff;">V </i>{{battery_msg.voltage}} V<br/>
+            <div class="jqr_id" v-else style="color: #f56c6c;">{{ $t('robot.notconnect') }}</div>
+          </el-table-column>
+          <el-table-column prop="battery" :label="$t('robot.battery')">
+            <div class="signal-div">
+              <Battery :quantity="Number(battery_msg.soc)" rotate="-90" />
+              <div>
+                <i style="color: #64b4ff;">V </i>{{ battery_msg.voltage }} V<br />
                 <i style="color:#64e1b4">A </i>{{ battery_msg.current }} A
               </div>
-          </div>
-        </el-table-column>
+            </div>
+          </el-table-column>
           <el-table-column prop="state" :label="$t('robot.network')">
             <div class="signal-div">
               <Signal :num="Number(wifi.signal)" />
               <div>
-                <i class="el-icon-sort-up" style="color: #64b4ff;"></i>{{ wifi.upspeed }}MB/s<br/>
+                <i class="el-icon-sort-up" style="color: #64b4ff;"></i>{{ wifi.upspeed }}MB/s<br />
                 <i class="el-icon-sort-down" style="color:#64e1b4"></i>{{ wifi.downspeed }}MB/s
               </div>
             </div>
-            
-            
           </el-table-column>
           <!-- <el-table-column prop="location" label="定位"></el-table-column> -->
         </el-table>
-        <!-- <div class="war_dialog">ID: 机器人001，电量：<Battery :quantity="10" />，连接状态：已连接</div>
-        <div class="war_dialog">ID: 机器人005，电量：<Battery :quantity="60" />，连接状态：未连接</div> -->
-        <span slot="footer" class="dialog-footer">
-          <el-button type="info" @click="robotDialogVisible = false">{{$t('mains.cancel')}}</el-button>
+        <!-- {{ diagnosticlist }} -->
+        <div style="display: flex; flex-wrap: wrap;justify-content: space-between">
+          <div v-for="(d, index) of diagnosticlist" :key="index"
+            style="border: #ebeef5 1px solid; margin: -1px 0 0 -1px; padding: 20px 50px; width: 50%; display: flex">
+            <span v-if="d.value == 3"><i class="el-icon-question" style="color: #f56c6c; margin-right: 10px"></i></span>
+            <span v-else-if="d.value == 2"><i class="el-icon-error"
+                style="color: #f56c6c; margin-right: 10px"></i></span>
+            <span v-else-if="d.value == 1"><i class="el-icon-warning"
+                style="color: #e6a23c; margin-right: 10px"></i></span>
+            <span v-else><i class="el-icon-success" style="color: #67c23a; margin-right: 10px"></i></span>
+            {{ d.key }}
+            <br />
+          </div>
+        </div>
+        <!-- <span slot="footer" class="dialog-footer">
+          <el-button type="info" @click="robotDialogVisible = false">{{ $t('mains.cancel') }}</el-button>
           <el-button type="primary" @click="robotDialogVisible = false">
-            {{$t('mains.confirm')}}
+            {{ $t('mains.confirm') }}
           </el-button>
-        </span>
+        </span> -->
       </el-dialog>
 
       <!-- 地图弹框 -->
-      <el-dialog
-        :title="$t('map.selectmap')"
-        :visible.sync="mapDialogVisible"
-        width="80%"
-        center
-      >
+      <el-dialog :title="$t('map.selectmap')" :visible.sync="mapDialogVisible" width="80%" center>
         <!-- 地图缩略图 -->
         <div class="demo-image__preview">
           <el-radio-group v-model="map2" text-color="#66b1ff" fill="#ebeef5">
@@ -98,19 +103,19 @@
                 </div>
               </el-radio-button>
             </div>
-            </el-radio-group>
+          </el-radio-group>
         </div>
 
         <span slot="footer" class="dialog-footer">
-          <el-button  type="info" @click="mapDialogVisible = false">{{$t('mains.cancel')}}</el-button>
-          <el-button type="primary" @click="map_name()">{{$t('mains.confirm')}}</el-button>
+          <el-button type="info" @click="mapDialogVisible = false">{{ $t('mains.cancel') }}</el-button>
+          <el-button type="primary" @click="map_name()">{{ $t('mains.confirm') }}</el-button>
         </span>
       </el-dialog>
     </div>
     <!-- 右边 -->
     <div class="right">
       <!-- 任务 -->
-        <Tasks />
+      <Tasks />
     </div>
   </div>
 </template>
@@ -126,8 +131,8 @@ export default {
   components: { Signal, Battery, Tasks, deviceDiagnostic },
   data() {
     return {
-      uname:{
-        robotinfo:this.$t('robot.robotinfo'),
+      uname: {
+        robotinfo: this.$t('robot.robotinfo'),
       },
       robotData: [
         {
@@ -158,42 +163,44 @@ export default {
       robotDialogVisible: false,
       taskDialogVisible: false,
       deviceDialogVisible: false,
-      battery_msg:{
-        current:'0',
-        voltage:'0',
-        soc:'60'
+      battery_msg: {
+        current: '0',
+        voltage: '0',
+        soc: '60'
       },
-      angular:'0',
-      linear:'0',
+      angular: '0',
+      linear: '0',
     };
   },
-  computed:{
+  computed: {
     ...mapState("ros", [
       'ros',
       "diagnostics",
       "Device",
-      'wifi'
+      'wifi',
+      'diagnosticlist',
+      'diagnosticstatus',
     ]),
     // ...mapGetters("ros", ['wifi']),
   },
   mounted() {
-    this.map_name(); 
+    this.map_name();
     this.battery();
     this.speed()
   },
   methods: {
 
-    reconnect(){
+    reconnect() {
       this.$message(`${this.$t('connPrompt.reconn')}...`);
       this.$bus.$emit('reconn')
     },
-    regexip(ws){
+    regexip(ws) {
       const regex = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
       return ws.match(regex)[1];
     },
 
     // 速度
-    speed(){
+    speed() {
       var rosTopic = new ROSLIB.Topic({
         ros: this.ros,
         name: "odom",
@@ -201,14 +208,14 @@ export default {
       });
 
       rosTopic.subscribe((msg) => {
-        this.angular = (msg.twist.twist.angular.z).toFixed(2);
-        this.linear = (msg.twist.twist.linear.x).toFixed(2);
+        this.angular = (msg.twist.twist.angular.z).toFixed(1);
+        this.linear = (msg.twist.twist.linear.x).toFixed(1);
         // console.log(msg.twist.twist.angular.z);
         // console.log(msg.twist.twist.linear.x);
       })
     },
     // 电池信息：电流 电压 电量
-    battery(){
+    battery() {
       var rosTopic = new ROSLIB.Topic({
         ros: this.ros,
         name: "diagnostics",
@@ -218,18 +225,18 @@ export default {
       rosTopic.subscribe((msg) => {
         // console.log(msg.status[0]);
         var b = msg.status[0]
-        if(b.message == 'battery_msg'){
+        if (b.message == 'battery_msg') {
           // console.log(b);
-          if(b.values[0]) this.battery_msg.current = b.values[0].value;
-          if(b.values[1]) this.battery_msg.voltage = b.values[1].value;
-          if(b.values[2]) this.battery_msg.soc = b.values[2].value;
+          if (b.values[0]) this.battery_msg.current = b.values[0].value;
+          if (b.values[1]) this.battery_msg.voltage = b.values[1].value;
+          if (b.values[2]) this.battery_msg.soc = b.values[2].value;
         }
       });
     },
     map_name() {
       var ls = localStorage.mapName || "map_ostream_display";
       this.map2 = this.map2 || ls
-      localStorage.setItem('mapName',this.map2);
+      localStorage.setItem('mapName', this.map2);
       // console.log(this.map2);
 
       this.$bus.$emit("mapName", ls);
@@ -250,9 +257,11 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .war_dialog {
   display: flex;
 }
+
 .jqr_id {
   display: inline-block;
   padding-right: 10px;
@@ -260,6 +269,7 @@ export default {
   font-weight: 600;
   // width: 80px;
 }
+
 @media screen and (max-width: 768px) {
   .tips {
     flex-wrap: wrap;
@@ -270,10 +280,12 @@ export default {
 .demo-image__preview {
   display: flex;
   justify-content: center;
+
   .el-radio-group {
     display: flex;
     align-content: flex-start;
     flex-wrap: wrap;
+
     .map_list {
       display: flex;
       flex-direction: column;
@@ -281,19 +293,23 @@ export default {
       align-items: center;
       margin: 5px;
     }
+
     .map_name {
       margin: 5px;
-      .iname{
+
+      .iname {
         margin-top: 5px;
       }
     }
   }
 }
-.signal-div{
+
+.signal-div {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .tips {
   // background-color: #f5f5f5;
   display: flex;
@@ -301,23 +317,28 @@ export default {
   font-size: 14px;
   cursor: pointer;
   flex-wrap: wrap;
+
   .left {
     // min-width: 500px;
     display: flex;
     align-items: center;
+
     .map {
       // margin: 0 0.5rem;
       cursor: pointer;
+
       &:hover {
         color: #409eff;
       }
     }
+
     .location {
       font-size: 20px;
       color: #fc7a01;
       margin: 0 5px;
     }
   }
+
   .right {
     display: flex;
     justify-content: center;
@@ -325,5 +346,12 @@ export default {
     overflow: hidden;
     flex-wrap: wrap;
   }
+}
+
+::v-deep .el-dialog__title {
+  line-height: 32px;
+  font-size: 24px;
+  color: #303133;
+  font-weight: 700;
 }
 </style>

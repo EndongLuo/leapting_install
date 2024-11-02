@@ -6,31 +6,42 @@
     <!-- <router-view /> -->
 
     <!-- 交互弹框 -->
-    <el-dialog :visible.sync="dialogVisible" width="80%" :close-on-click-modal="false" :show-close="false" :before-close="handleClose" center :append-to-body='true'>
+    <el-dialog :visible.sync="dialogVisible" width="80%" :close-on-click-modal="false" :show-close="false"
+      :before-close="handleClose" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
-        <span style="font-weight: 1000; font-size: 48px;">{{$t('prompt.prompt')}}</span><br />
+        <span style="font-weight: 1000; font-size: 48px;">{{ $t('prompt.prompt') }}</span><br />
         <!-- <span style="font-weight: 800;font-size: 32px;" >Install QTY： 9</span><br/>
         <span style="font-weight: 800;font-size: 32px;" >TIME：00:11:18</span> -->
         <span style="font-weight: 800;font-size: 32px;">{{ toptip }}</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button v-if="isback" type="info" @click="goBack" >{{$t('install.isback')}}</el-button>
-        <el-button v-else type="info" @click="putBack">{{$t('install.withdraw')}}</el-button>
-        <el-button type="primary" @click="installPV">{{$t('mains.confirm')}}</el-button>
+        <el-button v-if="isback" type="info" @click="goBack">{{ $t('install.isback') }}</el-button>
+        <el-button v-else type="info" @click="putBack">{{ $t('install.withdraw') }}</el-button>
+        <el-button type="primary" @click="installPV">{{ $t('mains.confirm') }}</el-button>
       </span>
     </el-dialog>
 
     <!-- 识别失败继续识别 -->
     <el-dialog :visible.sync="shibieDialog" width="80%" :before-close="handleClose" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
-        <span style="font-weight: 1000; font-size: 48px;">{{$t('prompt.prompt')}}</span><br />
-        <span style="font-weight: 800;font-size: 32px;">{{$t('identify.identifyFail')}}, {{$t('identify.identifyagain')}} ?</span>
+        <span style="font-weight: 1000; font-size: 48px;">{{ $t('prompt.prompt') }}</span><br />
+        <span style="font-weight: 800;font-size: 32px;">{{ $t('identify.identifyFail') }},
+          {{ $t('identify.identifyagain') }} ?</span>
         <span style="font-weight: 800;font-size: 28px; color: chocolate;">{{ shibiePick }}</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="shibiePV">{{$t('mains.confirm')}}</el-button>
+        <el-button type="primary" @click="shibiePV">{{ $t('mains.confirm') }}</el-button>
       </span>
     </el-dialog>
+
+    <!-- {{ isInstall }} -->
+    <div v-if="isInstall" class="tasking" :style="{ left: boxPosition }">
+      <!-- Task  -->
+      <!-- <el-button type="danger">Stop</el-button> -->
+      <img src="./views/home/img/stop.png" style="width: 72px; cursor: pointer;" alt="" @click="Stop()">
+      <div v-if="!isbask" @click="moveLeft" class="isback" > <i class="el-icon-d-arrow-right"></i> </div>
+      <div v-else @click="moveLeft" class="isbask" > <i class="el-icon-d-arrow-left"></i> </div>
+    </div>
   </div>
 </template>
 
@@ -49,7 +60,7 @@ export default {
       connected: false,
       ros: null,
       viewer: null,
-      ws: 'ws://10.168.5.252:9090',
+      ws: 'ws://10.168.5.158:9090',
       dialogVisible: false,
       shibieDialog: false,
       shibiePick: null,
@@ -58,13 +69,17 @@ export default {
       toptip: null,
       timer1: null,
       num: 1,
-      isback:false,
+      isback: false,
+      // isInstall:Number(localStorage.getItem('install'))||0,
+      boxPosition: '-17%', // 初始位置
+      isbask:false,
     };
   },
   computed: {
-    ...mapState('ros', ['pduStatus','taskState']),
+    ...mapState('ros', ['pduStatus', 'taskState','isInstall']),
   },
   mounted() {
+    
     this.connect();
 
     this.pdu_sub = new ROSLIB.Topic({
@@ -82,14 +97,15 @@ export default {
     this.shibie();
     this.dialog();
 
-    this.$bus.$on( 'reconn' , ()=>this.connect());
+    this.$bus.$on('reconn', () => this.connect());
 
     // if(this.gitParams) this.$message.success('git pull success!');
     // else this.$message.error('git pull failed!');
   },
   created() {
-    
+
     this.timer = setInterval(() => {
+      if (!this.connected) this.connect();
       var taskState = this.$store.state.ros.taskState;
       // console.log(this.ros.isConnected);
       if (!this.ros.isConnected) taskState = null;
@@ -129,8 +145,26 @@ export default {
       }
     },
   },
-  
+
   methods: {
+    Stop(){
+      this.$bus.$emit('getStop');
+    },
+    moveLeft() {
+      if(this.isbask) this.boxPosition = '-17%'; // 移动位置
+      else this.boxPosition = '0%'; // 移动位置
+      this.isbask = !this.isbask;
+    },
+    dialog() {
+      this.dialogVisible = true;
+    },
+    shibie() {
+      this.shibieDialog = true;
+    },
+    shibiePick(val) {
+      this.shibiePick = val;
+      this.isbask = !this.isbask;
+    },
     jishiqi() {
       this.$notify({
         title: '提示',
@@ -144,9 +178,10 @@ export default {
     },
     connect() {
       var _this = this;
-      this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
-      //  this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.40:9090" }); // 服务器
-      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.247:9090" }); 
+      // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.158:9090" }); 
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.2.247:9090" }); 
+      this.ros = new ROSLIB.Ros({ url: "ws://10.168.2.154:9090" }); 
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)
@@ -260,8 +295,8 @@ export default {
       })
     },
     // 最后一步是否前进 （不继续）
-    goBack(){
-      this.trig_pub.publish({frame_id:"goback"})
+    goBack() {
+      this.trig_pub.publish({ frame_id: "goback" })
       this.isback = false;
       this.dialogVisible = false;
     },
@@ -339,14 +374,54 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
+.tasking {
+  position: fixed;
+  bottom: 20%;
+  left: -100px;
+  width: 20%;
+  height: 100px;
+  display: flex;
+  padding: 10px;
+  /* justify-content: center; */
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to top right, #005bac, #5ec2c6);
+  color: #fff;
+  font-size: 24px;
+  border-radius: 0 10px 10px 0;
+  transition: left 0.5s;
+  .isback{
+    
+    height: 100px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.tasking .el-dialog__header {
+  padding: 0;
+}
+
+.tasking .el-dialog__body {
+  padding: 0;
+}
+
+.tasking .el-dialog__footer {
+  padding: 0;
+  text-align: center;
+  line-height: 100px;
+}
+
 /* body {
   background: url('../public/img/9.png') no-repeat; 
   background-size: cover;
 } */
 
 /* #app { */
-  /* position: absolute;
+/* position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -354,6 +429,6 @@ export default {
   background: rgba(255, 255, 255, 0.123);
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px); */
-  /* color: #dddddd; */
+/* color: #dddddd; */
 /* } */
 </style>

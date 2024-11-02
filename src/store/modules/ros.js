@@ -1,5 +1,5 @@
 import { dataProcess } from "@/utils/dataToTree";
-
+import Vue from 'vue';
 const actions = {
   // 获取ros
   getRos({ state, commit }, ros) {
@@ -8,9 +8,18 @@ const actions = {
     commit("JSONAGG", ros);
     commit("GETFLEXBEPARAMS", ros);
   },
+  getInstall({ state, commit }, { id }) {
+    // state.isInstall = isInstall;
+    commit("GETINSTALL", id)
+  }
 };
 
 const mutations = {
+  GETINSTALL(state, id) {
+    console.log('GETINSTALL', id);
+    state.isInstall = id;
+    // Vue.set(state, 'isInstall', id);
+  },
   // 订阅诊断信息
   GETDIAGNOSTIC(state, ros) {
     var rosTopic = new ROSLIB.Topic({
@@ -21,15 +30,25 @@ const mutations = {
 
     rosTopic.subscribe((msg) => {
       // console.log(msg.status);
+
+      var { status, list } = diagnostics(msg);
+      // console.log(status, list);
+
+      // state.diagnosticlist = list;
+      // state.diagnosticstatus = status;
+      Vue.set(state, 'diagnosticstatus', status);
+      Vue.set(state, 'diagnosticlist', list);
+
       state.diagnostics = msg.status;
-      var pdu = state.diagnostics.find(itme=>itme.name=='/DEVICES/PDU/rosbridge_pdu: Hardware status')
+      var pdu = state.diagnostics.find(itme => itme.name == '/DEVICES/PDU/rosbridge_pdu: Hardware status')
       if (!pdu) return
-      
-      state.pduStatus = pdu.values.map(item=>{
-        item.key = item.key.replaceAll("_"," ");
+
+      state.pduStatus = pdu.values.map(item => {
+        item.key = item.key.replaceAll("_", " ");
         return item
-      }).filter(item => item.key.indexOf('fuse')==-1);
-      // console.log(state.pduStatus);
+      }).filter(item => item.key.indexOf('fuse') == -1);
+
+
     });
   },
 
@@ -47,8 +66,8 @@ const mutations = {
       var diag = JSON.parse(msg.frame_id);
       // var diag = msg;
       // console.log(diag);
-      
-      
+
+
       var wifi = diag.SYSTEM.underling.NET.underling.wifi.message;
       // console.log(wifi);
       let wifiobj = {};
@@ -59,17 +78,17 @@ const mutations = {
         let [key, value] = pair.split(/:\s*/);
         wifiobj[key] = value;
       });
-      wifiobj.downspeed/=8;
-      wifiobj.upspeed/=8;
-      
+      wifiobj.downspeed /= 8;
+      wifiobj.upspeed /= 8;
+
       // console.log(wifiobj);
 
-      if(!diag) return
+      if (!diag) return
       // console.log(diag);
       try {
         var taskState = diag.STATUS.underling.TASK.underling.STATE.underling.task_state.message
       } catch (error) {
-        var taskState = {}
+        var taskState = undefined
       }
       // console.log(taskState);
       // console.log(ros.isConnected);
@@ -77,9 +96,10 @@ const mutations = {
       state.taskState = taskState;
 
       state.wifi = wifiobj;
+      // Vue.set(state.wifi, 'downspeed', wifiobj.downspeed);
+      // Vue.set(state.wifi, 'upspeed', wifiobj.upspeed);
+      // Vue.set(state, 'wifi', wifiobj);
       state.jsonAgg = dataProcess(diag);
-
-
     });
   },
 
@@ -98,9 +118,9 @@ const mutations = {
 
     rosTopic.subscribe((msg) => {
       var data = JSON.parse(msg.data);
-      
+
       state.flexbeParams = data.flexbe;
-      if(data.git){
+      if (data.git) {
         state.gitParams = data.git.res;
       }
     })
@@ -111,8 +131,10 @@ const mutations = {
 const state = {
   ros: null,
   diagnostics: [],
+  diagnosticlist: [],
+  diagnosticStatus: 0,
   flexbeParams: {},
-  gitParams:false,
+  gitParams: false,
   elTabPane: [
     {
       id: "0",
@@ -146,165 +168,166 @@ const state = {
     },
   ],
   Device: {
-      ALGORITHM: {
-        hardware_id: "",
-        level: 3,
-        message: "Stale",
-        name: "ALGORITHM",
-        underling: {
-          LOCALIZATION: {
-            hardware_id: "",
-            level: 3,
-            message: "Stale",
-            name: "LOCALIZATION",
-          },
+    ALGORITHM: {
+      hardware_id: "",
+      level: 3,
+      message: "Stale",
+      name: "ALGORITHM",
+      underling: {
+        LOCALIZATION: {
+          hardware_id: "",
+          level: 3,
+          message: "Stale",
+          name: "LOCALIZATION",
         },
       },
-      DEVICES: {
-        hardware_id: "",
-        level: 3,
-        message: "Stale",
-        name: "DEVICES",
-        underling: {
-          DRIVE: { hardware_id: "", level: 3, message: "Stale", name: "DRIVE" },
-          IMU: { hardware_id: "", level: 3, message: "Stale", name: "IMU" },
-          LASER: { hardware_id: "", level: 3, message: "Stale", name: "LASER" },
-          PLC: { hardware_id: "", level: 3, message: "Stale", name: "PLC" },
-        },
+    },
+    DEVICES: {
+      hardware_id: "",
+      level: 3,
+      message: "Stale",
+      name: "DEVICES",
+      underling: {
+        DRIVE: { hardware_id: "", level: 3, message: "Stale", name: "DRIVE" },
+        IMU: { hardware_id: "", level: 3, message: "Stale", name: "IMU" },
+        LASER: { hardware_id: "", level: 3, message: "Stale", name: "LASER" },
+        PLC: { hardware_id: "", level: 3, message: "Stale", name: "PLC" },
       },
-      STATUS: {
-        hardware_id: "",
-        level: 2,
-        message: "Error",
-        name: "STATUS",
-        underling: {
-          ACTION: { hardware_id: "", level: 0, message: "OK", name: "ACTION" },
-          ESTOP: {
-            hardware_id: "",
-            level: 3,
-            message: "Stale",
-            name: "ESTOP",
-            underling: {
-              BASE: {
-                hardware_id: "",
-                level: 3,
-                message: "Stale",
-                name: "BASE",
-              },
+    },
+    STATUS: {
+      hardware_id: "",
+      level: 2,
+      message: "Error",
+      name: "STATUS",
+      underling: {
+        ACTION: { hardware_id: "", level: 0, message: "OK", name: "ACTION" },
+        ESTOP: {
+          hardware_id: "",
+          level: 3,
+          message: "Stale",
+          name: "ESTOP",
+          underling: {
+            BASE: {
+              hardware_id: "",
+              level: 3,
+              message: "Stale",
+              name: "BASE",
             },
           },
-          MAINTENANCE: {
-            hardware_id: "",
-            level: 0,
-            message: "OK",
-            name: "MAINTENANCE",
-          },
-          MOTION: {
-            hardware_id: "",
-            level: 3,
-            message: "Stale",
-            name: "MOTION",
-            underling: {
-              BACK: {
-                hardware_id: "",
-                level: 3,
-                message: "Stale",
-                name: "BACK",
-              },
-              LEFT: {
-                hardware_id: "",
-                level: 3,
-                message: "Stale",
-                name: "LEFT",
-              },
-              RIGHT: {
-                hardware_id: "",
-                level: 3,
-                message: "Stale",
-                name: "RIGHT",
-              },
+        },
+        MAINTENANCE: {
+          hardware_id: "",
+          level: 0,
+          message: "OK",
+          name: "MAINTENANCE",
+        },
+        MOTION: {
+          hardware_id: "",
+          level: 3,
+          message: "Stale",
+          name: "MOTION",
+          underling: {
+            BACK: {
+              hardware_id: "",
+              level: 3,
+              message: "Stale",
+              name: "BACK",
+            },
+            LEFT: {
+              hardware_id: "",
+              level: 3,
+              message: "Stale",
+              name: "LEFT",
+            },
+            RIGHT: {
+              hardware_id: "",
+              level: 3,
+              message: "Stale",
+              name: "RIGHT",
             },
           },
-          START: {
-            hardware_id: "",
-            level: 3,
-            message: "Stale",
-            name: "START",
-            underling: {
-              RELAY: {
-                hardware_id: "",
-                level: 3,
-                message: "Stale",
-                name: "RELAY",
-              },
+        },
+        START: {
+          hardware_id: "",
+          level: 3,
+          message: "Stale",
+          name: "START",
+          underling: {
+            RELAY: {
+              hardware_id: "",
+              level: 3,
+              message: "Stale",
+              name: "RELAY",
             },
           },
-          TASK: {
-            hardware_id: "",
-            level: 0,
-            message: "OK",
-            name: "TASK",
-            underling: {
-              BEHAVIOR: {
-                hardware_id: "",
-                level: 0,
-                message: "OK",
-                name: "BEHAVIOR",
-                underling: {
-                  "task behavior": {
-                    hardware_id: "",
-                    level: 0,
-                    message: "reboot test:FINISHED",
-                    name: "task behavior",
-                  },
-                },
-              },
-              STATE: {
-                hardware_id: "",
-                level: 0,
-                message: "OK",
-                name: "STATE",
-                underling: {
-                  "task state": {
-                    hardware_id: "",
-                    level: 0,
-                    message: ":reboot test",
-                    name: "task state",
-                  },
+        },
+        TASK: {
+          hardware_id: "",
+          level: 0,
+          message: "OK",
+          name: "TASK",
+          underling: {
+            BEHAVIOR: {
+              hardware_id: "",
+              level: 0,
+              message: "OK",
+              name: "BEHAVIOR",
+              underling: {
+                "task behavior": {
+                  hardware_id: "",
+                  level: 0,
+                  message: "reboot test:FINISHED",
+                  name: "task behavior",
                 },
               },
             },
-          },
-        },
-      },
-      SYSTEM: {
-        hardware_id: "",
-        level: 0,
-        message: "OK",
-        name: "SYSTEM",
-        underling: {
-          NET: {
-            hardware_id: "",
-            level: 0,
-            message: "OK",
-            name: "NET",
-            underling: {
-              wifi: {
-                hardware_id: "",
-                level: 0,
-                message: "ssid:Leapting_Guest, signal:-58, upspeed:14.4, downspeed:14.8",
-                name: "wifi",
+            STATE: {
+              hardware_id: "",
+              level: 0,
+              message: "OK",
+              name: "STATE",
+              underling: {
+                "task state": {
+                  hardware_id: "",
+                  level: 0,
+                  message: ":reboot test",
+                  name: "task state",
+                },
               },
             },
           },
         },
       },
     },
+    SYSTEM: {
+      hardware_id: "",
+      level: 0,
+      message: "OK",
+      name: "SYSTEM",
+      underling: {
+        NET: {
+          hardware_id: "",
+          level: 0,
+          message: "OK",
+          name: "NET",
+          underling: {
+            wifi: {
+              hardware_id: "",
+              level: 0,
+              message: "ssid:Leapting_Guest, signal:-58, upspeed:14.4, downspeed:14.8",
+              name: "wifi",
+            },
+          },
+        },
+      },
+    },
+  },
   classifyDiagnostics: [],
   mapName: "",
   jsonAgg: [],
   wifi: {},
-  pduStatus:[],
+  pduStatus: [],
+  isInstall: Number(localStorage.getItem('isInstall')) || 0,
 };
 
 const getters = {
@@ -346,6 +369,25 @@ const getters = {
     // state.classifyDiagnostics = dataProcess(data1);
   },
 };
+
+function diagnostics(msg) {
+  const targetSet = new Set(["/Devices", "/NetWork", "/STATUS", "/DEVICES", "/SYSTEM", '/ALGORITHM', '/Other']);
+  const statusMap = { "Stale": 3, "Error": 2, "Warning": 1, "OK": 0 };
+  var status = 0;
+  const list = [];
+
+  msg.status.forEach(item => {
+    if (targetSet.has(item.name)) {
+      const processedValues = item.values.map(valueItem => {
+        const mapValue = statusMap[valueItem.value] ?? -1;
+        status = Math.max(status, mapValue);
+        return { ...valueItem, value: mapValue };
+      });
+      list.push(...processedValues);
+    }
+  });
+  return { status, list };
+}
 
 export default {
   namespaced: true,

@@ -37,58 +37,63 @@
         <Telecontrol />
       </div>
       <div v-else-if="isShow == 4" class="arml2">
-        <div>
-          <!-- <el-switch v-model="gtoa" active-color="#ff4949" inactive-color="#13ce66"> </el-switch> -->
-          <span class="armin ll" v-if="gtoa" @click="gtoa = false">{{ $t('install.axis') }}</span>
-          <span class="armin ll" v-else @click="gtoa = true">{{ $t('install.global') }}</span>
-          <span class="armin ll" v-if="ctof" @click="ctof = false">{{ $t('install.majoradjust') }}</span>
-          <span class="armin ll" v-else @click="ctof = true">{{ $t('install.minoradjust') }}</span>
-        </div>
-        <div>
-          <span class="armin ll" @click="withDraw('WithdrawPVM')">{{ $t('install.withdraw') }}</span>
-          <span class="armin ll" @click="withDraw('StartInstallCheck')">{{ $t('install.check') }}</span>
-        </div>
-
-        <!-- 机械臂全局操控 -->
-        <div class="armContent ll" v-if="gtoa" style="height: 168px;">
-          <span class="armin" style="width: 200px;" @click="control(0, -0.02)"><i style="color: #41ae3c;"
-              class="el-icon-arrow-up"></i></span>
-
-          <div style="display: flex;">
-            <span class="armin" @click="control(0.02)"><i style="color: #eb261a;" class="el-icon-arrow-left"></i></span>
-            <span class="armin" @click="control(-0.02)"><i style="color: #eb261a;"
-                class="el-icon-arrow-right"></i></span>
+        <div style="color: #fff;">{{gtoa ? $t('install.global') : $t('install.axis') }}：{{ctof ? $t('install.minoradjust') : $t('install.majoradjust') }}</div>
+        <div style="display: flex; align-items: center; justify-content: center;">
+          <div>
+            <!-- <el-switch v-model="gtoa" active-color="#ff4949" inactive-color="#13ce66"> </el-switch> -->
+            <span class="armin ll" v-if="gtoa" @click="gtoa = false">{{ $t('install.axis') }}</span>
+            <span class="armin ll" v-else @click="gtoa = true">{{ $t('install.global') }}</span>
+            <span class="armin ll" v-if="!ctof" @click="ctof = true">{{ $t('install.minoradjust') }}</span>
+            <span class="armin ll" v-else @click="ctof = false">{{ $t('install.majoradjust') }}</span>
           </div>
-          <span class="armin" style="width: 200px;" @click="control(0, 0.02)"><i style="color: #41ae3c;"
-              class="el-icon-arrow-down"></i></span>
+          <div>
+            <span class="armin ll" @click="withDraw('WithdrawPVM')">{{ $t('install.withdraw') }}</span>
+            <span class="armin ll" @click="withDraw('StartInstallCheck')">{{ $t('install.check') }}</span>
+          </div>
 
-        </div>
-        <div v-if="gtoa">
-          <span class="armin ll" @click="control(0, 0, 0.02)"><i style="color: #15559a;" class="el-icon-top"></i></span>
-          <span class="armin ll " @click="control(0, 0, -0.02)"><i style="color: #15559a;"
-              class="el-icon-bottom"></i></span>
-        </div>
-        <div v-if="gtoa">
-          <span class="armin ll" @click="control(0, 0, 0, -1)"><i style="transform: rotate(100deg)"
-              class="el-icon-refresh-right"></i></span>
-          <span class="armin ll " @click="control(0, 0, 0, 1)"><i style="transform: rotate(250deg)"
-              class="el-icon-refresh-left"></i></span>
-        </div>
+          <!-- 机械臂全局操控 -->
+          <div class="armContent ll" v-if="gtoa" style="height: 168px;">
+            <span class="armin" style="width: 200px;" @click="control(0, -0.05)"><i style="color: #41ae3c;"
+                class="el-icon-arrow-up"></i></span>
+
+            <div style="display: flex;">
+              <span class="armin" @click="control(0.05)"><i style="color: #eb261a;"
+                  class="el-icon-arrow-left"></i></span>
+              <span class="armin" @click="control(-0.05)"><i style="color: #eb261a;"
+                  class="el-icon-arrow-right"></i></span>
+            </div>
+            <span class="armin" style="width: 200px;" @click="control(0, 0.05)"><i style="color: #41ae3c;"
+                class="el-icon-arrow-down"></i></span>
+
+          </div>
+          <div v-if="gtoa">
+            <span class="armin ll" @click="control(0, 0, 0.05)"><i style="color: #15559a;"
+                class="el-icon-top"></i></span>
+            <span class="armin ll " @click="control(0, 0, -0.05)"><i style="color: #15559a;"
+                class="el-icon-bottom"></i></span>
+          </div>
+          <div v-if="gtoa">
+            <span class="armin ll" @click="control(0, 0, 0, -1)"><i style="transform: rotate(100deg)"
+                class="el-icon-refresh-right"></i></span>
+            <span class="armin ll " @click="control(0, 0, 0, 1)"><i style="transform: rotate(250deg)"
+                class="el-icon-refresh-left"></i></span>
+          </div>
 
 
-        <!-- 机械臂轴控制 -->
-        <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
-          <span class="armin" @mousedown="arm(i, 0.1)" @touchstart.prevent="arm(i, 0.1)"><i
-              class="el-icon-arrow-up"></i></span>
-          <span class="armin">{{ i }}</span>
-          <span class="armin" @mousedown="arm(i, -0.1)" @touchstart.prevent="arm(i, -0.1)"><i
-              class="el-icon-arrow-down"></i></span>
-        </div>
+          <!-- 机械臂轴控制 -->
+          <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
+            <span class="armin" @mousedown="arm(i, 0.1)" @touchstart.prevent="arm(i, 0.1)"><i
+                class="el-icon-arrow-up"></i></span>
+            <span class="armin">{{ i }}</span>
+            <span class="armin" @mousedown="arm(i, -0.1)" @touchstart.prevent="arm(i, -0.1)"><i
+                class="el-icon-arrow-down"></i></span>
+          </div>
 
-        <div>
-          <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
-          <span class="armin ll" id="stop" @click="Stop()">{{ $t('install.stop')
-            }}</span>
+          <div>
+            <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
+            <span class="armin ll" id="stop" @click="Stop()">{{ $t('install.stop')
+              }}</span>
+          </div>
         </div>
       </div>
       <!-- 安装 -->
@@ -154,6 +159,17 @@
         <img :src="urlRes" alt="" style="width: 100%; height:100%; overflow: hidden;">
       </div>
     </div>
+
+    <!-- 急停 -->
+    <div class="estop">
+      <div class="outer">
+        <div class="insart"></div>
+        <img src="./img/estop.png" alt="">
+      </div>
+      <!-- <div v-if="!isEstop" @click="estop('estop_on', true)">急停</div>
+      <div v-else @click="estop('estop_off', false)">取消急停</div> -->
+    </div>
+
   </div>
 </template>
 
@@ -171,15 +187,16 @@ export default {
   components: { Tips, Telecontrol, Toast, Three },
   data() {
     return {
+      isEstop: false,
       gtoa: false, // 全局-轴 （机械臂）
       ctof: false, // 粗调-微调（机械臂）
       isShow: 0,
-      isInstall: 0,
+      // isInstall:Number(localStorage.getItem('install'))|| 0,
       isVideo: 0,
       isThree: 0,
       urlVideo: null,
       video_sub: null,
-      flexbeSwitch: true,
+      flexbeSwitch: JSON.parse(localStorage.getItem('flexbeSwitch')) || true,
       pvm_num: 50,
       goal: null,
       goon: 0,
@@ -201,9 +218,25 @@ export default {
     };
   },
   computed: {
-    ...mapState("ros", ["ros", 'flexbeParams']),
+    ...mapState("ros", ["ros", 'flexbeParams', 'isInstall']),
+    // isShow(){
+    //   if(this.isShow) this.$store.dispatch('ros/getInstall',{id:0})
+    // }
   },
+  // watch:{
+  //   isShow(val){
+  //     if(val){
+  //       console.log('watch isShow',val);
+  //       this.$store.dispatch('ros/getInstall',{id:0})
+  //     }
+  //   }
+  // },
   mounted() {
+    this.$bus.$on('getStop', () => {
+      this.Stop()
+    });
+    this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
+    // console.log(JSON.parse(localStorage.getItem('flexbeSwitch')),this.flexbeSwitch);
     this.avoidanceEcho();
 
     this.publisher = new ROSLIB.Topic({
@@ -236,6 +269,24 @@ export default {
     });
   },
   methods: {
+    // 机械臂和底盘急停
+    estop(arm, base) {
+      // 机械臂急停
+      const pubEstop = new ROSLIB.Topic({
+        ros: this.ros,
+        name: "plc24_request",
+        messageType: "std_msgs/String",
+      });
+      // 底盘急停
+      const pubEstop2 = new ROSLIB.Topic({
+        ros: this.ros,
+        name: "estop",
+        messageType: "std_msgs/Bool",
+      });
+      pubEstop.publish({ data: arm });
+      pubEstop2.publish({ data: base });
+      this.isEstop = base;
+    },
     arm(axle, rot = 0) {
       if (rot && this.ctof) rot /= 5;
       console.log(axle, rot);
@@ -267,35 +318,12 @@ export default {
         return { arg_keys: [], arg_values: [] };
       }
     },
-    // test
-    // test() {
-    //   var {arg_keys, arg_values} = this.filterParam('test_flexbe_param2');
-    //   var goalMessage = new ROSLIB.Message({
-    //     behavior_name: 'test_flexbe_param2',
-    //     arg_keys,
-    //     arg_values
-    //   });
-    //   console.log(goalMessage);
-
-    //   this.actionClient(goalMessage);
-    // },
-
-    // control
-    // control(axis, offset) {
-    //   if (offset && this.ctof) offset /= 5;
-    //   var goalMessage = new ROSLIB.Message({
-    //     behavior_name: 'TransManipulation',
-    //     arg_keys: ['axis', 'offset'],
-    //     arg_values: [`${axis}`, `${offset}`]
-    //   });
-
-    //   this.actionClient(goalMessage);
-    // },
+    // 控制
     control(px = 0, py = 0, pz = 0, o = 0) {
       let qw, qz;
 
       if (this.ctof) {
-        px /= 4; py /= 4; pz /= 4;
+        px /= 5; py /= 5; pz /= 5;
         qw = o === 0 ? 1 : 0.9999905;
         qz = o === 0 ? 0 : 0.0043633 * o;
       } else {
@@ -310,6 +338,9 @@ export default {
           orientation: { x: 0, y: 0, z: qz, w: qw }
         },
       });
+
+      console.log(goalMessage);
+
 
       this.debouncedPublish(goalMessage);
 
@@ -368,11 +399,14 @@ export default {
       // 暂停继续
       if (this.goon) { this.Pause(); return; }
       this.flexbeSwitch = false;
+      localStorage.setItem('flexbeSwitch', false)
       // this.isInstall = id;
       // if (this.isInstall) this.$message(this.$t('prompt.switchMode'));
       if (id == 1) {
         // this.isShow = id;
-        this.isInstall = id;
+        // this.isInstall = id;
+        this.$store.dispatch('ros/getInstall', { id })
+        localStorage.setItem('isInstall', id);
         var isauto = id == 1 ? false : true;
         this.$message.success('Start Installation.');
         this.CommInstall(isauto, 50);
@@ -385,7 +419,9 @@ export default {
           inputErrorMessage: this.$t('prompt.inputErrorMessage')
         }).then(({ value }) => {
           // this.isShow = id;
-          this.isInstall = id;
+          // this.isInstall = id;
+          this.$store.dispatch('ros/getInstall', { id })
+          localStorage.setItem('isInstall', id);
           var auto = id == 1 ? false : true;
 
           this.$message.success('success: ' + value);
@@ -394,8 +430,11 @@ export default {
           console.log(Number(value));
           this.CommInstall(auto, value);
         }).catch(() => {
-          this.isInstall = 0;
+          // this.isInstall = 0;
+          this.$store.dispatch('ros/getInstall', { id: 0 })
+          localStorage.setItem('isInstall', 0);
           this.flexbeSwitch = true;
+          localStorage.setItem('flexbeSwitch', true)
           this.isShow = 0;
           this.isVideo = 0;
           this.isThree = 0;
@@ -459,11 +498,15 @@ export default {
         // this.$message(`result: ${JSON.stringify(result)}`);
         if (result.outcome == 'preempted') {
           this.flexbeSwitch = true;
+          localStorage.setItem('flexbeSwitch', true)
           this.$message(`task over！`);
         }
         if (result.outcome == 'finished') {
-          this.isInstall = 0;
+          // this.isInstall = 0;
+          this.$store.dispatch('ros/getInstall', { id: 0 })
+          localStorage.setItem('isInstall', 0);
           this.flexbeSwitch = true;
+          localStorage.setItem('flexbeSwitch', true)
           this.$message.success(`task finished !`);
         }
         console.log('Final Result: ', result);
@@ -485,13 +528,15 @@ export default {
       if (this.flexbeSwitch) {
         this.$message.success('Go on.');
         this.flexbeSwitch = false;
+        localStorage.setItem('flexbeSwitch', false)
       }
       else {
         this.$message('Pause');
         this.flexbeSwitch = true;
+        localStorage.setItem('flexbeSwitch', true)
       }
 
-      console.log(this.flexbeSwitch);
+      console.log('Pause', this.flexbeSwitch);
       pause_sub.publish({ "data": this.flexbeSwitch });
     },
     // 停止
@@ -503,8 +548,11 @@ export default {
       });
       stop_sub.publish({});
       this.$message.success('Installation Stopped.');
-      this.isInstall = 0;
+      // this.isInstall = 0;
+      this.$store.dispatch('ros/getInstall', { id: 0 })
+      localStorage.setItem('isInstall', 0);
       this.flexbeSwitch = true;
+      localStorage.setItem('flexbeSwitch', true)
       // this.isVideo = 0;
       // this.isThree = 0;
       // this.isShow = 0;
@@ -563,6 +611,51 @@ export default {
 </script>
 
 <style scoped lang="less">
+.estop {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  position: fixed;
+  top: 45%;
+  left: 0;
+  // background: #F56C6C;
+  z-index: 9999;
+  cursor: pointer;
+
+  .outer {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+
+    .insart {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      // background-color: #67C23A;
+      background-color: #E6A23C;
+      z-index: 1000;
+    }
+
+    img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 5000;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #000000a6;
+      overflow: hidden;
+      transition: box-shadow 0.8s ease;
+
+      &:hover {
+        box-shadow: 5px 5px 10px #000000a6;
+      }
+    }
+  }
+
+}
+
 .home {
   // position: relative;
   font-size: 0.5rem;
@@ -664,11 +757,11 @@ export default {
 .arml2 {
   height: 240px;
   display: flex;
-  flex-wrap: wrap;
-  align-content: center;
+  margin: 10px;
+  font-weight: 700;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 10px;
 
   .ll {
     border-radius: 5px;

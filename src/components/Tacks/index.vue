@@ -11,11 +11,12 @@
         :visible.sync="taskDialogVisible"
         width="80%"
         center
+        :close-on-click-modal ="true"
       >
         <div style="height: 280px; overflow-y: scroll; ">
           <div class="tasklist" style="font-weight: 700; margin: 10px 100px 10px 70px"> 
           <span>{{$t('task.task')}}</span><span>{{$t('task.step')}}</span> <span>Time</span></div>
-          <div class="tasklist" v-for="l in list">
+          <div class="tasklist" v-for="l,i in list" :key="i">
           <!-- <div v-for="l in list"> -->
             <!-- <div v-for=" l1 in l"> {{ l1 }} </div> -->
             <span class="li-in">{{ l[1] }}</span>
@@ -24,12 +25,12 @@
           </div>
           
         </div>
-        <span slot="footer" class="dialog-footer">
+        <!-- <span slot="footer" class="dialog-footer">
           <el-button  type="info" @click="taskDialogVisible = false">{{$t('mains.cancel')}}</el-button>
           <el-button type="primary" @click="taskDialogVisible = false">
             {{$t('mains.confirm')}}
           </el-button>
-        </span>
+        </span> -->
       </el-dialog>
   </div>
   
