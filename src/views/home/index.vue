@@ -37,7 +37,8 @@
         <Telecontrol />
       </div>
       <div v-else-if="isShow == 4" class="arml2">
-        <div style="color: #fff;">{{gtoa ? $t('install.global') : $t('install.axis') }}：{{ctof ? $t('install.minoradjust') : $t('install.majoradjust') }}</div>
+        <div style="color: #fff;">{{ gtoa ? $t('install.global') : $t('install.axis') }}：{{ ctof ?
+          $t('install.minoradjust') : $t('install.majoradjust') }}</div>
         <div style="display: flex; align-items: center; justify-content: center;">
           <div>
             <!-- <el-switch v-model="gtoa" active-color="#ff4949" inactive-color="#13ce66"> </el-switch> -->
@@ -82,11 +83,13 @@
 
           <!-- 机械臂轴控制 -->
           <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
-            <span class="armin" @mousedown="arm(i, 0.1)" @touchstart.prevent="arm(i, 0.1)"><i
-                class="el-icon-arrow-up"></i></span>
+            <span class="armin" @mousedown="startArm(i, 0.1)" @mouseup="stopArm" @mouseleave="stopArm"
+              @touchstart.prevent="startArm(i, 0.1)" @touchend.prevent="stopArm"><i
+              class="el-icon-arrow-up"></i></span>
             <span class="armin">{{ i }}</span>
-            <span class="armin" @mousedown="arm(i, -0.1)" @touchstart.prevent="arm(i, -0.1)"><i
-                class="el-icon-arrow-down"></i></span>
+            <span class="armin" @mousedown="startArm(i, -0.1)" @mouseup="stopArm" @mouseleave="stopArm"
+              @touchstart.prevent="startArm(i, -0.1)" @touchend.prevent="stopArm"><i
+              class="el-icon-arrow-down"></i></span>
           </div>
 
           <div>
@@ -164,7 +167,7 @@
     <div class="estop">
       <div class="outer">
         <div class="insart"></div>
-        <img src="./img/estop.png" alt="">
+        <img src="./img/estop.png" alt=""  @click="estop('estop_on', true)">
       </div>
       <!-- <div v-if="!isEstop" @click="estop('estop_on', true)">急停</div>
       <div v-else @click="estop('estop_off', false)">取消急停</div> -->
@@ -214,7 +217,8 @@ export default {
       dep_sub: null,
       res_sub: null,
       urlDep: null,
-      urlRes: null
+      urlRes: null,
+      inDraging: false,
     };
   },
   computed: {
@@ -232,6 +236,7 @@ export default {
   //   }
   // },
   mounted() {
+    this.loop1();
     this.$bus.$on('getStop', () => {
       this.Stop()
     });
@@ -288,11 +293,28 @@ export default {
       this.isEstop = base;
     },
     arm(axle, rot = 0) {
+      console.log('开始');
+
+      // this.inDraging = true;
       if (rot && this.ctof) rot /= 5;
       console.log(axle, rot);
       this.message.axes = Array(8).fill(0);
       this.message.axes[axle - 1] = rot;
-      // console.log(this.message);
+      console.log(this.message);
+      this.publisher.publish(this.message);
+    },
+    startArm(axle, rot) {
+      this.inDraging = true;
+      this.currentAxle = axle;
+      this.currentRot = rot;
+      this.arm(axle, rot);
+    },
+    stopArm() {
+      console.log('停止');
+
+      this.inDraging = false;
+      this.message.axes = Array(8).fill(0);
+      console.log(this.message);
       this.publisher.publish(this.message);
     },
     // 检查ros连接状态
@@ -317,6 +339,19 @@ export default {
       } catch (error) {
         return { arg_keys: [], arg_values: [] };
       }
+    },
+    loop1() {
+      // 此方法可以将回调函数追加到动画帧请求回调函数列表的末尾。
+      // 当执行requestAnimationFrame(callback)时候，不会立刻调用callback函数，只是将其放入队列。
+      requestAnimationFrame(this.loop1);
+
+      if (this.inDraging) {
+        console.log('loop');
+
+        // this.arm(axle, rot)
+        this.arm(this.currentAxle, this.currentRot)
+      }
+      // else this.stop();
     },
     // 控制
     control(px = 0, py = 0, pz = 0, o = 0) {
@@ -345,7 +380,7 @@ export default {
       this.debouncedPublish(goalMessage);
 
     },
-    debouncedPublish: debounce(function (goalMessage) {
+    debouncedPublish(goalMessage) {
       const pubTool = new ROSLIB.Topic({
         ros: this.ros,
         name: "tool0_goal",
@@ -353,7 +388,16 @@ export default {
       });
 
       pubTool.publish(goalMessage);
-    }, 500),
+    },
+    // debouncedPublish: debounce(function (goalMessage) {
+    //   const pubTool = new ROSLIB.Topic({
+    //     ros: this.ros,
+    //     name: "tool0_goal",
+    //     messageType: "geometry_msgs/PoseStamped",
+    //   });
+
+    //   pubTool.publish(goalMessage);
+    // }, 500),
 
     // pose Action
     poseAction(name) {

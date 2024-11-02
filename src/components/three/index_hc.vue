@@ -125,7 +125,7 @@ function poselist(link, item) {
 
   var { rotation, translation } = item.transform;
   if (!link.mash) return;
-  link.mash.position.set(translation.x, translation.y, translation.z);
+  link.mash.position.set(translation.x, translation.y, translation.z-1);
   link.mash.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
 }
 export default {
@@ -349,11 +349,11 @@ export default {
       const k = width / height; // 窗口宽高比
       // PerspectiveCamera( fov, aspect, near, far )
       this.camera = new THREE.PerspectiveCamera(70, k, 0.1, 1000);
-      // this.camera.position.set(30, -30, 20); // 设置相机位置
-      this.camera.position.set(3, 3, 10); // 设置相机位置
+      this.camera.position.set(3,2,3); // 设置相机位置
+      // this.camera.position.set(11, 4, 3); // 设置相机位置
       this.camera.up.set(0, 0, 1);
 
-      this.camera.lookAt({ x: 0, y: -10, z: 0 }); // 设置相机方向
+      // this.camera.lookAt({ x: 10, y: 10, z:10 }); // 设置相机方向
       this.scene.add(this.camera);
     },
     // 创建渲染器
@@ -395,7 +395,7 @@ export default {
       this.controls.maxDistance = 100;
       this.controls.maxPolarAngle = Math.PI / 2 - 0.1;
 
-      // this.camera.position.x = 20;
+      // this.camera.position.z = 20;
       this.controls.update();
     },
 
