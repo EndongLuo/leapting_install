@@ -39,8 +39,8 @@
       <!-- Task  -->
       <!-- <el-button type="danger">Stop</el-button> -->
       <img src="./views/home/img/stop.png" style="width: 72px; cursor: pointer;" alt="" @click="Stop()">
-      <div v-if="!isbask" @click="moveLeft" class="isback" > <i class="el-icon-d-arrow-right"></i> </div>
-      <div v-else @click="moveLeft" class="isbask" > <i class="el-icon-d-arrow-left"></i> </div>
+      <div v-if="!isbask" @click="moveLeft" class="isback"> <i class="el-icon-d-arrow-right"></i> </div>
+      <div v-else @click="moveLeft" class="isbask"> <i class="el-icon-d-arrow-left"></i> </div>
     </div>
   </div>
 </template>
@@ -72,14 +72,14 @@ export default {
       isback: false,
       // isInstall:Number(localStorage.getItem('install'))||0,
       boxPosition: '-17%', // 初始位置
-      isbask:false,
+      isbask: false,
     };
   },
   computed: {
-    ...mapState('ros', ['pduStatus', 'taskState','isInstall']),
+    ...mapState('ros', ['pduStatus', 'taskState', 'isInstall']),
   },
   mounted() {
-    
+
     this.connect();
 
     this.pdu_sub = new ROSLIB.Topic({
@@ -105,7 +105,11 @@ export default {
   created() {
 
     this.timer = setInterval(() => {
-      if (!this.connected) this.connect();
+      // this.sendHeartbeat();
+      // if (!this.connected){
+      //   this.ros.close();
+      //   this.connect();
+      // } 
       var taskState = this.$store.state.ros.taskState;
       // console.log(this.ros.isConnected);
       if (!this.ros.isConnected) taskState = null;
@@ -120,10 +124,12 @@ export default {
         this.$message.success(`${this.$t('identify.checkTF')}`);
       }
 
-    }, 3000);
+    }, 1000);
   },
   beforeDestroy() {
     if (this.timer) clearInterval(this.timer);
+    this.ros.close();
+
   },
   watch: {
     connected(val, old) {
@@ -132,8 +138,9 @@ export default {
         if (this.timer1) clearInterval(this.timer1);
         else this.timer1 = setInterval(() => {
           if (this.num > 6) return;
-          console.log(`${this.$t('connPrompt.reconn')}${this.num}....`);
+          // console.log(`${this.$t('connPrompt.reconn')}${this.num}....`);
           this.$message(`${this.$t('connPrompt.reconn')}${this.num}...`);
+          this.ros.close();
           this.connect();
           this.num++;
         }, 30000);
@@ -147,11 +154,25 @@ export default {
   },
 
   methods: {
-    Stop(){
+    //  sendHeartbeat() {
+    //   var heartbeat = new ROSLIB.Message({
+    //     data: 'heartbeat'
+    //   });
+
+    //   var topic = new ROSLIB.Topic({
+    //     ros: this.ros,
+    //     name: '/heartbeat',
+    //     messageType: 'std_msgs/String'
+    //   });
+
+    //   topic.publish(heartbeat);
+    //   console.log('Heartbeat sent');
+    // },
+    Stop() {
       this.$bus.$emit('getStop');
     },
     moveLeft() {
-      if(this.isbask) this.boxPosition = '-17%'; // 移动位置
+      if (this.isbask) this.boxPosition = '-17%'; // 移动位置
       else this.boxPosition = '0%'; // 移动位置
       this.isbask = !this.isbask;
     },
@@ -181,7 +202,8 @@ export default {
       // this.ros = new ROSLIB.Ros({ url: "ws://" + this.ip + ":9090" });
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.5.158:9090" }); 
       // this.ros = new ROSLIB.Ros({ url: "ws://10.168.2.247:9090" }); 
-      this.ros = new ROSLIB.Ros({ url: "ws://10.168.2.154:9090" }); 
+      // this.ros = new ROSLIB.Ros({ url: "ws://10.168.2.154:9090" }); 
+      this.ros = new ROSLIB.Ros({ url: "ws://192.168.8.40:9090" });
 
       this.$store.dispatch("ros/getRos", this.ros);
       // console.log(this.ros)
@@ -270,28 +292,34 @@ export default {
       this.trig_pub.subscribe((msg) => {
         console.log(msg);
         var fid = msg.frame_id;
-        if (fid.indexOf('UI_dump') != -1) {
-          this.toptip = this.$t('identify.UI_dump');
-          this.dialogVisible = true;
-        }
-        else if (fid.indexOf('UI_place') != -1) {
-          this.toptip = this.$t('identify.UI_place');
-          this.dialogVisible = true;
-        }
-        else if (fid.indexOf('UI_handeye_arm') != -1) {
-          this.toptip = this.$t('identify.UI_handeye_arm');
-          this.dialogVisible = true;
-        }
-        else if (fid.indexOf('UI_handeye_take') != -1) {
-          this.toptip = this.$t('identify.UI_handeye_take');
-          this.dialogVisible = true;
-        }
-        else if (fid.indexOf('UI_continue') != -1) {
-          this.toptip = this.$t('identify.UI_continue');
-          this.isback = true;
-          this.dialogVisible = true;
-        }
-        console.log(this.toptip);
+        const regex = /_([^:]+):/g;
+        let match = regex.exec(fid)
+        console.log(match[1]);
+        this.toptip = match[1];
+        this.dialogVisible = true;
+
+        // if (fid.indexOf('UI_dump') != -1) {
+        //   this.toptip = this.$t('identify.UI_dump');
+        //   this.dialogVisible = true;
+        // }
+        // else if (fid.indexOf('UI_place') != -1) {
+        //   this.toptip = this.$t('identify.UI_place');
+        //   this.dialogVisible = true;
+        // }
+        // else if (fid.indexOf('UI_handeye_arm') != -1) {
+        //   this.toptip = this.$t('identify.UI_handeye_arm');
+        //   this.dialogVisible = true;
+        // }
+        // else if (fid.indexOf('UI_handeye_take') != -1) {
+        //   this.toptip = this.$t('identify.UI_handeye_take');
+        //   this.dialogVisible = true;
+        // }
+        // else if (fid.indexOf('UI_continue') != -1) {
+        //   this.toptip = this.$t('identify.UI_continue');
+        //   this.isback = true;
+        //   this.dialogVisible = true;
+        // }
+        // console.log(this.toptip);
       })
     },
     // 最后一步是否前进 （不继续）
@@ -391,8 +419,9 @@ export default {
   font-size: 24px;
   border-radius: 0 10px 10px 0;
   transition: left 0.5s;
-  .isback{
-    
+
+  .isback {
+
     height: 100px;
     cursor: pointer;
     display: flex;

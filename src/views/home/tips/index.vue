@@ -35,7 +35,8 @@
       </div>
 
       <!-- 机器人弹框 -->
-      <el-dialog :title="$t('robot.robotinfo')" :visible.sync="robotDialogVisible" width="80%" center :close-on-click-modal ="true">
+      <el-dialog :title="$t('robot.robotinfo')" :visible.sync="robotDialogVisible" width="80%" center
+        :close-on-click-modal="true">
         <!-- <span @click="allDevice">全部诊断>></span> -->
 
         <el-table stripe :data="robotData" border style="width: 100%">
@@ -186,7 +187,15 @@ export default {
   mounted() {
     this.map_name();
     this.battery();
-    this.speed()
+    this.speed();
+    if (navigator.connection) {
+      console.dir(navigator.connection);
+      const downlink = navigator.connection.downlink;
+      console.log(`当前下载速度: ${downlink} Mbps`);
+    } else {
+      console.log("Network Information API 不被支持");
+    }
+
   },
   methods: {
 

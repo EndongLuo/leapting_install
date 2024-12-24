@@ -84,12 +84,11 @@
           <!-- 机械臂轴控制 -->
           <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
             <span class="armin" @mousedown="startArm(i, 0.1)" @mouseup="stopArm" @mouseleave="stopArm"
-              @touchstart.prevent="startArm(i, 0.1)" @touchend.prevent="stopArm"><i
-              class="el-icon-arrow-up"></i></span>
+              @touchstart.prevent="startArm(i, 0.1)" @touchend.prevent="stopArm"><i class="el-icon-arrow-up"></i></span>
             <span class="armin">{{ i }}</span>
             <span class="armin" @mousedown="startArm(i, -0.1)" @mouseup="stopArm" @mouseleave="stopArm"
               @touchstart.prevent="startArm(i, -0.1)" @touchend.prevent="stopArm"><i
-              class="el-icon-arrow-down"></i></span>
+                class="el-icon-arrow-down"></i></span>
           </div>
 
           <div>
@@ -128,9 +127,8 @@
     <!-- 可拖拽框 -->
     <div style="display: flex; justify-content: center;" v-if="isVideo || isThree">
 
-
       <div class="win" v-if="gtoa && isShow == 4">
-        <div class="totitle">
+        <div class="totitle" v-if="isThree">
           <span>{{ $t('install.model') }}</span>
           <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
         </div>
@@ -165,9 +163,13 @@
 
     <!-- 急停 -->
     <div class="estop">
-      <div class="outer">
+      <div class="outer" v-if="!isEstop">
         <div class="insart"></div>
-        <img src="./img/estop.png" alt=""  @click="estop('estop_on', true)">
+        <img src="./img/estop.png" alt="" @dblclick="estop('estop_on', true)">
+      </div>
+      <div class="outer" v-else>
+        <div class="insart estop_off"></div>
+        <img src="./img/estop.png" alt="" @dblclick="estop('estop_off', false)">
       </div>
       <!-- <div v-if="!isEstop" @click="estop('estop_on', true)">急停</div>
       <div v-else @click="estop('estop_off', false)">取消急停</div> -->
@@ -192,7 +194,7 @@ export default {
     return {
       isEstop: false,
       gtoa: false, // 全局-轴 （机械臂）
-      ctof: false, // 粗调-微调（机械臂）
+      ctof: true, // 粗调-微调（机械臂）
       isShow: 0,
       // isInstall:Number(localStorage.getItem('install'))|| 0,
       isVideo: 0,
@@ -293,7 +295,7 @@ export default {
       this.isEstop = base;
     },
     arm(axle, rot = 0) {
-      console.log('开始');
+      console.log('arm', axle, rot);
 
       // this.inDraging = true;
       if (rot && this.ctof) rot /= 5;
@@ -310,11 +312,11 @@ export default {
       this.arm(axle, rot);
     },
     stopArm() {
-      console.log('停止');
+      console.log('stopArm');
 
       this.inDraging = false;
       this.message.axes = Array(8).fill(0);
-      console.log(this.message);
+      // console.log(this.message);
       this.publisher.publish(this.message);
     },
     // 检查ros连接状态
@@ -380,7 +382,7 @@ export default {
       this.debouncedPublish(goalMessage);
 
     },
-    debouncedPublish(goalMessage) {
+    debouncedPublish: debounce(function (goalMessage) {
       const pubTool = new ROSLIB.Topic({
         ros: this.ros,
         name: "tool0_goal",
@@ -388,16 +390,7 @@ export default {
       });
 
       pubTool.publish(goalMessage);
-    },
-    // debouncedPublish: debounce(function (goalMessage) {
-    //   const pubTool = new ROSLIB.Topic({
-    //     ros: this.ros,
-    //     name: "tool0_goal",
-    //     messageType: "geometry_msgs/PoseStamped",
-    //   });
-
-    //   pubTool.publish(goalMessage);
-    // }, 500),
+    }, 500),
 
     // pose Action
     poseAction(name) {
@@ -677,9 +670,12 @@ export default {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      // background-color: #67C23A;
       background-color: #E6A23C;
       z-index: 1000;
+    }
+
+    .estop_off {
+      background-color: #67C23A;
     }
 
     img {
