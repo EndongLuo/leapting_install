@@ -1,6 +1,10 @@
 <template>
   <div class="home">
-    <Tips />
+    <div style="display: flex; justify-content: space-between;">
+      <Tips />
+      <Tasks @winChanged="winChanged" />
+    </div>
+
     <div class="h_outer">
       <div class="h_inner" :style="{ 'margin': isShow ? ' 1% 0' : '10% 0' }" v-show="!isShow" @click="checkRos()">
         <!-- 操控 -->
@@ -16,13 +20,13 @@
         </div>
 
         <!-- 半自动安装 -->
-        <div class="btn" :title="$t('install.sai')" @click="isShow = 1">
+        <div class="btn" :title="$t('install.sai')" @click="sendTask(1)">
           <img src="./img/bauto.png" alt="">
           <span>{{ $t('install.sai') }}</span>
         </div>
 
         <!-- 自动安装 -->
-        <div class="btn" :title="$t('install.fai')" @click="isShow = 2">
+        <div class="btn" :title="$t('install.fai')" @click="sendTask(0)">
           <img src="./img/auto.png" alt="">
           <span>{{ $t('install.fai') }}</span>
         </div>
@@ -30,7 +34,7 @@
     </div>
 
     <!-- 开始后 -->
-    <div class="kuang" v-show="isShow">
+    <div class="kuang" :style="{ zIndex: zIndexValue }" v-show="isShow == 3 || isShow == 4">
       <i class="el-icon-close" @click="closeWin"></i>
       <!-- 机器人遥控 -->
       <div v-if="isShow == 3">
@@ -47,30 +51,26 @@
             <span class="armin ll" v-if="!ctof" @click="ctof = true">{{ $t('install.minoradjust') }}</span>
             <span class="armin ll" v-else @click="ctof = false">{{ $t('install.majoradjust') }}</span>
           </div>
-          <div>
-            <span class="armin ll" @click="withDraw('WithdrawPVM')">{{ $t('install.withdraw') }}</span>
-            <span class="armin ll" @click="withDraw('StartInstallCheck')">{{ $t('install.check') }}</span>
-          </div>
 
           <!-- 机械臂全局操控 -->
           <div class="armContent ll" v-if="gtoa" style="height: 168px;">
-            <span class="armin" style="width: 200px;" @click="control(0, -0.05)"><i style="color: #41ae3c;"
+            <span class="armin" style="width: 200px;" @click="control(0, -0.05)"><i style="color: #67C23A;"
                 class="el-icon-arrow-up"></i></span>
 
             <div style="display: flex;">
-              <span class="armin" @click="control(0.05)"><i style="color: #eb261a;"
+              <span class="armin" @click="control(0.05)"><i style="color: #F56C6C;"
                   class="el-icon-arrow-left"></i></span>
-              <span class="armin" @click="control(-0.05)"><i style="color: #eb261a;"
+              <span class="armin" @click="control(-0.05)"><i style="color: #F56C6C;"
                   class="el-icon-arrow-right"></i></span>
             </div>
-            <span class="armin" style="width: 200px;" @click="control(0, 0.05)"><i style="color: #41ae3c;"
+            <span class="armin" style="width: 200px;" @click="control(0, 0.05)"><i style="color: #67C23A;"
                 class="el-icon-arrow-down"></i></span>
 
           </div>
           <div v-if="gtoa">
-            <span class="armin ll" @click="control(0, 0, 0.05)"><i style="color: #15559a;"
+            <span class="armin ll" @click="control(0, 0, 0.05)"><i style="color: #409EFF;"
                 class="el-icon-top"></i></span>
-            <span class="armin ll " @click="control(0, 0, -0.05)"><i style="color: #15559a;"
+            <span class="armin ll " @click="control(0, 0, -0.05)"><i style="color: #409EFF;"
                 class="el-icon-bottom"></i></span>
           </div>
           <div v-if="gtoa">
@@ -80,84 +80,73 @@
                 class="el-icon-refresh-left"></i></span>
           </div>
 
-
           <!-- 机械臂轴控制 -->
           <div v-show="!gtoa" v-for="i in 6" :key="i" class="armContent1 ll">
-            <span class="armin" @mousedown="startArm(i, 0.1)" @mouseup="stopArm" @mouseleave="stopArm"
-              @touchstart.prevent="startArm(i, 0.1)" @touchend.prevent="stopArm"><i class="el-icon-arrow-up"></i></span>
+            <span class="armin" @mousedown="startArm(i, 0.1)" @mouseup="stopArm" @touchstart.prevent="startArm(i, 0.1)"
+              @touchend.prevent="stopArm"><i class="el-icon-arrow-up"></i></span>
             <span class="armin">{{ i }}</span>
-            <span class="armin" @mousedown="startArm(i, -0.1)" @mouseup="stopArm" @mouseleave="stopArm"
+            <span class="armin" @mousedown="startArm(i, -0.1)" @mouseup="stopArm"
               @touchstart.prevent="startArm(i, -0.1)" @touchend.prevent="stopArm"><i
                 class="el-icon-arrow-down"></i></span>
           </div>
 
-          <div>
-            <span class="armin ll " @click="poseAction('armInitPose')">{{ $t('install.reset') }}</span>
-            <span class="armin ll" id="stop" @click="Stop()">{{ $t('install.stop')
-              }}</span>
-          </div>
         </div>
-      </div>
-      <!-- 安装 -->
-      <div class="l2" v-else>
-        <!-- <div class="in" :title="$t('install.monitor')" @click="videoRos()">
-          <img src="./img/video1.png" alt="">
-          <span>{{ $t('install.monitor') }}</span>
-        </div> -->
-
-        <div v-if="!flexbeSwitch" class="in" :title="$t('install.pause')" @click="Pause()">
-          <img src="./img/pause1.png" alt="">
-          <span>{{ $t('install.pause') }}</span>
-        </div>
-        <div v-else class="in" :title="$t('install.start')" @click="start(isShow)">
-          <img src="./img/start.png" alt="">
-          <span>{{ $t('install.start') }}</span>
-        </div>
-        <div class="in" :title="$t('install.stop')">
-          <img src="./img/stop.png" alt="" @click="Stop()">
-          <span>{{ $t('install.stop') }}</span>
-        </div>
-        <!-- <div class="in" :title="$t('install.model')" @click="isThree = 1">
-          <img src="./img/3d.png" alt="">
-          <span>{{ $t('install.model') }}</span>
-        </div> -->
       </div>
     </div>
 
     <!-- 可拖拽框 -->
-    <div style="display: flex; justify-content: center;" v-if="isVideo || isThree">
+    <div style="display: flex; justify-content: flex-end;" v-show="isShow || isTask">
+      <!-- 任务状态 -->
+      <div class="win" style="width: 40%;" v-if="taskState.id">
+        <div class="totitle">
+          <span>{{$t('task.taskinfo')}}</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
+        </div>
+        <div class="contents" ref="contents">
+          <div class="content">
+            <div class="taskInfo">
+              <div><span class="title">{{$t('task.taskid')}}:</span>{{ taskState.id }}</div>
+              <div><span class="title">{{$t('task.taskname')}}:</span>{{ taskState.task_name }}</div>
+              <div><span class="title">{{$t('task.tasktype')}}:</span>{{ taskState.task_type == 1 ? `${$t('install.sai')}` : `${$t('install.fai')}`}}</div>
+              <div><span class="title">{{$t('task.taskprogress')}}:</span>{{ (taskState.done_num / taskState.task_num) * 100 }}%
+                （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
+              <div><span class="title">{{$t('task.starttime')}}:</span>{{ taskState.start_time }}</div>
+              <div v-if="taskState.end_time"><span class="title">{{$t('task.endtime')}}:</span>{{ taskState.end_time }}</div>
+              <div><span class="title">{{$t('task.taskstep')}}:</span>{{ taskState.task_step }}</div>
+            </div>
+            <div class="right">
+              <div class="tiptop">
+                <span v-if="taskState.task_status == 3">{{ $t('task.completed') }}</span>
+                <span v-if="taskState.task_status == 2">{{ $t('task.pause') }}</span>
+                <span v-if="taskState.task_status == 1">{{ $t('task.executing') }}</span>
+                <span v-if="taskState.task_status == 0">{{ $t('task.stop') }}</span>
+              </div>
+              <div class="btns">
+                <el-button class="btn" v-if="taskState.task_status == 2" @click="changeTask(1)">{{ $t('task.continue') }}</el-button>
+                <el-button class="btn" v-if="taskState.task_status == 1" @click="changeTask(2)">{{ $t('task.pause') }}</el-button>
+                <el-button class="btn" v-if="taskState.task_status == 1 || taskState.task_status == 2"
+                  @click="changeTask(0)">{{ $t('task.stop') }}</el-button>
+              </div>
+            </div>
 
-      <div class="win" v-if="gtoa && isShow == 4">
-        <div class="totitle" v-if="isThree">
-          <span>{{ $t('install.model') }}</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="isThree = 0"></i>
+          </div>
         </div>
-        <Three v-if="isThree" style="width: 49%; height:44%;" />
       </div>
-      <div class="win" v-if="urlVideo && !gtoa">
-        <div class="totitle">
-          <!-- <span>{{ $t('install.monitor') }}</span> -->
-          <span>RGB</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(1)"></i>
-        </div>
 
-        <img v-if="!urlVideo" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
-        <img v-else :src="urlVideo" alt="" style="width: 100%; height:100%; overflow: hidden;">
-      </div>
-      <div class="win" v-if="urlDep && !gtoa">
+      <!-- flexbe日志 -->
+      <div class="win">
         <div class="totitle">
-          <span>Depth</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(2)"></i>
+          <span>{{$t('task.tasklog')}}</span>
+          <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
         </div>
-        <img v-if="!urlDep" src="./img/empty.png" alt="" style="width: 55%; overflow: hidden; margin: 0 auto;">
-        <img v-else :src="urlDep" alt="" style="width: 100%; height:100%; overflow: hidden;">
-      </div>
-      <div class="win" v-if="urlRes && !gtoa">
-        <div class="totitle">
-          <span>Segmentation</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="pauseRos(3)"></i>
+        <div class="contents" ref="contents">
+          <div class="p" v-for="l, i in flexbeLog" :key="i" style="">
+            <span>[{{ l.time }}]：</span>
+            <span v-if="l.status_code == 3" style="color: #F56C6C; font-weight: 600;">{{ l.text }}</span>
+            <span v-if="l.status_code == 1" style="color: #E6A23C; font-weight: 600;">{{ l.text }}</span>
+            <span v-if="l.status_code == 0" style="font-weight: 600;">{{ l.text }}</span>
+          </div>
         </div>
-        <img :src="urlRes" alt="" style="width: 100%; height:100%; overflow: hidden;">
       </div>
     </div>
 
@@ -171,8 +160,17 @@
         <div class="insart estop_off"></div>
         <img src="./img/estop.png" alt="" @dblclick="estop('estop_off', false)">
       </div>
-      <!-- <div v-if="!isEstop" @click="estop('estop_on', true)">急停</div>
-      <div v-else @click="estop('estop_off', false)">取消急停</div> -->
+    </div>
+
+    <!-- 工具箱 -->
+    <div class="tool">
+      <div class="outer" :style="{ height: toolbar1 ? '126px' : '50px' }">
+        <div class="inner">
+          <i class="el-icon-suitcase" @click="toolbar1 = !toolbar1"></i>
+          <img src="./img/joy.png" alt="" @click="toolbar(3)">
+          <img src="./img/arm.png" alt="" @click="toolbar(4)">
+        </div>
+      </div>
     </div>
 
   </div>
@@ -181,129 +179,101 @@
 <script>
 import Tips from "./tips";
 import Telecontrol from "@/components/Telecontrol";
-import { number } from "echarts";
 import { mapState } from "vuex";
 import Toast from "@/components/toast";
-import Three from '@/components/three/index_hc.vue'
+import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
 
 export default {
   name: "home",
-  components: { Tips, Telecontrol, Toast, Three },
+  components: { Tips, Telecontrol, Toast, Tasks },
   data() {
     return {
+      isTask: false,
+      toolbar1: false,
+      zIndexValue: 999,
       isEstop: false,
       gtoa: false, // 全局-轴 （机械臂）
       ctof: true, // 粗调-微调（机械臂）
       isShow: 0,
-      // isInstall:Number(localStorage.getItem('install'))|| 0,
-      isVideo: 0,
-      isThree: 0,
-      urlVideo: null,
-      video_sub: null,
-      flexbeSwitch: JSON.parse(localStorage.getItem('flexbeSwitch')) || true,
-      pvm_num: 50,
-      goal: null,
-      goon: 0,
-      pvm_length: '2123',
-      pvm_width: '1123',
-      install_gap: 10,
-      message: {
-        header: { frame_id: 'jtc' },
-        axes: [0, 0, 0, 0, 0, 0, 0, 0],
-        buttons: [0, 0, 0, 0, 0, 0, 0, 0],
-      },
-      publisher: null,
-      pubTool: null,
-      zAixs: 0,
-      dep_sub: null,
-      res_sub: null,
-      urlDep: null,
-      urlRes: null,
       inDraging: false,
     };
   },
   computed: {
-    ...mapState("ros", ["ros", 'flexbeParams', 'isInstall']),
-    // isShow(){
-    //   if(this.isShow) this.$store.dispatch('ros/getInstall',{id:0})
-    // }
+    ...mapState("socket", ['rosConnect', 'flexbeLog', 'taskState']),
   },
-  // watch:{
-  //   isShow(val){
-  //     if(val){
-  //       console.log('watch isShow',val);
-  //       this.$store.dispatch('ros/getInstall',{id:0})
-  //     }
-  //   }
-  // },
   mounted() {
+    this.$nextTick(() => this.scrollToBottom());
     this.loop1();
-    this.$bus.$on('getStop', () => {
-      this.Stop()
-    });
     this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
-    // console.log(JSON.parse(localStorage.getItem('flexbeSwitch')),this.flexbeSwitch);
-    this.avoidanceEcho();
-
-    this.publisher = new ROSLIB.Topic({
-      ros: this.ros,
-      name: "joy",
-      messageType: "sensor_msgs/Joy",
-    });
-
-    this.pubTool = new ROSLIB.Topic({
-      ros: this.ros,
-      name: "tool0_goal",
-      messageType: "geometry_msgs/Pose",
-    });
-
-    this.video_sub = new ROSLIB.Topic({
-      ros: this.ros,
-      name: '/compressed_raw_base64',
-      messageType: 'std_msgs/String'
-    });
-
-    this.dep_sub = new ROSLIB.Topic({
-      ros: this.ros,
-      name: '/compressed_dep_base64',
-      messageType: 'std_msgs/String'
-    });
-    this.res_sub = new ROSLIB.Topic({
-      ros: this.ros,
-      name: '/compressed_res_base64',
-      messageType: 'std_msgs/String'
-    });
+  },
+  watch: {
+    flexbeLog() {
+      this.$nextTick(() => {
+        this.scrollToBottom();
+      });
+    }
   },
   methods: {
+    winChanged(val) {
+      this.isTask = val;
+      this.isShow = 1;
+    },
+    winClose() {
+      this.isTask = false;
+      this.isShow = 0;
+    },
+    // 发送任务
+    sendTask(num) {
+      var isInstall = this.taskState.task_status == 1 || this.taskState.task_status == 2;
+      if (isInstall) return this.$message.error('任务正在执行中，请等待任务结束后再发送新任务！');
+      var id = Math.round(Math.random() * 900000000 + 100000000);
+      this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
+        confirmButtonText: this.$t('mains.confirm'),
+        cancelButtonText: this.$t('mains.cancel'),
+        inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
+        inputErrorMessage: this.$t('prompt.inputErrorMessage')
+      }).then(({ value }) => {
+        var taskmsg = { id, task_status: 1, task_name: `Web_${num ? 'Semi-Auto' : 'Fully-Auto'}`, task_type: num, task_num: Number(value) };
+        this.$store.dispatch('socket/sendTask', taskmsg);
+        this.$message.success('sendTask: ', taskmsg);
+        this.isShow = 4;
+      }).catch(() => {
+        this.$message(this.$t('mains.cancel'));
+      });
+
+    },
+    // 修改任务状态
+    changeTask(num) {
+      var { id, task_name, task_type, task_num } = this.taskState;
+      var taskmsg = { id, task_status: num, task_name, task_type, task_num };
+      this.$store.dispatch('socket/sendTask', taskmsg);
+    },
+    // flexbelog滚动到底部
+    scrollToBottom() {
+      const contents = this.$refs.contents;
+      if (contents) contents.scrollTop = contents.scrollHeight;
+    },
+    // 工具箱
+    toolbar(num) {
+      // console.log('tool');
+      this.toolbar1 = false;
+      this.isShow = num;
+      this.zIndexValue = 9999;
+    },
     // 机械臂和底盘急停
     estop(arm, base) {
-      // 机械臂急停
-      const pubEstop = new ROSLIB.Topic({
-        ros: this.ros,
-        name: "plc24_request",
-        messageType: "std_msgs/String",
-      });
-      // 底盘急停
-      const pubEstop2 = new ROSLIB.Topic({
-        ros: this.ros,
-        name: "estop",
-        messageType: "std_msgs/Bool",
-      });
-      pubEstop.publish({ data: arm });
-      pubEstop2.publish({ data: base });
       this.isEstop = base;
+      this.$store.dispatch('socket/armEstop', arm);
+      this.$store.dispatch('socket/Estop', base);
     },
     arm(axle, rot = 0) {
-      console.log('arm', axle, rot);
-
-      // this.inDraging = true;
+      var frame_id = 'jtc';
       if (rot && this.ctof) rot /= 5;
-      console.log(axle, rot);
-      this.message.axes = Array(8).fill(0);
-      this.message.axes[axle - 1] = rot;
-      console.log(this.message);
-      this.publisher.publish(this.message);
+      var axes = Array(8).fill(0);
+      axes[axle - 1] = rot;
+
+      this.$store.dispatch("socket/control", { axes, frame_id });
     },
     startArm(axle, rot) {
       this.inDraging = true;
@@ -312,50 +282,26 @@ export default {
       this.arm(axle, rot);
     },
     stopArm() {
-      console.log('stopArm');
-
       this.inDraging = false;
-      this.message.axes = Array(8).fill(0);
-      // console.log(this.message);
-      this.publisher.publish(this.message);
+      var frame_id = 'jtc';
+      var axes = Array(8).fill(0);
+
+      this.$store.dispatch("socket/control", { axes, frame_id });
     },
     // 检查ros连接状态
     checkRos() {
-      if (this.isShow) {
-        this.videoRos();
-        this.isThree = 1;
-      }
-      if (!this.ros.isConnected) {
-        // this.isShow = 0;
+      if (!this.rosConnect) {
+        this.isShow = 0;
         this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
       }
     },
-
-    // 筛选flexbe参数
-    filterParam(name) {
-      try {
-        var params = this.flexbeParams[name];
-        if (!params) return { arg_keys: [], arg_values: [] };
-
-        return { arg_keys: Object.keys(params), arg_values: Object.values(params) }
-      } catch (error) {
-        return { arg_keys: [], arg_values: [] };
-      }
-    },
     loop1() {
-      // 此方法可以将回调函数追加到动画帧请求回调函数列表的末尾。
-      // 当执行requestAnimationFrame(callback)时候，不会立刻调用callback函数，只是将其放入队列。
       requestAnimationFrame(this.loop1);
 
-      if (this.inDraging) {
-        console.log('loop');
-
-        // this.arm(axle, rot)
-        this.arm(this.currentAxle, this.currentRot)
-      }
-      // else this.stop();
+      if (this.inDraging) this.arm(this.currentAxle, this.currentRot);
     },
-    // 控制
+    //----------------------------
+    // 全局控制
     control(px = 0, py = 0, pz = 0, o = 0) {
       let qw, qz;
 
@@ -368,286 +314,75 @@ export default {
         qz = o === 0 ? 0 : 0.0087265 * o;
       }
 
-      const goalMessage = new ROSLIB.Message({
-        header: { frame_id: 'tool0' },
-        pose: {
-          position: { x: px, y: py, z: pz },
-          orientation: { x: 0, y: 0, z: qz, w: qw }
-        },
-      });
-
-      console.log(goalMessage);
-
-
-      this.debouncedPublish(goalMessage);
+      const pose = { position: { x: px, y: py, z: pz }, orientation: { x: 0, y: 0, z: qz, w: qw } };
+      // console.log(pose);
+      this.debouncedPublish(pose);
 
     },
-    debouncedPublish: debounce(function (goalMessage) {
-      const pubTool = new ROSLIB.Topic({
-        ros: this.ros,
-        name: "tool0_goal",
-        messageType: "geometry_msgs/PoseStamped",
-      });
-
-      pubTool.publish(goalMessage);
+    debouncedPublish: debounce(function (pose) {
+      this.$store.dispatch("socket/globalControl", pose);
     }, 500),
-
-    // pose Action
-    poseAction(name) {
-      var goalMessage = new ROSLIB.Message({
-        behavior_name: 'SiteManipulation',
-        arg_keys: ['site_name'],
-        arg_values: [`${name}`,]
-      });
-
-      this.actionClient(goalMessage);
-    },
-
-    // withDraw
-    withDraw(name) {
-      var goalMessage = new ROSLIB.Message({
-        behavior_name: name,
-      });
-      if (name == 'StartInstallCheck') this.checkZaixs(goalMessage)
-      else this.actionClient(goalMessage);
-    },
-
-    checkZaixs(goalMessage) {
-      var f = 1
-      // console.log(1);
-      var publisher = new ROSLIB.Topic({
-        ros: this.ros,
-        name: "arm_pose",
-        messageType: "geometry_msgs/Pose",
-      });
-
-      publisher.subscribe((msg) => {
-        this.zAixs = msg.position.z;
-        if (f == 1) {
-          if (this.zAixs > 1) this.actionClient(goalMessage);
-          else this.$message('请抬高机械臂,末端高度为：' + this.zAixs);
-        }
-        f = 0
-      })
-    },
-
-    // 开始第一次
-    start(id) {
-      // 暂停继续
-      if (this.goon) { this.Pause(); return; }
-      this.flexbeSwitch = false;
-      localStorage.setItem('flexbeSwitch', false)
-      // this.isInstall = id;
-      // if (this.isInstall) this.$message(this.$t('prompt.switchMode'));
-      if (id == 1) {
-        // this.isShow = id;
-        // this.isInstall = id;
-        this.$store.dispatch('ros/getInstall', { id })
-        localStorage.setItem('isInstall', id);
-        var isauto = id == 1 ? false : true;
-        this.$message.success('Start Installation.');
-        this.CommInstall(isauto, 50);
-      }
-      else if (id == 2) {
-        this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
-          confirmButtonText: this.$t('mains.confirm'),
-          cancelButtonText: this.$t('mains.cancel'),
-          inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
-          inputErrorMessage: this.$t('prompt.inputErrorMessage')
-        }).then(({ value }) => {
-          // this.isShow = id;
-          // this.isInstall = id;
-          this.$store.dispatch('ros/getInstall', { id })
-          localStorage.setItem('isInstall', id);
-          var auto = id == 1 ? false : true;
-
-          this.$message.success('success: ' + value);
-
-          // this.pvm_num = value;
-          console.log(Number(value));
-          this.CommInstall(auto, value);
-        }).catch(() => {
-          // this.isInstall = 0;
-          this.$store.dispatch('ros/getInstall', { id: 0 })
-          localStorage.setItem('isInstall', 0);
-          this.flexbeSwitch = true;
-          localStorage.setItem('flexbeSwitch', true)
-          this.isShow = 0;
-          this.isVideo = 0;
-          this.isThree = 0;
-          this.$message(this.$t('mains.cancel'));
-        });
-      }
-    },
-
-    avoidanceEcho() {
-      var pvsize_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/robot_state',
-        messageType: 'std_msgs/String'
-      });
-
-      pvsize_sub.subscribe((msg) => {
-        msg = JSON.parse(msg.data);
-        console.log(msg);
-        // this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
-        this.pvm_length = msg.parameter.pvm_length;
-        this.pvm_width = msg.parameter.pvm_width;
-        this.install_gap = msg.parameter.install_gap;
-
-        var pvm_param = { pvm_width: this.pvm_width, install_gap: this.install_gap };
-        localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
-      })
-    },
-
-    // 发送goal
-    CommInstall(auto, pvm_num) {
-      var { arg_keys, arg_values } = this.filterParam('CommInstallPVM');
-
-      var goalMessage = new ROSLIB.Message({
-        behavior_name: 'CommInstallPVM',
-        arg_keys: ['auto', 'pvm_sum', ...arg_keys],
-        arg_values: [`${auto}`, `${pvm_num}`, ...arg_values]
-      });
-
-      console.log(goalMessage);
-
-      this.actionClient(goalMessage);
-    },
-
-    actionClient(goalMessage) {
-      var actionClient = new ROSLIB.ActionClient({
-        ros: this.ros,
-        actionName: 'flexbe_msgs/BehaviorExecutionAction',
-        serverName: '/flexbe/execute_behavior'
-      });
-      this.goal = new ROSLIB.Goal({ actionClient, goalMessage });
-
-      console.log(this.goal);
-      this.goal.send();
-
-      this.goal.on('feedback', (feedback) => {
-        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
-        console.log('Feedback: ', feedback);
-      });
-
-      this.goal.on('result', (result) => {
-        // this.$message(`result: ${JSON.stringify(result)}`);
-        if (result.outcome == 'preempted') {
-          this.flexbeSwitch = true;
-          localStorage.setItem('flexbeSwitch', true)
-          this.$message(`task over！`);
-        }
-        if (result.outcome == 'finished') {
-          // this.isInstall = 0;
-          this.$store.dispatch('ros/getInstall', { id: 0 })
-          localStorage.setItem('isInstall', 0);
-          this.flexbeSwitch = true;
-          localStorage.setItem('flexbeSwitch', true)
-          this.$message.success(`task finished !`);
-        }
-        console.log('Final Result: ', result);
-
-      });
-    },
-
-    // 任务状态开始,暂停,继续,停止
-    // 暂停
-    Pause() {
-      // console.log(this.flexbeSwitch);
-      this.goon = 1;
-      var pause_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/flexbe/command/pause',
-        messageType: 'std_msgs/Bool'
-      });
-
-      if (this.flexbeSwitch) {
-        this.$message.success('Go on.');
-        this.flexbeSwitch = false;
-        localStorage.setItem('flexbeSwitch', false)
-      }
-      else {
-        this.$message('Pause');
-        this.flexbeSwitch = true;
-        localStorage.setItem('flexbeSwitch', true)
-      }
-
-      console.log('Pause', this.flexbeSwitch);
-      pause_sub.publish({ "data": this.flexbeSwitch });
-    },
-    // 停止
-    Stop() {
-      var stop_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/flexbe/command/preempt',
-        messageType: 'std_msgs/Empty'
-      });
-      stop_sub.publish({});
-      this.$message.success('Installation Stopped.');
-      // this.isInstall = 0;
-      this.$store.dispatch('ros/getInstall', { id: 0 })
-      localStorage.setItem('isInstall', 0);
-      this.flexbeSwitch = true;
-      localStorage.setItem('flexbeSwitch', true)
-      // this.isVideo = 0;
-      // this.isThree = 0;
-      // this.isShow = 0;
-      this.goon = 0;
-    },
-
-    // 开始video
-    videoRos() {
-      this.isVideo = 1;
-      // 订阅 topic
-      this.video_sub.subscribe((msg) => {
-        this.urlVideo = `data:image/jpeg;base64,${msg.data}`;
-      })
-      this.dep_sub.subscribe(msg => {
-        // console.log(msg);
-        this.urlDep = `data:image/jpeg;base64,${msg.data}`;
-      })
-      this.res_sub.subscribe(msg => {
-        // console.log(msg);
-        if (!msg.data) this.urlRes = null;
-        else this.urlRes = `data:image/jpeg;base64,${msg.data}`;
-      })
-    },
-
-    // 停止video
-    pauseRos(id) {
-      this.isVideo = 0;
-      if (id == 1) {
-        this.video_sub.unsubscribe();
-        this.urlVideo = null;
-      }
-      if (id == 2) {
-        this.dep_sub.unsubscribe();
-        this.urlDep = null;
-      }
-      if (id == 3) {
-        this.res_sub.unsubscribe();
-        this.urlRes = null;
-      }
-      // this.video_sub.unsubscribe();
-      // this.urlVideo = null;
-      // this.dep_sub.unsubscribe();
-      // this.urlDep = null;
-      // this.res_sub.unsubscribe();
-      // this.urlRes = null;
-    },
 
     // 关闭窗口
     closeWin() {
+      this.zIndexValue = 999;
       this.isShow = 0;
-      this.isThree = 0;
-      this.pauseRos();
+      this.isTask = false;
     }
   },
 };
 </script>
 
 <style scoped lang="less">
+.content {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px;
+
+  .taskInfo {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    div {
+      margin: 5px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .title {
+      font-weight: 600;
+      margin-right: 5px;
+    }
+  }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+
+    .tiptop {
+      font-weight: 600;
+      font-size: 24px;
+      margin: 10px 0;
+    }
+
+    .btns {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: baseline;
+
+      .btn {
+        margin: 5px;
+      }
+    }
+  }
+
+
+}
+
 .estop {
   width: 100px;
   height: 100px;
@@ -696,6 +431,48 @@ export default {
 
 }
 
+.tool {
+  width: 60px;
+  height: 60px;
+  position: fixed;
+  top: 20%;
+  left: 0;
+  z-index: 9999;
+  cursor: pointer;
+
+  .outer {
+    position: relative;
+    width: 60px;
+    // height: 126px;
+    height: 50px;
+    border-radius: 0 20px 20px 0;
+    background-color: #ffffff;
+    overflow: hidden;
+
+    .inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      img {
+        width: 36px;
+        height: 36px;
+      }
+
+      i {
+        font-size: 36px;
+        margin-top: 10px;
+
+        &:hover {
+          color: #409EFF;
+        }
+      }
+    }
+
+  }
+
+}
+
 .home {
   // position: relative;
   font-size: 0.5rem;
@@ -725,13 +502,13 @@ export default {
       align-items: center;
       cursor: pointer;
       // background: rgba(0, 0, 0, 0.075);
-      background: #cccccc30;
+      background: #cccccc50;
       // background: rgba(255, 255, 255, 0.103);
       border-radius: 5px;
       margin: 1px;
 
       &:hover {
-        background: #cccccc50;
+        background: #cccccc70;
         // background: rgba(255, 255, 255, 0.164);
       }
 
@@ -792,8 +569,6 @@ export default {
   }
 }
 
-
-
 .arml2 {
   height: 240px;
   display: flex;
@@ -830,7 +605,7 @@ export default {
   }
 
   .armContent1 {
-    margin: 0 1px;
+    margin: 0 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -900,7 +675,7 @@ export default {
   width: 50%;
   height: 35%;
   border: 1px solid #dddddd71;
-  // background: #ffffffe1;
+  background: #cccccc50;
   font-size: 14px;
   box-shadow: 0px 0px 10px #bdbdbd61;
   overflow: hidden;
@@ -910,7 +685,44 @@ export default {
   .totitle {
     display: flex;
     justify-content: space-between;
-    margin: 5px;
+    margin: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    // border-bottom: #000000a6 1px;
+  }
+
+  .contents {
+    width: 100%;
+    height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-top: #00000065 1px solid;
+
+    &::-webkit-scrollbar {
+      // 滚动条样式
+      width: 3px;
+      height: 3px;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background: #999999;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 0;
+      background: #d6d6d6;
+    }
+
+    .p {
+      margin: 5px 10px;
+      text-overflow: ellipsis;
+    }
   }
 }
 
@@ -923,7 +735,7 @@ export default {
   box-shadow: 0px 0px 20px 10px rgb(36 36 36 / 50%), inset 0px 5px 20px 10px rgb(100 100 100 / 50%);
   width: 100%;
   height: 250px;
-  z-index: 1000;
+  // z-index: 1000;
   color: #e9e9e9;
 
   .el-icon-close {

@@ -2,25 +2,15 @@
   <el-container>
     <el-container>
       <!-- 头部 -->
-      <el-header style="height: 60px">
+      <el-header style="height: 60px; border-bottom: 1px solid #000;">
         <div class="header_inner">
-          <!-- <div class="logo"><img  src="@/assets/logo.png" alt="logo" /></div> -->
-
-          <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-            <div class="logo"><img src="@/assets/logo.png" alt="logo" /></div>
-
-            <el-menu-item index="1" @click="activeIndex='1'"><router-link to="/">{{$t('nav.index')}}</router-link></el-menu-item>
-            <!-- <el-menu-item index="2" @click="activeIndex='2'"><router-link to="/map">{{$t('nav.map')}}</router-link></el-menu-item> -->
-            <el-menu-item index="3" @click="activeIndex='3'"><router-link to="/behaviorInfo">{{$t('nav.task')}}</router-link></el-menu-item>
-            <el-menu-item index="4" @click="activeIndex='4'"><router-link to="/diagnostics">{{$t('nav.diagnostic')}}</router-link></el-menu-item>
-            <!-- <el-menu-item index="5"><router-link to="/ros_paramcfg">{{$t('nav.config')}}</router-link></el-menu-item> -->
-          </el-menu>
+          <div class="logo"><img src="@/assets/logo.png" alt="logo" @click="fullscreenChange"></div>
 
           <div class="header_right">
-            <i class="iconfont icon-shezhi" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;"></i>
-            <img src="/img/znen.png" alt="中/En" @click="changeLanguage()" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;">
-            <Fullscreen />
-            <router-link to="/ros_paramcfg"><img src="/img/setting.png" :alt="$t('nav.config')"  @click="activeIndex='0'" style="width: 30px; height: 30px; margin-right: 10px; cursor: pointer;"></router-link>
+            <router-link to="/" v-if="isIndex"><i class=" el-icon-setting menu_font"
+                @click="changeIndex(0)"></i></router-link>
+            <router-link to="/ros_paramcfg" v-else><i class="el-icon-back menu_font"
+                @click="changeIndex(1)"></i></router-link>
           </div>
 
         </div>
@@ -37,17 +27,12 @@
 </template>
 
 <script>
-import users from "@/views/users";
-import Fullscreen from "@/components/Fullscreen";
-import { setCache, getCache } from "@/utils/session";
-
 export default {
   name: "layout",
-  components: { users, Fullscreen },
   data() {
     return {
       themes: 'white',
-      activeIndex: '1',
+      isIndex: Number(localStorage.getItem('isIndex')),
     };
   },
   computed: {
@@ -71,47 +56,113 @@ export default {
     }
   },
   mounted() {
-    if (getCache('activeIndex')) this.activeIndex = getCache('activeIndex');
+    // 快捷键判断
+    window.onkeydown = (e) => this.keyJudgment(e);
+
+    // 判断全屏状态
+    this.isFullscreen = this.isFullScreens()
+    window.onresize = () => this.isFullscreen = this.isFullScreens();
   },
   methods: {
+    changeIndex(index) {
+      this.isIndex = index;
+      localStorage.setItem('isIndex', index);
+    },
     changeLanguage() {
       this.$i18n.locale == 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'   //设置中英文模式
       localStorage.setItem('languageSet', this.$i18n.locale)   //将用户设置存储到localStorage以便用户下次打开时使用此设置
     },
 
-    handleSelect(key, keyPath) {
-      setCache('activeIndex', key)
+    // 判断是否为全屏
+    isFullScreens() {
+      return (
+        document.fullscreenElement ||
+        document.msFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.webkitFullscreenElement ||
+        false
+      )
+    },
+
+    // F11快捷键判断
+    keyJudgment(e) {
+      const keyCode = e.keyCode || e.which || e.charCode
+      const altKey = e.altKey
+      const shiftKey = e.shiftKey
+      const ctrlKey = e.ctrlKey
+      if (!altKey && !ctrlKey && !shiftKey && keyCode === 122) {
+        this.fullscreenChange()
+        e.preventDefault()
+        return
+      }
+    },
+
+    // 全屏切换
+    fullscreenChange() {
+      console.log(1)
+      this.isFullscreen = !this.isFullscreen
+      const el = document.documentElement
+      if (this.isFullscreen) {
+        const rfs =
+          el.requestFullScreen ||
+          el.webkitRequestFullScreen ||
+          el.mozRequestFullScreen ||
+          el.msRequestFullscreen
+        if (typeof rfs !== undefined && rfs) {
+          rfs.call(el)
+        }
+        return
+      } else {
+        const newRFS =
+          document.exitFullscreen ||
+          document.msExitFullscreen ||
+          document.mozCancelFullScreen ||
+          document.webkitExitFullscreen
+        newRFS.call(document)
+      }
     }
   },
 };
 </script>
 
 <style lang="less">
-.el-menu{
+.menu_right {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.el-menu {
   background-color: #ffffff00 !important;
 }
+
 .el-menu-demo {
   display: flex;
   align-items: center;
   width: 100%;
 }
-.el-menu-item{
+
+.el-menu-item {
   font-size: 18px !important;
   font-weight: 700 !important;
 }
 
 .el-menu.el-menu--horizontal {
-  
+
   border-bottom: solid 1px #66b1ff !important;
-  a{
+
+  a {
     color: #0e0e0eec !important;
   }
 }
 
-.el-menu--horizontal>.el-menu-item:not(.is-disabled):focus, .el-menu--horizontal>.el-menu-item:not(.is-disabled):hover, .el-menu--horizontal>.el-submenu .el-submenu__title:hover {
-    background-color: #3994fc85 !important;
-    // background-color: #222222 !important;
+.el-menu--horizontal>.el-menu-item:not(.is-disabled):focus,
+.el-menu--horizontal>.el-menu-item:not(.is-disabled):hover,
+.el-menu--horizontal>.el-submenu .el-submenu__title:hover {
+  background-color: #3994fc85 !important;
+  // background-color: #222222 !important;
 }
+
 .el-drawer__header {
   font-size: 18px;
   padding: 20px !important;
@@ -207,11 +258,17 @@ export default {
   font-size: 32px;
 }
 
+.menu_font {
+  color: #000000;
+  font-size: 36px;
+}
+
 .header_right {
   display: flex;
   align-items: center;
   position: absolute;
   right: 20px;
+  cursor: pointer;
 }
 
 .el-dropdown {
@@ -235,4 +292,5 @@ export default {
   padding: 10px !important;
   // border-left: solid 2px #e6e6e667; 
   background-color: #ffffff00 !important;
-}</style>
+}
+</style>

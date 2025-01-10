@@ -6,10 +6,33 @@ const {
   ResultInfo,
   Security,
   G1_pro,
+  FlexbeLog
 } = require("../schema/index");
 const { sequelize } = require("../config/db");
 const { Op } = require("sequelize");
 class TaskModel {
+
+   // 获取Flexbe日志
+   static async getFlexbeLog(id, time) {
+    return await FlexbeLog.findAll({
+      where: {
+        id,
+        time: {
+          [Op.gt]: time || new Date().getTime() - 24 * 60 * 60 * 1000, // 查询时间大于指定时间
+        }
+      },
+      order: [["id", "DESC"]],
+    })
+  }
+
+  // 设置Flexbe日志
+  static async setFlexbeLog(data) {
+    return await FlexbeLog.create({
+      text: data.text,
+      time: data.time,
+      status_code: data.status_code,
+    });
+  }
   // 创建任务
   static async createTask(data) {
     return await Task.create({

@@ -14,11 +14,9 @@ class RobotModel {
   }
 
   // 获取机器人
-  static async getRobot(siteId) {
-    //console.log('==========now siteId==============='+siteId);
+  static async getRobot() {
     return await Robot.findAll({
-      where: { status: 1, siteId },
-
+      where: { status: 1 },
     });
   }
 
@@ -71,12 +69,10 @@ class RobotModel {
   // 更新机器人信息
   static async updateRobot(data) {
     return await Robot.update({
-      robotname: data.robotname,
-      ip: data.ip,
-      ptzurl: data.ptzurl,
-      robot_type: data.robot_type,
-      //若移动机器人到其他场地，siteId就是新场地的id
-      siteId: data.siteId,
+      pvmheight: data.pvmheight,
+      pvmwidth: data.pvmwidth,
+      reminder: data.reminder,
+      installgap: data.installgap,
     }, {
       where: { id: data.id }
     });

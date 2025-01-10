@@ -70,11 +70,9 @@ class Robot extends EventEmitter {
   // Promise 化的 subscribe 操作
   subscribeTopic(topicName, messageType, callback) {
     const topic = this.Topic(topicName, messageType);
-    topic.subscribe((msg) => {
-      callback(msg);
-    }, (error) => {
-      console.log(`Error subscribing to ${topicName}:`, error);
-    });
+    const wrappedCallback = (msg) => callback(msg);
+    topic.subscribe(wrappedCallback, (error) => console.log(`Error subscribing to ${topicName}:`, error));
+    return () => topic.unsubscribe(wrappedCallback);
   }
 
   // ----------------------------- 发 布 消 息 （publish） -------------------------------------------
@@ -85,22 +83,10 @@ class Robot extends EventEmitter {
     this.publish('joy', 'sensor_msgs/Joy', message);
   }
 
-   // 夹爪操控 seq:0  张开 seq：100 抓取
-   gripper(num) {
-    console.log(num);
-    const message = { seq: num, frame_id: 'open_close_gripper' };
-    this.publish('/trig', 'std_msgs/Header', message);
-  }
-
-  // 底座标定
-  baseCalibration() {
-    const message = { seq: 1, frame_id: 'zero_calibrate' };
-    this.publish('/trig', 'std_msgs/Header', message);
-  }
-
-  // 重定位
-  initPose(pose) {
-    this.publish('/initialpose', 'geometry_msgs/PoseWithCovarianceStamped', { header: { frame_id: 'map' }, pose: { pose } });
+  // 全局操控
+  globalControl(pose) {
+    const message = { header: { frame_id: 'tool0' }, pose };
+    this.publish('tool0_goal', 'geometry_msgs/PoseStamped', message);
   }
 
   // 发送任务
@@ -108,40 +94,24 @@ class Robot extends EventEmitter {
     this.publish('/task_nodes', 'task/task_info', d);
   }
 
-  // 导航
-  sendNav(data) {
-    this.publish('/set_goal_node', 'std_msgs/String', { data });
-    // this.publish('/testhaha', 'std_msgs/String', {header: { frame_id: 'Luke_luo' } });
-  }
-
-  // 取消导航
-  cancelNav() {
-    this.publish('/move_base/cancel', 'actionlib_msgs/GoalID', { id: '' });
-  }
-
   // 重启工控机
   reboot() {
     this.publish('/system_cmd', 'std_msgs/String', { data: 'echo nvidia | sudo -S sudo reboot' });
   }
-  
-   // 重启程序
-   relaunch() {
+
+  // 重启程序
+  relaunch() {
     this.publish('/system_cmd', 'std_msgs/String', { data: 'echo nvidia|~/sh_file/restart_run.sh' });
   }
 
-  // 回库
-  goBack() {
-    this.publish('/go_charging', 'std_msgs/Bool', { data: true });
+  // 急停
+  estop(data) {
+    this.publish('/estop', 'std_msgs/Bool', { data });
   }
 
-  // 设置机器人参数
-  setParam(data) {
-    this.publish('/set_param', 'param/Params', { data });
-  }
-
-   // 急停
-   estop(data) {
-    this.publish('/estop', 'std_msgs/Bool', { data: data });
+  // 机械臂急停
+  armEstop(data) {
+    this.publish('/plc24_request', 'std_msgs/String', { data });
   }
 
   // flexbe操作
@@ -149,61 +119,86 @@ class Robot extends EventEmitter {
     this.publish('/flexbe_trig', 'std_msgs/Header', { frame_id: data });
   }
 
+  // 弹框
+  sendDialog(data) {
+    this.publish('/dialog', 'std_msgs/Header', { frame_id: data });
+  }
+
+  // Git 
+  git() {
+    this.publish('/robot_command', 'std_msgs/String', { data: '{"git": {"op": "pull"}}' });
+  }
+
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
-   // 消息反馈trig
-   feedBack(callback) {
-    return this.subscribeTopic('/trig', 'std_msgs/Header', callback);
+  // robot_state
+  robotState(callback) {
+    if (this.robotStateSub) this.robotStateSub();
+    this.robotStateSub = this.subscribeTopic('/robot_state', 'std_msgs/String', callback);
+  }
+
+  // 弹框
+  dialog(callback) {
+    if (this.dialogSub) this.dialogSub();
+    this.dialogSub = this.subscribeTopic('/dialog', 'std_msgs/Header', callback);
+  }
+
+  // flexbe log
+  flexbeLog(callback) {
+    if (this.flexbeLogSub) this.flexbeLogSub();
+    this.flexbeLogSub = this.subscribeTopic('/flexbe/log_stamped', 'flexbe_msgs/BehaviorLog', callback);
+  }
+
+  ///message to web diagnostics
+  newDiagnostics(callback) {
+    if (this.newDiagnosticsSub) this.newDiagnosticsSub();
+    this.newDiagnosticsSub = this.subscribeTopic('message_to_web_diagnostics', 'diagnostic_msgs/DiagnosticArray', callback);
+  }
+
+  // 消息反馈trig
+  feedBack(callback) {
+    if (this.feedBackSub) this.feedBackSub();
+    this.feedBackSub = this.subscribeTopic('/trig', 'std_msgs/Header', callback);
   }
   // 获取机器人参数
   getParam(callback) {
-    this.subscribeTopic('/pub_param', 'param/Params', msg => callback(msg.data));
-  }
-
-  // 导航结束
-  navEnd(callback) {
-    return this.subscribeTopic('/move_base/result', 'move_base_msgs/MoveBaseActionResult', msg => callback(msg.status.status === 3));
-  }
-
-  // 路径
-  async navPath(callback) {
-    return this.subscribeTopic('/move_base/NavfnROS/plan', 'nav_msgs/Path', callback);
-    // return this.subscribeTopic('/move_base/RsLocalPlanner/local_plan', 'nav', callback);
-    // return this.subscribeTopic('/move_base/GlobalPlanner/plan', 'nav_msgs/Path', callback); //原来的
+    if (this.getParamSub) this.getParamSub();
+    this.getParamSub = this.subscribeTopic('/param', 'param/Params', msg => callback(msg.data));
   }
 
   // 任务状态
   taskState(callback) {
-    return this.subscribeTopic('/task_node/task_state', 'task/task_state', callback);
-  }
-
-  // 机器人姿态
-  async robotPose(callback) {
-    return this.subscribeTopic('/robot_pose', 'geometry_msgs/Pose', callback);
+    if (this.taskStateSub) this.taskStateSub();
+    this.taskStateSub = this.subscribeTopic('/task_node/task_state', 'task/task_state', callback);
   }
 
   // 电量、速度
   bunkerStatus(callback) {
-    return this.subscribeTopic('/bunker_status', 'bunker_msgs/BunkerStatus', callback);
+    if (this.bunkerStatusSub) this.bunkerStatusSub();
+    this.bunkerStatusSub = this.subscribeTopic('/bunker_status', 'bunker_msgs/BunkerStatus', callback);
+  }
+
+  // 速度
+  speed(callback) {
+    if (this.speedSub) this.speedSub();
+    this.speedSub = this.subscribeTopic('/odom', 'nav_msgs/Odometry', callback);
+  }
+
+  // 电量
+  battery(callback) {
+    if (this.batterySub) this.batterySub();
+    this.batterySub = this.subscribeTopic('/battery', 'sensor_msgs/BatteryState', callback);
   }
 
   // 诊断，告警
   diagnostic(callback) {
-    return this.subscribeTopic('/diagnostics_agg', 'diagnostic_msgs/DiagnosticArray', callback);
+    if (this.diagnosticSub) this.diagnosticSub();
+    this.diagnosticSub = this.subscribeTopic('/diagnostics', 'diagnostic_msgs/DiagnosticArray', callback);
   }
 
-  // 点云
-  scanPoints(callback) {
-    return this.subscribeTopic('/scan_points', 'sensor_msgs/PointCloud', callback);
-  }
-
-   // 日志
-   log(callback) {
-    return this.subscribeTopic('/logs', 'rosgraph_msgs/Log', callback);
-  }
-
-   // 机械臂视频
-   armVideo(callback) {
-    return this.subscribeTopic('/arm_video', 'std_msgs/String', callback);
+  // 日志
+  log(callback) {
+    if (this.logSub) this.logSub();
+    this.logSub = this.subscribeTopic('/logs', 'rosgraph_msgs/Log', callback);
   }
 
   // --------------------------------------------------------

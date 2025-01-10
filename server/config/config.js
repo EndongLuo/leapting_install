@@ -6,21 +6,7 @@ module.exports = {
     port: '5432',
     dialect: 'postgres',
     // database: 'leapting_robot_qs',
-    database: 'leapting_robot',
-    user: 'postgres',
-    password: 'root',
-    pool: {
-      max: 10,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    },
-  },
-  r_db: {
-    host: '10.168.4.100',
-    port: '5432',
-    dialect: 'postgres',
-    database: 'robot',
+    database: 'leapting_install',
     user: 'postgres',
     password: 'root',
     pool: {

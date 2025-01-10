@@ -8,12 +8,9 @@ class RobotController {
    */
   static async getRobot(ctx) {
     try {
-      const { siteId } = ctx.query;
-      //当前所属场地
-      //console.log('siteId', siteId);
-      var res = await RobotModel.getRobot(siteId);
-      // console.log('+++++++++++res++++++++++++', res[0]);
-
+      // const { siteId } = ctx.query;
+      
+      var res = await RobotModel.getRobot();
       if (res) {
         console.log('获取机器人成功');
         ctx.body = { code: 200, msg: '获取机器人成功', data: res };

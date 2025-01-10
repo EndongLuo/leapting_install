@@ -43,18 +43,6 @@ async function initializeRobots(robotIPs) {
       // console.log(`${socket.id}: ${ip} in Inspection`);
 
       if (!robotArr[ip]) robotArr[ip] = new Robot(ip);
-
-      if (!deviceArr[ip]) {
-        try {
-          //根据机器人获取场地id
-          if (ip == '10.168.4.100') return;
-          const res = await getRobotSite(ip);
-
-          deviceArr[ip] = { ...res[0].dataValues }
-        } catch (error) {
-          console.error(`Error getting site for IP ${ip}:`, error);
-        }
-      }
     });
     // 等待 robotPromises 中的所有 promises 解析
     await Promise.all(robotPromises);

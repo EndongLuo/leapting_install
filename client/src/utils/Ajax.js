@@ -21,7 +21,7 @@ instance.interceptors.request.use(
     // }
     // //用户身份token
     // if (store.state.user.token) {
-    //   //请求头的这个属性token，和后台老师商量好的了，不能叫做别的名字
+    //   //请求头的这个属性token
     //   config.headers.token = store.state.user.token;
     // }
     // 进度条开始

@@ -19,12 +19,14 @@ Vue.use(Vuex);
 
 import user from './modules/user';
 import ros from './modules/ros';
+import socket from './modules/socket';
 import setting from './modules/setting';
 
 export default new Vuex.Store({
   modules: {
     user,
     ros,
-    setting
+    setting,
+    socket
   },
 });

@@ -2,7 +2,7 @@
  * 模型关联类
  */
 
-const { sequelize, resultPool } = require("../config/db");
+const { sequelize } = require("../config/db");
 const { DataTypes } = require('sequelize');
 const User = require('./user')(sequelize, DataTypes);
 const Role = require('./role')(sequelize, DataTypes);
@@ -14,11 +14,8 @@ const TimedTask = require('./timedtask')(sequelize, DataTypes);
 const Permission = require('./permission')(sequelize, DataTypes);
 const Log = require('./log')(sequelize, DataTypes);
 const G1_pro = require('./g1_pro')(sequelize, DataTypes);
-const WindLog = require('./wind_log')(sequelize, DataTypes);
+const FlexbeLog = require('./flexbe_log')(sequelize, DataTypes);
 
-const ResultInfo = require('./resultinfo')(resultPool, DataTypes);
-const rosParam = require('./rosparam')(resultPool, DataTypes);
-const Security = require('./security')(resultPool, DataTypes);
 
 //建立模型之间关联关系
 
@@ -53,18 +50,18 @@ TaskInfo.belongsTo(Task);
 Task.hasMany(TimedTask, { onDelete: 'CASCADE' });
 TimedTask.belongsTo(Task);
 
-// 场地与风速日志：一个场地有多个风速日志，一个风速日志只有一个场地
-Site.hasMany(WindLog);
-WindLog.belongsTo(Site);
+// // 场地与风速日志：一个场地有多个风速日志，一个风速日志只有一个场地
+// Site.hasMany(FlexbeLog);
+// FlexbeLog.belongsTo(Site);
 
 
 //创建表
-// sequelize.sync({ force: true });  { alter: true }
+// sequelize.sync({ force: true });  
+// sequelize.sync({ alter: true });
 sequelize.sync();
-resultPool.sync();
 
 // Site.sync({ alter: true })
 
 module.exports = {
-  User, Role, Site, Task, TimedTask, TaskInfo, Robot, ResultInfo, Security, rosParam, G1_pro, Log, WindLog
+  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog
 }

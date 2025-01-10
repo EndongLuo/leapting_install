@@ -1,4 +1,4 @@
-const { Site, User, Robot, WindLog } = require('../schema/index')
+const { Site, User, Robot, FlexbeLog } = require('../schema/index')
 const { sequelize } = require("../config/db");
 const { Op, Sequelize, where } = require('sequelize');
 
@@ -229,27 +229,7 @@ class siteMapModel {
     return { PVMIDs: PVMIDs.map((item) => item.PVMID), tablename, wind_limit };
   }
 
-  // 获取风速日志
-  static async getWindLog(id, time) {
-    return await WindLog.findAll({
-      where: {
-        id,
-        time: {
-          [Op.gt]: time || new Date().getTime() - 24 * 60 * 60 * 1000, // 查询时间大于指定时间
-        }
-      },
-    })
-  }
-
-  // 设置风速日志
-  static async setWindLog(data) {
-    return await WindLog.create({
-      wind_speed: data.wind_speed,
-      wind_limit: data.wind_limit,
-      status: data.status,
-      siteId: data.siteId,
-    });
-  }
+ 
 }
 
 module.exports = siteMapModel;

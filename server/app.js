@@ -9,10 +9,10 @@ const jwt = require('koa-jwt')
 const cors = require('koa2-cors')
 
 const { koaSwagger } = require('koa2-swagger-ui')
-const scheduleDataUpdate = require('./utils/scheduleTasks');
+// const scheduleDataUpdate = require('./utils/scheduleTasks');
 
 // 启动定时任务
-scheduleDataUpdate();
+// scheduleDataUpdate();
 
 // 配置文件
 const config = require('./config/config')
@@ -75,6 +75,7 @@ app.use(jwt({
 }).unless({
   // 设置login、register接口，可以不需要认证访问
   path: [
+    /\/api\/robot\/robot/,
     /\/api\/user\/register/,
     /\/api\/user\/login/,
     /\/api\/public\/getCaptcha/,

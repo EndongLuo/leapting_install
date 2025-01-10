@@ -49,9 +49,23 @@ const en = {
   },
   task:{
     taskinfo:'Task Info',
+    tasklog: 'Flexbe Log',
     task:'Task',
     step:'Status',
-    none: 'None'
+    none: 'None',
+    progress:'Progress',
+    stop: 'Stop', 
+    executing: 'Executing',
+    pause: 'Pause', 
+    completed:'Completed',
+    continue:'Go On',
+    taskid:'Task ID',
+    taskname:'Task Name',
+    tasktype:'Task Type',
+    taskprogress:'Progress',
+    starttime:'Start Time',
+    endtime:'End Time',
+    taskstep:'Task Step',
   },
   install:{
     control:'Chassis Control',
@@ -90,6 +104,9 @@ const en = {
     noautohandeye:'Manual Calibration',
     git:'Version',
     update:'Update',
+    language: 'Language',
+    chinese: 'Chinese',
+    english: 'English',
   },
   connPrompt:{
     success:'Connected to Install Robot.',
@@ -121,6 +138,18 @@ const en = {
     UI_handeye_arm:'mobile manipulator',
     UI_handeye_take:'collect data',
     UI_continue:'Whether to continue the installation',
+  },
+  dialog:{
+    next:'Continue after confirmation',
+    withdraw_pvm:'Confirm to withdraw the PVM',
+    withdraw:'Withdraw',
+    cupoff:'The suction cup will be released after confirmation',
+    down5mm:'The end of the robot arm will be pressed down by 5mm after confirmation',
+    uninstall:'Is the robot arm in the right position? After confirmation, the robot arm will descend vertically',
+    pose_failed:'Data exception, the component will be withdrawn',
+    plan_failed:`The spacing is too far, please move the vehicle and confirm`,
+    identification_failure:'Identification timeout, please try again...',
+    sec_identification_failure:`Please confirm after fine-tuning, or install manually`,
   }
 }
 

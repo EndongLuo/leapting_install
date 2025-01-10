@@ -1,20 +1,13 @@
-// import requests from '@/utils/Ajax';
-import mockRequests from '@/utils/mockAjax';
+const { request } = require('@/utils/request');
 
+/**
+ * @description 获取机器人
+ * @returns {Object}
+ */
+export const getRobot = () => request.get(`/robot/robot`);
 
-
-// mock虚拟信息
-export const reqTableData = () => mockRequests.get('/tableData');
-export const reqDevice = () => mockRequests.get('/device');
-export const reqBehaviorList = () => mockRequests.get('/behavior_list');
-export const reqFlexbeSite = () => mockRequests.get('/flexbe_site');
-export const reqRoscfg = () => mockRequests.get('/roscfg');
-// export const reqBannerList = () => mockRequests.get('/banner');
-// export const reqFloorList = () => mockRequests.get('/floor');
-
-// 搜索信息
-// export const reqSearchInfo = data => requests.post('/list', data);
-// 三级联动接口
-// /api/product/getBaseCategoryList get请求 无参数
-// export const reqCategoryList = () =>
-//   requests.get('/product/getBaseCategoryList');
+/**
+ * @description 修改机器人
+ * @returns {Object}
+ */
+export const updateRobot = data => request.put(`/robot/robot`, data);

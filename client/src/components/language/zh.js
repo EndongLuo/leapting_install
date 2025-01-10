@@ -2,125 +2,155 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
 const zh = {
   language: {
-      name: 'English'
+    name: 'English'
   },
   ...zhLocale,
-  mains:{
-    confirm:'确认',
-    cancel:'取消',
-    edit:'编辑',
-    goback:'返回',
+  mains: {
+    confirm: '确认',
+    cancel: '取消',
+    edit: '编辑',
+    goback: '返回',
     save: '保存'
   },
-  nav:{
+  nav: {
     index: '首页',
-    task:'任务',
-    diagnostic:'诊断',
-    config:'配置',
-    map:'地图'
+    task: '任务',
+    diagnostic: '诊断',
+    config: '配置',
+    map: '地图'
   },
-  table:{
+  table: {
     send: '发送',
     stop: '停止',
     delete: '删除',
-    edit:'编辑'
+    edit: '编辑'
   },
-  diagnostics:{
+  diagnostics: {
     complete: '完成',
-    warning:'警告',
-    error:'错误',
-    stale:'失效',
+    warning: '警告',
+    error: '错误',
+    stale: '失效',
     total: '全部'
   },
-  robot:{
-    robotinfo:'机器人信息',
+  robot: {
+    robotinfo: '机器人信息',
     robotid: '机器人ID',
-    connect:'连接',
-    reconnect:'重连',
-    connected:'已连接',
-    notconnect:'未连接',
+    connect: '连接',
+    reconnect: '重连',
+    connected: '已连接',
+    notconnect: '未连接',
     battery: '电池',
-    network:'网络',
-    speed:'速度'
+    network: '网络',
+    speed: '速度'
   },
-  map:{
-    selectmap:'选择地图',
-    nomap:'暂无地图'
+  map: {
+    selectmap: '选择地图',
+    nomap: '暂无地图'
   },
-  task:{
-    taskinfo:'任务信息',
-    task:'任务',
-    step:'步骤',
-    none: '暂无'
+  task: {
+    taskinfo: '任务信息',
+    tasklog: '任务日志',
+    task: '任务',
+    step: '步骤',
+    none: '暂无',
+    progress: '进度',
+    stop: '停止',
+    executing: '执行中',
+    pause: '暂停',
+    completed: '完成',
+    continue: '继续',
+    taskid: '任务 ID',
+    taskname: '任务名称',
+    tasktype: '任务类型',
+    taskprogress:'任务进度',
+    starttime:'开始时间',
+    endtime:'结束时间',
+    taskstep:'任务步骤'
   },
-  install:{
-    control:'机器人操控',
-    armcontrol:'机械臂操控',
+  install: {
+    control: '机器人操控',
+    armcontrol: '机械臂操控',
     fai: '全自动安装',
     sai: '半自动安装',
-    monitor:'监控',
-    model:'3D模型',
-    pause:'暂停',
+    monitor: '监控',
+    model: '3D模型',
+    pause: '暂停',
     start: '开始',
-    continue:'继续',
-    stop:'停止',
-    withdraw:'撤回',
-    isback:'返回',
-    reset:'复位',
-    check:'检测',
-    axis:'轴',
-    global:'全局',
-    majoradjust:'粗调',
-    minoradjust:'微调'
+    continue: '继续',
+    stop: '停止',
+    withdraw: '撤回',
+    isback: '返回',
+    reset: '复位',
+    check: '检测',
+    axis: '轴',
+    global: '全局',
+    majoradjust: '粗调',
+    minoradjust: '微调'
   },
-  config:{
-    pducontrol:'PDU 控制',
-    chargeStatus:'充电状态',
-    chassis:'底盘上电',
-    inverter:'逆变器上电',
-    charge:'充电上电',
-    basecontrol:'基础控制',
-    avoidance:'避障',
-    reminder:'电量提醒',
-    pvmsize:'组件尺寸',
-    installgap:'安装间隙',
-    devicestatus:'设备状态',
-    handeye:'手眼标定',
-    autohandeye:'自动标定',
-    noautohandeye:'手动标定',
-    git:'当前版本',
-    update:'更新',
+  config: {
+    pducontrol: 'PDU 控制',
+    chargeStatus: '充电状态',
+    chassis: '底盘上电',
+    inverter: '逆变器上电',
+    charge: '充电上电',
+    basecontrol: '基础控制',
+    avoidance: '避障',
+    reminder: '电量提醒',
+    pvmsize: '组件尺寸',
+    installgap: '安装间隙',
+    devicestatus: '设备状态',
+    handeye: '手眼标定',
+    autohandeye: '自动标定',
+    noautohandeye: '手动标定',
+    git: '当前版本',
+    update: '更新',
+    language: '系统语言',
+    chinese: '简体中文',
+    english: '英文',
   },
-  connPrompt:{
-    success:'安装机器人已连接。',
-    close:'安装机器人连接已关闭',
-    reconn:'重新连接'
+  connPrompt: {
+    success: '安装机器人已连接。',
+    close: '安装机器人连接已关闭',
+    reconn: '重新连接'
   },
-  prompt:{
+  prompt: {
     switchMode: '任务进行中，请先结束任务再切换模式。',
     inputErrorMessage: '格式不正确',
-    inputNum:'请输入安装组件数量',
-    uninputNum:'请输入拆卸组件数量',
-    prompt:'提示',
+    inputNum: '请输入安装组件数量',
+    uninputNum: '请输入拆卸组件数量',
+    prompt: '提示',
     lowBattery: '电量过低'
   },
-  identify:{
-    identifyOk:'识别成功。',
-    identifyFail:'识别失败。',
-    identifyPick:'请检查是否有组件或者组件是否反光。',
-    identifyPut:'请移动车辆：桩子与车内侧履带2m平行（误差±5cm）。',
-    UI_dump:'是否释放吸盘',
-    UI_place:'是否放下光伏组件到支架上',
-    putting:'放回中。。。',
-    identifyagain:'继续识别',
-    checkPickupTF:'抓取识别中。。。',
-    checkPlaceTF:'放置识别中。。。',
-    checkTF:'检测识别中。。。',
-    close:'确认关闭？',
-    taskover:'任务结束！',
-    UI_handeye_arm:'移动机械臂',
-    UI_handeye_take:'采集数据',
-    UI_continue:'是否继续安装',
+  identify: {
+    identifyOk: '识别成功。',
+    identifyFail: '识别失败。',
+    identifyPick: '请检查是否有组件或者组件是否反光。',
+    identifyPut: '请移动车辆：桩子与车内侧履带2m平行（误差±5cm）。',
+    UI_dump: '是否释放吸盘',
+    UI_place: '是否放下光伏组件到支架上',
+    putting: '放回中。。。',
+    identifyagain: '继续识别',
+    checkPickupTF: '抓取识别中。。。',
+    checkPlaceTF: '放置识别中。。。',
+    checkTF: '检测识别中。。。',
+    close: '确认关闭？',
+    taskover: '任务结束！',
+    UI_handeye_arm: '移动机械臂',
+    UI_handeye_take: '采集数据',
+    UI_continue: '是否继续安装',
+  },
+  dialog: {
+    next: '确认后继续流程',
+    withdraw_pvm: '确认后撤回光伏板',
+    withdraw: '撤回',
+    cupoff: '确认后将松开吸盘',
+    down5mm: '确认后机械臂末端将下压5mm',
+    uninstall: '机械臂是否在合适位置，确认后机械臂将垂直下降',
+    pose_failed: '数据异常，将撤回组件',
+    plan_failed: `间距过远，请移动车辆后确认`,
+    identification_failure: '识别超时 请重试。。。',
+    sec_identification_failure: `请微调后确认，或手动安装`,
+    manual: '手动',
   }
 }
 

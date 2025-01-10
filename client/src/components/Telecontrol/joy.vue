@@ -1,18 +1,5 @@
 <template>
   <div class="joys">
-    <!-- <div class="bizhang">
-    <el-tooltip :content="autocross ?'Avoidance' :'Avoidance' " placement="top">
-      <el-switch
-        class="switchStyle"
-        v-model="autocross"
-        @change="upDataAvoidance"
-        active-color="#121212"
-        inactive-color="#dcdfe6"
-        active-text="On"
-        inactive-text="Off">
-        </el-switch>
-      </el-tooltip>
-    </div> -->
     <!-- 前后 -->
     <div class="page">
     <div style="margin-top: 100px; margin-left: 50%; position: relative">
@@ -109,7 +96,6 @@ var getDistance = function (x1, y1, x2, y2) {
   // Math.sqrt求平方根
   return Math.sqrt(_x * _x + _y * _y);
 };
-import { mapState } from 'vuex';
 export default {
   props: [ "stop", 'velocity'],
   data() {
@@ -129,9 +115,6 @@ export default {
       inDraging1: false,
     };
   },
-  computed: {
-    ...mapState('ros',['ros']),
-  },
   mounted() {
     // 禁用双指放大
     document.documentElement.addEventListener('touchstart',  (e)=> {
@@ -139,55 +122,8 @@ export default {
       }, {passive: false});
       
     this.loop();
-
-    this.avoidanceEcho();
   },
   methods: {
-    // 避障数据回显
-    avoidanceEcho(){
-      
-      var pvsize_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/robot_state',
-        messageType: 'std_msgs/String'
-      });
-
-      pvsize_sub.subscribe((msg)=> {
-        msg = JSON.parse(msg.data);
-        this.autocross = msg.dynparam.filter_enabled;
-      })
-    },
-    // 修改避障状态
-    upDataAvoidance(){
-      var updatasize_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/robot_command',
-        messageType: 'std_msgs/String'
-      });
-      if (!this.autocross) {
-        console.log(this.autocross);
-        this.$confirm(`是否确认关闭避障`, '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            center: true,
-            type: 'warning'
-          }).then(() => {
-            updatasize_sub.publish({data:`{"dynparam": {"cmd_vel_filter": {"filter_enabled": ${this.autocross}}}`});
-
-            this.$message.success('避障已关闭!');
-          }).catch(() => {
-            this.autocross = true
-            this.$message({
-              type: 'info',
-              message: '取消关闭'
-            });
-          });
-      }else{
-        updatasize_sub.publish({data:`{"dynparam": {"cmd_vel_filter": {"filter_enabled": ${this.autocross}}}`});
-      } 
-      
-    },
-
     /**参数说明 angle 旋转的角度 direction X Y 两个邻边  power 两点之间的距离比上最大摇杆移动距离*/
     // 手指触摸屏幕事件
     onTouchStart(e) {

@@ -1,176 +1,104 @@
 <template>
-  <div
-    style="background-color: #ffffff0a; overflow: hidden; width: 70%;min-width: 580px;min-height: 90vh; margin: 0 auto;">
-    <!-- <el-button type="primary" v-if="!isEdit" @click="isEdit = true">{{ $t('mains.edit') }}</el-button>
-    <el-button v-else @click="isEdit = false">{{ $t('mains.goback') }}</el-button> -->
+  <div class="setting">
 
     <!-- 电量，避障，组件尺寸 -->
     <div class="pduControl">
       <h1 class="title">{{ $t('config.basecontrol') }}</h1>
       <div class="outbox">
-        <div class="inbox"><span>{{ $t('config.avoidance') }}：</span> <el-switch v-model="autocross"
-            @input="upDataAvoidance"></el-switch></div>
-        <div class="inbox"><span>{{ $t('config.reminder') }}：</span>
-          <div style="width: 100px;"><el-slider v-model="reminder" :step="5"></el-slider></div>
+        <div class="inbox">
+          <span style="width: 386px;">{{ $t('config.pvmsize') }}(mm)：</span>
+          <el-input v-model="robot.pvmheight" @blur="upDataPVM"></el-input>
+          <el-input v-model="robot.pvmwidth" @blur="upDataPVM"></el-input>
         </div>
-        <div class="inbox"><span style="width: 386px;">{{ $t('config.pvmsize') }}(mm)：</span>
-          <el-input v-model="pvm_length" @blur="upDataPVM"></el-input>
-          <el-input v-model="pvm_width" @blur="upDataPVM"></el-input>
-        </div>
-        <div class="inbox"><span style="width: 232px;">{{ $t('config.installgap') }}(mm)：</span>
-          <el-input v-model="install_gap" @blur="upDataPVM" style="width: 100%;"></el-input>
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.installgap') }}(mm)：</span>
+          <el-input v-model="robot.installgap" @blur="upDataPVM"></el-input>
         </div>
 
         <div class="inbox">
-          <span style="width: 100px;">{{ $t('config.handeye') }}：</span>
-          <el-button type="primary" @click="HandEye(false)">{{ $t('config.noautohandeye') }}</el-button>
-          <el-button type="primary" @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
+          <span>{{ $t('config.reminder') }}：</span>
+          <div style="width: 200px;"><el-slider v-model="robot.reminder" @change="upDataPVM" :step="5"></el-slider>
+          </div>
+          <div style="margin-left: 10px;">{{ robot.reminder }}%</div>
+        </div>
+
+        <div class="inbox">
+          <span>{{ $t('config.language') }}：</span>
+          <el-select v-model="language" placeholder="Language" @change="changeLanguage">
+            <el-option :label="$t('config.chinese')" value="zh"></el-option>
+            <el-option :label="$t('config.english')" value="en"></el-option>
+          </el-select>
+        </div>
+
+        <div class="inbox">
+          <span>{{ $t('config.handeye') }}：</span>
+          <el-button @click="HandEye(false)">{{ $t('config.noautohandeye') }}</el-button>
+          <el-button @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
         </div>
 
         <div class="inbox">
           <span style="width: 100px;">{{ $t('config.git') }}：
-            <span v-if="gitNum" style="margin-left: 10px;color: #949494; font-size: 13px;"> {{gitNum}} </span>
+            <span v-if="gitNum" style="margin-left: 10px;color: #949494; font-size: 13px;"> {{ gitNum }} </span>
           </span>
-          <el-button type="primary" @click="gitPull">{{ $t('config.update') }}</el-button> 
-        </div>
-
-      </div>
-    </div>
-
-    <!-- pdu控制 -->
-    <div class="pduControl">
-      <h1 class="title">{{ $t('config.pducontrol') }}</h1>
-      <div class="outbox">
-        <div class="inbox"><span>{{ $t('config.chassis') }}：</span> <el-switch v-model="chassisSwitch" @input="chassis"
-            active-value="1" inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{ $t('config.inverter') }}：</span> <el-switch v-model="inverterSwitch" @input="inverter"
-            active-value="1" inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{ $t('config.charge') }}：</span> <el-switch v-model="chargeSwitch" @input="openCharge"
-            active-value="1" inactive-value="0"></el-switch></div>
-        <div class="inbox"><span>{{ $t('config.chargeStatus') }}：</span> <el-switch disabled v-model="chargeStatus"
-            active-value="1" inactive-value="0"></el-switch></div>
-      </div>
-    </div>
-
-
-    <!-- 设备状态 -->
-    <div class="pduControl" v-if="pduStatus != null">
-      <h1 class="title">{{ $t('config.devicestatus') }}</h1>
-      <div class="outbox1">
-        <div v-for="i in pduStatus" :key="i.key" style="margin: 5px;">
-          {{ i.key }}: <span style="font-weight: 300;">{{ i.value }}</span>
+          <el-button @click="gitPull">{{ $t('config.update') }}</el-button>
         </div>
       </div>
     </div>
-
-    <!-- <el-form ref="form" size="small" :model="form">
-      <el-form-item v-for="(ros, k1, index) in rosCfg" :key="index">
-        <el-divider content-position="center">{{ k1 }}</el-divider>
-
-        <el-form-item v-for="(r, k2, index) in ros" :key="index" :label="k2" label-width="140px">
-          <div v-if="!isEdit">
-            ：{{ form[k1][k2] }}
-          </div>
-
-          <div v-else>
-            <div v-if="typeof r == 'boolean'">
-              <el-switch v-model="form[k1][k2]"></el-switch>
-            </div>
-            <div v-else-if="typeof r == 'string'">
-              <el-col :span="18">
-                <el-input v-model="form[k1][k2]"></el-input></el-col>
-            </div>
-            <div v-else-if="typeof r == 'object'">
-              <el-col :span="18">
-                <el-select style="width:100%" v-model="form[k1][k2]" placeholder="请选择">
-                  <el-option v-for="s, i in r" :key="i" :label="s.label" :value="s"></el-option>
-                </el-select></el-col>
-            </div>
-            <div v-else-if="typeof r == 'number'">
-              <el-col :span="18">
-                <el-input type="number" :step="0.1" v-model.number="form[k1][k2]"></el-input></el-col>
-            </div>
-          </div>
-        </el-form-item>
-      </el-form-item>
-      <el-form-item class="threeBtn" v-if="isEdit">
-        <el-button type="primary" @click="saveCfg">{{ $t('mains.save') }}</el-button>
-      </el-form-item>
-    </el-form> -->
   </div>
 </template>
 
 <script>
-import { reqRoscfg } from "@/api";
-import rosCfg from "@/assets/ros.cfg.json";
-import ROSLIB from "roslib/src/RosLib";
 import { mapState } from "vuex";
+import { getRobot, updateRobot } from '@/api';
 export default {
   data() {
     return {
-      isEdit: false,
-      rosCfg: null,
-      form: null,
-      chargeSwitch: false, // 充电开关
-      chargeStatus: false, // 充电状态
-      inverterSwitch: 0, // 逆变器开关
-      chassisSwitch: false, // 底盘开关
-      pdu_sub: null,
-      updatasize_sub: null,
-      reminder: 20,
-      pvm_length: '2123',
-      pvm_width: '1123',
-      autocross: false,
-      install_gap: 10,
-      gitNum:null,
-      // gitNum:'V1.0.3',
+      language: this.$i18n.locale,
+      robot: {}
     };
   },
   computed: {
-    ...mapState("ros", ["ros", "pduStatus"]),
+    ...mapState("socket", ['battery', 'gitNum', 'gitFeedback']),
   },
-  mounted() {
-    // this.getRoscfg();
-    // this.getRoscfgs();
-    this.avoidanceEcho();
-    this.reminder = JSON.parse(localStorage.getItem('reminder'));
-    this.battery();
-
-    this.pdu_sub = new ROSLIB.Topic({
-      ros: this.ros,
-      name: '/pdu_request',
-      messageType: 'std_msgs/String'
-    });
-
-    this.updatasize_sub = new ROSLIB.Topic({
-      ros: this.ros,
-      name: '/robot_command',
-      messageType: 'std_msgs/String'
-    });
-
-    this.trig_pub = new ROSLIB.Topic({
-      ros: this.ros,
-      name: '/trig',
-      messageType: 'std_msgs/Header',
-    });
+  async created() {
+    var res = await getRobot();
+    this.robot = res.data[0];
   },
   watch: {
-    pduStatus(val, old) {
-      // 控制逆变器
-      val.filter(o => {
-        if (o.key == 'chassis contactor') this.chassisSwitch = o.value;
-        else if (o.key == 'inverter contactor') this.inverterSwitch = o.value;
-        else if (o.key == 'charger contactor') this.chargeSwitch = o.value;
-        else if (o.key == 'charger status') this.chargeStatus = o.value;
-      })
-    },
-    reminder(val) {
-      localStorage.setItem('reminder', val);
+    battery(val, oldval) {
+      console.log(val, oldval, this.robot.reminder);
+
+      if (val < this.robot.reminder) {
+        console.log('电量低');
+        
+        this.$notify({
+          title: 'Warning',
+          message: 'Battery is low, please charge the robot as soon as possible!',
+          type: 'warning'
+        });
+      }
     }
   },
   methods: {
+    async upDataPVM() {
+      var res = await updateRobot(this.robot);
+
+      if (res.code == 200) {
+        this.$message.success('Update success!');
+      } else {
+        this.$message.error('Update failed!');
+      }
+    },
+    changeLanguage() {
+      this.$i18n.locale == 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'   //设置中英文模式
+      localStorage.setItem('languageSet', this.$i18n.locale)   //将用户设置存储到localStorage以便用户下次打开时使用此设置
+    },
+    // 发送goal
+    HandEye(b) {
+      this.$store.dispatch("socket/HandEye", b);
+    },
     gitPull() {
-      this.updatasize_sub.publish({ data: '{"git": {"op": "pull"}}' });
+      this.$store.dispatch("socket/git");
 
       const loading = this.$loading({
         lock: true,
@@ -178,224 +106,32 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
+      if (this.gitFeedback) this.$message.success(`Update success!`);
+      else this.$message.error(`Update failed!`);
+      loading.close();
 
-      this.trig_pub.subscribe((msg) => {
-        // console.log(msg);
-        if (msg.frame_id == 'git_pull_res') {
-          if (msg.seq == 1) this.$message.success(`Update success!`);
-          else this.$message(`Update failed!`);
-          loading.close();
-        }
-      });
     },
-    // 发送goal
-    HandEye(b) {
-      var goalMessage = new ROSLIB.Message({
-        behavior_name: 'HandEyeCalibration',
-        arg_keys: ['if_auto_all'],
-        arg_values: [`${b}`]
-      });
-
-      console.log(goalMessage);
-
-      this.actionClient(goalMessage);
-    },
-
-    actionClient(goalMessage) {
-      var actionClient = new ROSLIB.ActionClient({
-        ros: this.ros,
-        actionName: 'flexbe_msgs/BehaviorExecutionAction',
-        serverName: '/flexbe/execute_behavior'
-      });
-      this.goal = new ROSLIB.Goal({ actionClient, goalMessage });
-
-      console.log(this.goal);
-      this.goal.send();
-
-      this.goal.on('feedback', (feedback) => {
-        // this.$message(`feedback: ${JSON.stringify(feedback)}`);
-        console.log('Feedback: ', feedback);
-      });
-
-      this.goal.on('result', (result) => {
-        // this.$message(`result: ${JSON.stringify(result)}`);
-        if (result.outcome == 'preempted') this.$message(`task over！`);
-        if (result.outcome == 'finished') this.$message(`task over！`);
-        console.log('Final Result: ', result);
-      });
-    },
-    // 逆变器开关
-    inverter() {
-      if (!this.pdu_sub) return;
-      if (this.inverterSwitch == '1') {
-        if (this.battery_soc <= this.reminder) this.$message.error(`${this.$t('prompt.lowBattery')}`);
-        else this.pdu_sub.publish({ data: "inverter_on" });
-      }
-      else this.pdu_sub.publish({ data: "inverter_off" });
-    },
-
-    // 充电开关
-    openCharge() {
-      if (!this.pdu_sub) return;
-      console.log(this.chargeSwitch);
-      if (this.chargeSwitch == '1') this.pdu_sub.publish({ data: "charge_on" });
-      else this.pdu_sub.publish({ data: "charge_off" });
-    },
-
-    // 底盘开关
-    chassis() {
-      if (!this.pdu_sub) return;
-      if (this.chassisSwitch == '1') this.pdu_sub.publish({ data: "chassis_on" });
-      else this.pdu_sub.publish({ data: "chassis_off" });
-    },
-
-    saveCfg() {
-      var cfg_pub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/cfg_istring',
-        messageType: "std_msgs/String",
-      });
-
-      var msgJson = JSON.stringify(this.form);
-      // console.log(msgJson)
-      cfg_pub.publish({ data: msgJson });
-      // console.log('pub', this.form);
-
-      this.isEdit = false;
-      this.getRoscfgs();
-
-      var msgJson = JSON.stringify(this.form);
-      // console.log(this.form)
-      localStorage.setItem('pvm_param', msgJson);
-
-      this.$message({
-        type: 'success',
-        message: 'Save Success!'
-      });
-      this.isEdit = false;
-    },
-
-    // 电池信息：电量
-    battery() {
-      var rosTopic = new ROSLIB.Topic({
-        ros: this.ros,
-        name: "diagnostics",
-        messageType: "diagnostic_msgs/DiagnosticArray",
-      });
-
-      rosTopic.subscribe((msg) => {
-        var b = msg.status[0]
-        if (b.message == 'battery_msg' && b.values[2]) {
-          this.battery_soc = b.values[2].value;
-          if (b.values[2].value <= this.reminder && this.inverterSwitch === '1') {
-            this.$message.error(`${this.$t('prompt.lowBattery')}`);
-            this.pdu_sub.publish({ data: "inverter_off" });
-          }
-        }
-      });
-    },
-
-    getRoscfgs() {
-      var cfg_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/cfg_ostring',
-        messageType: "std_msgs/String",
-      });
-      // console.log(cfg_sub);
-
-      cfg_sub.subscribe((msg) => {
-        this.rosCfg = rosCfg;
-        var msgJson = `[${msg.data}]`;
-        // console.log(msg.data)
-        this.form = JSON.parse(msgJson)[0];
-        // console.log('sub', this.form);
-      })
-    },
-    async getRoscfg() {
-      var res = await reqRoscfg();
-      this.rosCfg = rosCfg;
-      var ls = localStorage.getItem('pvm_param');
-      if (ls) this.form = JSON.parse(ls);
-      else {
-        this.form = res.data.data;
-        localStorage.setItem('pvm_param', JSON.stringify(res.data.data))
-      }
-    },
-
-    // robot_state数据回显
-    avoidanceEcho() {
-      var pvsize_sub = new ROSLIB.Topic({
-        ros: this.ros,
-        name: '/robot_state',
-        messageType: 'std_msgs/String'
-      });
-
-      pvsize_sub.subscribe((msg) => {
-        msg = JSON.parse(msg.data);
-        console.log(msg);
-        // this.autocross = msg.dynparam.cmd_vel_filter.filter_enabled;
-        this.pvm_length = msg.parameter.pvm_length;
-        this.pvm_width = msg.parameter.pvm_width;
-        this.install_gap = msg.parameter.install_gap;
-
-        this.gitNum = msg.git.info.msg;
-
-        var pvm_param = { pvm_width: this.pvm_width, install_gap: this.install_gap };
-        localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
-      })
-    },
-    // 修改避障状态
-    upDataAvoidance() {
-      const { pvm_length, pvm_width, install_gap } = this;
-      if (!this.autocross) {
-        console.log(this.autocross);
-        this.$confirm(`是否确认关闭避障`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          center: true,
-          type: 'warning'
-        }).then(() => {
-          this.updatasize_pub();
-
-          this.$message.success('避障已关闭!');
-        }).catch(() => {
-          this.autocross = true
-          this.$message({
-            type: 'info',
-            message: '取消关闭'
-          });
-        });
-      } else {
-        if (!this.updatasize_sub) return
-        this.updatasize_pub();
-      }
-    },
-
-    // 修改PVM尺寸
-    upDataPVM() {
-      const { pvm_length, pvm_width, install_gap } = this;
-      this.updatasize_pub();
-      var pvm_param = { pvm_width, install_gap };
-      localStorage.setItem('pvm_param', JSON.stringify(pvm_param));
-    },
-
-    updatasize_pub() {
-      const { pvm_length, pvm_width, install_gap, autocross } = this;
-      this.updatasize_sub.publish({ data: `{"parameter": {"pvm_length":  ${pvm_length},"pvm_width":  ${pvm_width},"install_gap":  ${install_gap}},"dynparam": {"cmd_vel_filter": {"filter_enabled": ${autocross}}}}` });
-    }
   },
 };
 </script>
 
 <style lang="less" scoped>
+.setting {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .pduControl {
-  width: 500px;
-  margin: 15px auto;
+  width: 50%;
+  height: 90vh;
+  margin-top: -10px;
   padding: 30px 40px;
   border-radius: 5px;
-  // background: #cccccc10;
-  background: #cccccc30;
-  // box-shadow: 5px 5px 20px #64646499;
+  background: #cccccc50;
   box-shadow: 0px 0px 10px #7f7f7f69;
   overflow: hidden;
   display: flex;
@@ -423,11 +159,6 @@ export default {
       display: flex;
       align-items: center;
       margin: 10px 20px;
-      // font-size: 16px;
-      // font-weight: 700;
-      // span{
-      // width: 80px;
-      // }
     }
   }
 
@@ -443,4 +174,5 @@ export default {
   justify-content: center;
   margin-top: 15px;
   margin-left: 0 !important;
-}</style>
+}
+</style>

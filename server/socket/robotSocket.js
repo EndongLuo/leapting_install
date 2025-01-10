@@ -1,9 +1,9 @@
 const ROSLIB = require("roslib");
-const schedule = require('node-schedule');
-const { updateTaskInfo } = require("../models/task");
+const { updateTaskInfo, setFlexbeLog } = require("../models/task");
 const { logger } = require('../utils/logger');
 let oldState = {};
 let navPathCache = {};
+const flexbeLogs = [];
 
 //清扫日志相关
 const { addLog } = require("../models/robot");
@@ -12,20 +12,8 @@ const logs = [];
 const logSet = new Set();
 let estopStatus = true;
 let log;
-
-// 偏移量相关
-const MapTransformer = require("../utils/mapOffset");
-const transformer = new MapTransformer();
-
-// 风速检测相关
-const scheduledJobs = {};  // 用于存储已创建的任务
-const siteMapModel = require("../models/siteMap");
-const stateArr = {};
-const state = { windIp: '', windDialog: false, windSpeed: 0, windLimit: 8, countdown: 30 };
-let timers = {}; // 计时器
-// 请求通讯箱风速
-const axios = require('axios');
-const baseUrl = 'http://10.168.5.100:8080';
+let rostimers = {};
+let timers = {};
 
 async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
   // console.log(robotIPs, robotArr);
@@ -36,54 +24,21 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
   socket.on("control", (ip, axes, buttons, frame_id) => {
     try {
       robotArr[ip].control(axes, buttons, frame_id);
-      logger.info(`控制 control ${ip} ${axes} ${buttons} ${frame_id}`);
-      console.log("control", ip, axes, buttons);
+      // logger.info(`控制 control ${ip} ${axes} ${buttons} ${frame_id}`);
+      // console.log("control", ip, axes, buttons);
     } catch (error) {
       logger.error(`控制 control ${ip} ${axes} ${buttons} ${frame_id} ${error}`);
     }
   });
 
-  // 夹爪
-  socket.on("gripper", ({ ip, seq }) => {
+  // 全局控制
+  socket.on("globalControl", (ip, pose) => {
     try {
-      robotArr[ip].gripper(seq);
-      logger.info(`夹爪 gripper ${ip} ${seq}`);
+      robotArr[ip].globalControl(pose);
+      // logger.info(`全局控制 globalControl ${ip} ${pose}`);
+      // console.log("globalControl", ip, pose);
     } catch (error) {
-      logger.error(`夹爪 gripper ${ip} ${seq} ${error}`);
-    }
-  });
-
-  // 底座标定
-  socket.on("baseCalibration", ({ ip }) => {
-    // console.log(seq);
-    try {
-      robotArr[ip].baseCalibration();
-      logger.info(`底座标定 baseCalibration ${ip}`);
-    } catch (error) {
-      logger.error(`底座标定 baseCalibration ${ip} ${error}`);
-    }
-  });
-
-  // 导航
-  socket.on("sendNav", (ip, data) => {
-    try {
-      robotArr[ip].sendNav(data);
-      logger.info(`导航 sendNav ${ip} ${data}`);
-      console.log("sendNav", data);
-    } catch (error) {
-      logger.error(`导航 sendNav ${ip} ${data} ${error}`);
-    }
-  });
-
-  // 取消导航
-  socket.on("cancelNav", (ip) => {
-    try {
-      robotArr[ip].cancelNav();
-      logger.info(`取消导航 cancelNav ${ip}`);
-      console.log("cancelNav", ip);
-    } catch (error) {
-      logger.error(`取消导航 cancelNav ${ip} ${error}`);
-      console.log("cancelNav error", error);
+      logger.error(`全局控制 globalControl ${ip} ${pose} ${error}`);
     }
   });
 
@@ -98,10 +53,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   });
 
-  socket.on("initPose", (ip, poses) => {
-    const pose = transformer.mapInverseOffset(poses, deviceArr[ip].siteId);
-    robotArr[ip].initPose(pose);
-  });
 
   // 重启工控机
   socket.on("reboot", (ip) => {
@@ -125,18 +76,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   });
 
-  // 回库
-  socket.on("goBack", ({ ip }) => {
-    console.log("goBack", ip);
-    try {
-      robotArr[ip].goBack();
-      logger.info(`回库 goBack ${ip}`);
-    }
-    catch (error) {
-      logger.error(`回库 goBack ${ip} ${error}`);
-    }
-  });
-
   //清扫flexbe
   socket.on("flexbeTrig", ({ ip, data }) => {
     try {
@@ -149,33 +88,37 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   });
 
-  socket.on("isOpenWork", (ip) => {
+  // 手眼标定
+  socket.on("HandEye", (ip, d) => {
     try {
       var actionClient = new ROSLIB.ActionClient({
         ros: robotArr[ip].ros,
         actionName: "flexbe_msgs/BehaviorExecutionAction",
         serverName: "/flexbe/execute_behavior",
       });
-      var goal = new ROSLIB.Goal({
-        actionClient,
-        goalMessage: { behavior_name: "test_container5" },
-      });
 
-      // console.log(goal);
+      var goalMessage = new ROSLIB.Message({
+        behavior_name: 'HandEyeCalibration',
+        arg_keys: ['if_auto_all'],
+        arg_values: [`${d}`]
+      });
+      var goal = new ROSLIB.Goal({ actionClient, goalMessage, });
+
       goal.send();
-      // socket.emit('goal',flatted.stringify(goal))
 
       goal.on("feedback", (feedback) => {
         console.log("openFeedback: ", feedback);
-        socket.emit("openFeedback", feedback.current_state);
+        // socket.emit("openFeedback", feedback.current_state);
       });
 
       goal.on("result", (result) => {
+        var res = false;
         console.log("Final Result: ", result);
-        socket.emit("openResult", result.outcome);
+        if (result.outcome == 'preempted' || result.outcome == 'finished') res = true;
+        socket.emit("openResult", res);
       });
     } catch (error) {
-      logger.error(`清扫flexbe flexbeTrig ${ip} ${data} ${error}`);
+      logger.error(`清扫flexbe flexbeTrig ${ip} ${d} ${error}`);
       console.log(error);
     }
   });
@@ -190,7 +133,16 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     } catch (error) {
       logger.error(`急停 estop ${ip} ${data} ${error}`);
     }
+  });
 
+  // armEstop
+  socket.on("armEstop", ({ ip, data }) => {
+    try {
+      console.log("armEstop", ip, data);
+      robotArr[ip].armEstop(data);
+    } catch (error) {
+      logger.error(`armEstop ${ip} ${data} ${error}`);
+    }
   });
 
   // 电站部署
@@ -244,9 +196,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       logger.info(`设置机器人参数 setParam ${ip} ${param} ${type} ${value}`);
     } catch (error) {
       logger.error(`设置机器人参数 setParam ${ip} ${param} ${type} ${value} ${error}`);
-
     }
-
   });
 
   // 风速检测：是否回库
@@ -263,45 +213,122 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   })
 
+  // 弹窗交互
+  socket.on("sendDialog", ({ ip, data }) => {
+    try {
+      console.log("sendDialog", ip, data);
+      robotArr[ip].sendDialog(data);
+      // logger.info(`sendDialog ${ip} ${msg}`);
+    } catch (error) {
+      logger.error(`sendDialog ${ip} ${data} ${error}`);
+    }
+  });
+
+  //Git
+  socket.on("git", (ip) => {
+    try {
+      console.log("git", ip);
+      
+      robotArr[ip].git();
+      logger.info(`git ${ip}`);
+    } catch (error) {
+      logger.error(`git ${ip} ${error}`);
+    }
+  })
+
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
 
   robotIPs.forEach((ip) => {
     // 机器人连接
-    setInterval(() => {
+    if (rostimers[ip]) clearInterval(rostimers[ip]);
+    rostimers[ip] = setInterval(() => {
       socket.server.of('/XJ').emit("rosConnect", ip, robotArr[ip].rosConnect);
     }, 1000);
 
-    // 机器人姿态
-    robotArr[ip].robotPose((msg) => {
-      try {
-        socket.server.of('/XJ').emit("robotPose", ip, transformer.mapOffset(msg, "", deviceArr[ip].siteId))
-      } catch (error) {
-        console.log("robotPose", error);
+    // robot_state
+    robotArr[ip].robotState((msg) => {
+      // console.log("robotState", msg);
+      msg = JSON.parse(msg.data);
+      var gitNum = msg.git.info.msg
+      socket.server.of('/XJ').emit("robotState", ip, gitNum);
+    })
+
+    // 速度
+    robotArr[ip].speed((msg) => {
+      const angular = (msg.twist.twist.angular.z).toFixed(1);
+      const linear = (msg.twist.twist.linear.x).toFixed(1);
+      socket.server.of('/XJ').emit("speed", ip, { angular, linear });
+    })
+
+    // 电量
+    robotArr[ip].battery((msg) => {
+      // console.log("battery", msg);
+      socket.server.of('/XJ').emit("battery", ip, msg.percentage);
+    })
+
+    // dialog
+    robotArr[ip].dialog(({ frame_id }) => {
+      let msg = { text: "", btns: [] };
+      if (!frame_id.includes("UI")) return;
+      if (frame_id.includes(":")) {
+        let parts = frame_id.split(":");
+        msg.text = parts[1];
+        msg.btns = parts.slice(2);
+      } else msg.text = frame_id;
+
+      socket.server.of('/XJ').emit("dialog", ip, msg);
+    });
+
+    // flexbe log
+    robotArr[ip].flexbeLog(async (msg) => {
+      const isDuplicate = flexbeLogs.some((log) => `[${log.time}]: ${log.text}` === msg.text);
+      if (!isDuplicate) {
+        const timeRegex = /^\[(.*?)\]:\s*/;
+        const match = msg.text.match(timeRegex);
+
+        if (match) {
+          const time = match[1];
+          const text = msg.text.replace(timeRegex, '');
+          msg = { ...msg, text, time };
+        }
+        var res = await setFlexbeLog(msg);
+        flexbeLogs.push(msg);
+        if (flexbeLogs.length > 100) flexbeLogs.shift();
       }
+      socket.server.of('/XJ').emit("flexbeLog", ip, flexbeLogs);
+    });
+
+    // newDiagnostics
+    robotArr[ip].newDiagnostics((msg) => {
+      // console.log('robot Socket newDiagnostics');
+      var status = 0;
+      var list = [];
+      var list2 = [];
+      msg.status.forEach((i) => {
+        if (i.level === 1) {
+          list.push(i);
+          status = Math.max(status, i.message);
+        }
+        else if (i.level === 2) list2.push(i);
+      });
+      socket.server.of('/XJ').emit("newDiagnostics", ip, { status, list, list2 });
     });
 
     // 任务状态
     robotArr[ip].taskState(async (msg) => {
       socket.server.of('/XJ').emit("taskState", ip, msg);
       if (!oldState[ip])
-        oldState[ip] = { state: "", id: 0, start_time: "", task_odom: 0 };
-      // console.log('1',msg.id ,oldState[ip].id,msg.task_type == oldState[ip].state);
+        oldState[ip] = { state: "", id: 0, start_time: "" };
       if (msg.task_type !== oldState[ip].state) {
-        // console.log('2',msg.id ,oldState[ip]);
 
         if (msg.id == 0) {
           msg.id = oldState[ip].id;
           msg.start_time = oldState[ip].start_time;
-          msg.task_odom = oldState[ip].task_odom;
           msg.progress = 0;
         } else {
           oldState[ip].state = msg.task_type;
           oldState[ip].id = msg.id;
           oldState[ip].start_time = msg.start_time;
-          oldState[ip].task_odom = msg.task_odom;
-          msg.progress =
-            (msg.done_nodes.length / msg.task_nodes.length).toFixed(2) * 100 ||
-            0;
         }
         try {
           var res = await updateTaskInfo(msg);
@@ -318,19 +345,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     robotArr[ip].bunkerStatus((msg) =>
       socket.server.of('/XJ').emit("bunkerStatus", ip, msg.battery_voltage, msg.linear_velocity, msg.base_state)
     );
-
-    // 导航路径
-    robotArr[ip].navPath((msg) => {
-      var navPath = transformer.mapOffset(msg.poses, "", deviceArr[ip].siteId);
-      console.log("navPath", navPath.length);
-
-      navPathCache[ip] = navPath; // 缓存导航路径
-
-      socket.server.of('/XJ').emit("navPath", ip, navPath);
-    });
-
-    // 导航结束
-    robotArr[ip].navEnd((msg) => socket.server.of('/XJ').emit("navEnd", ip, msg));
 
     // 诊断，告警
     robotArr[ip].diagnostic((msg) => {
@@ -352,14 +366,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("diagnostic", ip, { status, list });
     });
 
-    // 点云
-    robotArr[ip].scanPoints((msg) => {
-      try {
-        socket.server.of('/XJ').emit("scanPoints", ip, transformer.mapOffset("", msg.points, deviceArr[ip].siteId))
-      } catch (error) {
-        console.log('scanPoints', error);
-      }
-    });
 
     // 日志
     robotArr[ip].log(async (d) => {
@@ -388,10 +394,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("feedBack", ip, msg);
     });
 
-    // 机械臂视频
-    robotArr[ip].armVideo((msg) => {
-      socket.server.of('/XJ').emit("armVideo", ip, msg);
-    });
 
     // 获取机器人参数
     robotArr[ip].getParam((msg) => {
@@ -399,99 +401,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("getParam", ip, msg);
     });
 
-    // 风速检测
-    try {
-      if (ip !== '10.168.4.100' && deviceArr[ip].robot_type == 'MCR') {
-        if (scheduledJobs[ip]) console.log(`${ip}风速检测定时任务 已经存在`);
-        else scheduledJobs[ip] = schedule.scheduleJob('1 * * * * *', () => windSpeedFn(socket, ip, deviceArr[ip].siteId));
-        // else scheduledJobs[ip] = schedule.scheduleJob('*/20 * * * * *', () => windSpeedFn(socket, ip, deviceArr[ip].siteId));
-      }
-    } catch (error) {
-      console.log('风速检测任务开始异常', deviceArr[ip]);
-    }
   });
 }
 
 module.exports = { robotSocket };
-
-async function windSpeedFn(socket, ip, id) {
-  try {
-    const g2Id = ip.split('.')[3];
-    const { tablename, wind_limit } = await siteMapModel.getPVMIDs(id);
-    let { data, code } = await getG2Info(g2Id, tablename);
-
-    // let currentWindSpeed = 10; // 初始风速
-    // const delta = (data.wind * 6 - 3).toFixed(1); // -3.0 到 3.0 的变化量
-    // currentWindSpeed = Math.min(16, Math.max(0, currentWindSpeed + parseFloat(delta)));
-    // data.wind = currentWindSpeed;
-
-    if (code === 200 && data.loraConnect) {
-      stateArr[ip] = state;
-      // console.log('当前风速：', data.wind, '，风速限制：', wind_limit);
-
-      var status = data.wind > wind_limit;
-      if (status) {
-        console.log(`siteId:${id} 当前风速：${data.wind} 风速超过限制（${wind_limit}）, ${ip} 准备回库 `);
-        logger.info(`siteId:${id} 当前风速：${data.wind} 风速超过限制（${wind_limit}）, ${ip} 准备回库 `);
-        stateArr[ip] = { windIp: ip, windDialog: true, windSpeed: data.wind, windLimit: wind_limit, countdown: 30, }
-        if (timers[ip]) clearInterval(timers[ip]);
-        timers[ip] = setInterval(async () => {
-          stateArr[ip].countdown--;
-
-          if (stateArr[ip].countdown <= 0) {
-            clearInterval(timers[ip]);  // 清除定时器，停止倒计时
-            stateArr[ip].windDialog = false;
-            var res = await setG2Task({ g2Id, siteId: tablename, taskCode: 5 });
-            if (res.code == 200) {
-              logger.info(`服务端操作：${ip} 回库成功 ${res.msg}`);
-              console.log(`服务端操作：${ip} 回库成功 ${res.msg}`);
-            } else {
-              logger.error(`服务端操作：${ip} 回库失败 ${res.msg}`);
-              console.log(`服务端操作：${ip} 回库失败 ${res.msg}`);
-            }
-          }
-
-          socket.server.of('/XJ').emit("windDialog", id, stateArr[ip]);
-        }, 1000);  // 每秒执行一次
-      }
-
-      const WindLogData = { siteId: id, wind_speed: data.wind, wind_limit, status: Number(status) };
-
-      await siteMapModel.setWindLog(WindLogData); // 添加风速日志到数据库
-    } else {
-      console.log(`else ${ip} 风速请求失败：code ${code}`);
-      logger.info(`${ip} 风速请求失败：code ${code}`);
-    }
-  } catch (error) {
-    console.log(`catch ${ip} 通讯箱未连接`);
-    // logger.info(`${ip} 通讯箱未连接`);
-  }
-}
-// 请求通讯箱风速
-async function getG2Info(g2Id, siteId) {
-  const url = `${baseUrl}/prod-api/robot/g2info`;
-
-  try {
-    const response = await axios.get(url, { params: { g2Id, siteId } });
-
-    // console.log('Response data:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('getG2Info Error fetching data:', error);
-    logger.error('getG2Info Error fetching data:', error);
-  }
-}
-
-async function setG2Task(data) {
-  const url = `${baseUrl}/prod-api/robot/g2task`;
-  try {
-    const response = await axios.post(url, data, { headers: { 'Content-Type': 'application/json' } });
-    // console.log('Response data:', response.data);
-    return response.data;
-  }
-  catch (error) {
-    console.error('setG2Task Error fetching data:', error);
-    logger.error('setG2Task Error fetching data:', error);
-  }
-
-}
