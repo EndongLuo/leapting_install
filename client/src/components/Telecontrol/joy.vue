@@ -2,90 +2,64 @@
   <div class="joys">
     <!-- 前后 -->
     <div class="page">
-    <div style="margin-top: 100px; margin-left: 50%; position: relative">
-      <!-- 触摸识别区域部分 -->
-      <div
-        class="toucharea"
-        @touchstart="onTouchStart"
-        @touchmove="onTouchMove"
-        @touchcancel="onTouchEnd"
-        @touchend="onTouchEnd"
-        @touchmove.prevent 
-        @mousewheel.prevent
-      >
-        <div
-          style="border-radius: 50%"
-          :style="{
+      <div style="margin-top: 100px; margin-left: 50%; position: relative">
+        <!-- 触摸识别区域部分 -->
+        <div class="toucharea" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchcancel="onTouchEnd"
+          @touchend="onTouchEnd" @touchmove.prevent @mousewheel.prevent>
+          <div style="border-radius: 50%" :style="{
             width: touchRadius * 2 + 'px',
             height: touchRadius * 2 + 'px',
-          }"
-        ></div>
-      </div>
-      <!-- 上部小图 -->
-      <div
-        class="ball"
-        :style="{ left:  '0px', top: top + 'px' }"
-        :class="{ animation: inDraging === false && transition }"
-      >
-        <div style="width: 70px; height: 70px">
-          <img src="./img/ball2.png" style="width: 100%; height: 100%" />
+          }"></div>
+        </div>
+        <!-- 上部小图 -->
+        <div class="ball" :style="{ left: '0px', top: top + 'px' }"
+          :class="{ animation: inDraging === false && transition }">
+          <div style="width: 70px; height: 70px">
+            <img src="./img/ball2.png" style="width: 100%; height: 100%" />
+          </div>
+        </div>
+        <!-- 底部大图 -->
+        <div class="bottom">
+          <div style="width: 200px; height: 200px">
+            <!-- <div style="width: 3.5rem; height: 3.5rem"> -->
+            <img src="./img/22.png" style="width: 100%; height: 100%" />
+          </div>
         </div>
       </div>
-      <!-- 底部大图 -->
-      <div class="bottom">
-        <div style="width: 200px; height: 200px">
-          <!-- <div style="width: 3.5rem; height: 3.5rem"> -->
-          <img src="./img/22.png" style="width: 100%; height: 100%" />
+    </div>
+
+    <!-- 左右 -->
+    <div class="page">
+      <div style="margin-top: 100px; margin-left: 50%; position: relative">
+        <!-- 触摸识别区域部分 -->
+        <div class="toucharea" @touchstart="onTouchStart1" @touchmove="onTouchMove1" @touchcancel="onTouchEnd1"
+          @touchend="onTouchEnd1" @touchmove.prevent @mousewheel.prevent>
+          <div style="border-radius: 50%" :style="{
+            width: touchRadius * 2 + 'px',
+            height: touchRadius * 2 + 'px',
+          }"></div>
+        </div>
+        <!-- 上部小图 -->
+        <div class="ball" :style="{ left: left + 'px', top: '0px' }"
+          :class="{ animation: inDraging1 === false && transition }">
+          <div style="width: 70px; height: 70px">
+            <img src="./img/ball2.png" style="width: 100%; height: 100%" />
+          </div>
+        </div>
+
+        <!-- 底部大图 -->
+        <div class="bottom">
+          <div style="width: 200px; height: 200px">
+            <!-- <div style="width: 3.5rem; height: 3.5rem"> -->
+            <img src="./img/11.png" style="width: 100%; height: 100%" />
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 左右 -->
-  <div class="page">
-    <div style="margin-top: 100px; margin-left: 50%; position: relative">
-      <!-- 触摸识别区域部分 -->
-      <div
-        class="toucharea"
-        @touchstart="onTouchStart1"
-        @touchmove="onTouchMove1"
-        @touchcancel="onTouchEnd1"
-        @touchend="onTouchEnd1"
-        @touchmove.prevent 
-        @mousewheel.prevent
-      >
-        <div
-          style="border-radius: 50%"
-          :style="{
-            width: touchRadius * 2 + 'px',
-            height: touchRadius * 2 + 'px',
-          }"
-        ></div>
-      </div>
-      <!-- 上部小图 -->
-      <div
-        class="ball"
-        :style="{ left: left + 'px', top: '0px' }"
-        :class="{ animation: inDraging1 === false && transition }"
-      >
-        <div style="width: 70px; height: 70px">
-          <img src="./img/ball2.png" style="width: 100%; height: 100%" />
-        </div>
-      </div>
-
-      <!-- 底部大图 -->
-      <div class="bottom">
-        <div style="width: 200px; height: 200px">
-        <!-- <div style="width: 3.5rem; height: 3.5rem"> -->
-          <img  src="./img/11.png" style="width: 100%; height: 100%" />
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
-  
 </template>
- 
+
 <script>
 var startLeft, startTop;
 // 两点之间的距离函数
@@ -97,7 +71,7 @@ var getDistance = function (x1, y1, x2, y2) {
   return Math.sqrt(_x * _x + _y * _y);
 };
 export default {
-  props: [ "stop", 'velocity'],
+  props: ["stop", 'velocity'],
   data() {
     return {
       autocross: true,
@@ -117,10 +91,10 @@ export default {
   },
   mounted() {
     // 禁用双指放大
-    document.documentElement.addEventListener('touchstart',  (e)=> {
-          if (e.touches.length > 1)  e.preventDefault();
-      }, {passive: false});
-      
+    document.documentElement.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+
     this.loop();
   },
   methods: {
@@ -128,7 +102,7 @@ export default {
     // 手指触摸屏幕事件
     onTouchStart(e) {
       var curTouch = e.targetTouches[0];
-        
+
       // 获取触摸坐标
       // startLeft = curTouch.clientX - this.left;
       startTop = curTouch.clientY - this.top;
@@ -189,35 +163,39 @@ export default {
       requestAnimationFrame(this.loop);
 
       if (this.inDraging || this.inDraging1) {
-        var lin = Number((-this.top/50).toFixed(1));
-        var ang = Number((-this.left/100).toFixed(1));
+        var lin = Number((-this.top / 50).toFixed(1));
+        var ang = Number((-this.left / 100).toFixed(1));
         this.velocity(lin, ang);
-      } 
+      }
       // else this.stop();
     },
   },
 };
 </script>
- 
-<style lang="less" >
+
+<style lang="less">
 .switchStyle .el-switch__label {
   position: absolute;
   display: none;
   color: #a7a7a7;
 }
+
 .switchStyle .el-switch__label--left {
   z-index: 9;
   left: 22px;
   color: #525252;
 }
+
 .switchStyle .el-switch__label--right {
   z-index: 9;
   left: -3px;
   color: #ececec;
 }
+
 .switchStyle .el-switch__label.is-active {
   display: block;
 }
+
 .switchStyle.el-switch .el-switch__core,
 .el-switch .el-switch__label {
   width: 55px !important;
@@ -225,19 +203,21 @@ export default {
 }
 
 
-.joys{
+.joys {
   width: 100%;
   display: flex;
   // align-items: center;
   // justify-content: center;
   justify-content: space-between;
 }
-.bizhang{
+
+.bizhang {
   position: absolute;
   top: 8px;
   left: 15px;
   margin: 10px;
 }
+
 .page {
   position: relative;
   width: 35%;
@@ -246,30 +226,35 @@ export default {
   padding: 40px;
   // margin-left: -75px;
 }
+
 div {
   box-sizing: border-box;
 }
+
 .toucharea {
   position: absolute;
   z-index: 4;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  box-shadow: 0px 0 20px 1px rgba(155, 227, 255, 0.3),0px 0 20px 1px rgba(107, 120, 129, 0.3);
+  box-shadow: 0px 0 20px 1px rgba(155, 227, 255, 0.3), 0px 0 20px 1px rgba(107, 120, 129, 0.3);
 
 }
+
 .ball {
   position: absolute;
   z-index: 3;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   // transition: all 0.2s ease-out;
-  box-shadow: 0 0 10px 2px rgba(139, 222, 255, 0.5),0 0 10px 2px rgba(93, 115, 131, 0.5),0 0 20px 2px #85f7ff80 inset;
-  &:hover{
-      transform: translate(-1px,-1px);
-      transition: all 0.2s ease-out;
-      box-shadow: 0px 0 15px 1px rgba(155, 255, 213, 0.6),0px 0 15px 1px rgba(107, 129, 116, 0.6);
-    }
+  box-shadow: 0 0 10px 2px rgba(139, 222, 255, 0.5), 0 0 10px 2px rgba(93, 115, 131, 0.5), 0 0 20px 2px #85f7ff80 inset;
+
+  &:hover {
+    transform: translate(-1px, -1px);
+    transition: all 0.2s ease-out;
+    box-shadow: 0px 0 15px 1px rgba(155, 255, 213, 0.6), 0px 0 15px 1px rgba(107, 129, 116, 0.6);
+  }
 }
+
 .bian {
   position: absolute;
   width: 250px;
@@ -278,16 +263,20 @@ div {
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
+
 .stick {
   position: absolute;
   z-index: 2;
 }
+
 .ball.animation {
   transition: left 0.1s ease-out, top 0.1s ease-out;
 }
+
 .stick.animation {
   transition: all 0.2s ease-out;
 }
+
 .bottom {
   position: absolute;
   z-index: 1;
