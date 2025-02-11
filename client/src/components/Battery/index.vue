@@ -5,7 +5,7 @@
     </div>
     <div
       v-show="showText"
-      :style="{ marginLeft: (parseFloat(rotate) ? 0 : '10') + 'px' }"
+      :style="{ marginLeft: (parseFloat(rotate) ? 0 : '5') + 'px' }"
       class="text"
     >
       {{ quantity }}%
@@ -38,10 +38,7 @@ export default {
   },
   computed: {
     bgClass() {
-      if (this.quantity>100){
-        this.quantity = 100;
-        return "success"
-      } 
+      if (this.quantity>100) return "success";
       else if (this.quantity >= 30) return "success";
       else if (this.quantity >= 15) return "warning";
       else return "danger";
@@ -110,7 +107,7 @@ export default {
   .text {
     text-align: left;
     // color: #000 !important;
-    width: 25px;
+    width: 35px;
     font-size: 12px;
   }
 

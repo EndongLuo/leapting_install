@@ -263,7 +263,11 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     // 电量
     robotArr[ip].battery((msg) => {
       // console.log("battery", msg);
-      socket.server.of('/XJ').emit("battery", ip, msg.percentage);
+      let percentage =msg.percentage;
+      if (percentage < 0) percentage = 0;
+      if (percentage > 100) percentage = 100;
+      socket.server.of('/XJ').emit("battery", ip, parseInt(percentage));
+      // socket.server.of('/XJ').emit("battery", ip, 40);
     })
 
     // dialog

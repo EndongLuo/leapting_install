@@ -186,7 +186,7 @@ class Robot extends EventEmitter {
   // 电量
   battery(callback) {
     if (this.batterySub) this.batterySub();
-    this.batterySub = this.subscribeTopic('/battery', 'sensor_msgs/BatteryState', callback);
+    this.batterySub = this.subscribeTopic('/battery_msg_topic', 'sensor_msgs/BatteryState', callback);
   }
 
   // 诊断，告警
