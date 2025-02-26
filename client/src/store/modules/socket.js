@@ -33,8 +33,8 @@ const translationMaps = new Map([
 
 const state = {
   socket: null,
-  ips: ['192.168.8.234'],
-  // ips: ['10.168.0.199'],
+  // ips: ['192.168.8.234'],
+  ips: ['10.168.2.178'],
   nowIP: localStorage.getItem('nowIP') || '192.168.8.234',
   taskState: {},
   Robot: {},

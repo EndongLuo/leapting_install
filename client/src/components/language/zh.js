@@ -72,6 +72,7 @@ const zh = {
     armcontrol: '机械臂操控',
     fai: '全自动安装',
     sai: '半自动安装',
+    detach: '拆卸',
     monitor: '监控',
     model: '3D模型',
     pause: '暂停',
@@ -116,7 +117,7 @@ const zh = {
   prompt: {
     switchMode: '任务进行中，请先结束任务再切换模式。',
     inputErrorMessage: '格式不正确',
-    inputNum: '请输入安装组件数量',
+    inputNum: '请输入组件数量',
     uninputNum: '请输入拆卸组件数量',
     prompt: '提示',
     lowBattery: '电量过低'

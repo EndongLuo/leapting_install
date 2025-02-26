@@ -1,14 +1,13 @@
 <template>
   <div>
     <div class="tacks" @click="isTask" v-if="taskState.id">
-      <span><b>{{ $t('task.task') }}：</b>{{ taskState.task_type == 1 ? `${$t('install.sai')}` : `${$t('install.fai')}`
-        }}(<span style="font-weight: 700;"><span v-if="taskState.task_status == 3">{{ $t('task.completed') }}</span>
+      <span><b>{{ $t('task.task') }}：</b>{{ taskState.task_type == 0 ? `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2 ? `${$t('install.detach')}` : '' }}(<span style="font-weight: 700;"><span v-if="taskState.task_status == 3">{{ $t('task.completed') }}</span>
           <span v-if="taskState.task_status == 2">{{ $t('task.pause') }}</span>
           <span v-if="taskState.task_status == 1">{{ $t('task.executing') }}</span>
           <span v-if="taskState.task_status == 0">{{ $t('task.stop') }}</span></span>)</span>
       <span><b>{{ $t('task.progress') }}：</b>{{ (taskState.done_num / taskState.task_num) * 100 }}%
         （{{ taskState.done_num }}/{{ taskState.task_num }}）</span>
-      <span class="taskbox"><b>{{ $t('task.step') }}：</b>{{ taskState.task_step }}</span>
+      <!-- <span class="taskbox"><b>{{ $t('task.step') }}：</b>{{ taskState.task_step }}</span> -->
     </div>
   </div>
 

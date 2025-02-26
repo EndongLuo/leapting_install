@@ -9,7 +9,7 @@
 
 <script>
 import L_table from "@/components/L_table";
-import { reqTableData } from "@/api";
+// import { reqTableData } from "@/api";
 export default {
   name: "test",
   components: { L_table },
@@ -47,7 +47,7 @@ export default {
     };
   },
   mounted() {
-    this.getTableData();
+    // this.getTableData();
   },
   methods: {
     async getTableData() {

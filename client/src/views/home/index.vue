@@ -107,7 +107,7 @@
             <div class="taskInfo">
               <div><span class="title">{{$t('task.taskid')}}:</span>{{ taskState.id }}</div>
               <div><span class="title">{{$t('task.taskname')}}:</span>{{ taskState.task_name }}</div>
-              <div><span class="title">{{$t('task.tasktype')}}:</span>{{ taskState.task_type == 1 ? `${$t('install.sai')}` : `${$t('install.fai')}`}}</div>
+              <div><span class="title">{{$t('task.tasktype')}}:</span>{{ taskState.task_type == 0 ? `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2 ? `${$t('install.detach')}` : '' }}</div>
               <div><span class="title">{{$t('task.taskprogress')}}:</span>{{ (taskState.done_num / taskState.task_num) * 100 }}%
                 （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
               <div><span class="title">{{$t('task.starttime')}}:</span>{{ taskState.start_time }}</div>
@@ -164,11 +164,12 @@
 
     <!-- 工具箱 -->
     <div class="tool">
-      <div class="outer" :style="{ height: toolbar1 ? '126px' : '50px' }">
+      <div class="outer" :style="{ height: toolbar1 ? '165px' : '50px' }">
         <div class="inner">
           <i class="el-icon-suitcase" @click="toolbar1 = !toolbar1"></i>
           <img src="./img/joy.png" alt="" @click="toolbar(3)">
           <img src="./img/arm.png" alt="" @click="toolbar(4)">
+          <img src="./img/chai.png" style="margin-top: 5px;" alt="拆卸" @click="sendTask(2)">
         </div>
       </div>
     </div>
@@ -234,10 +235,12 @@ export default {
         inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
         inputErrorMessage: this.$t('prompt.inputErrorMessage')
       }).then(({ value }) => {
-        var taskmsg = { id, task_status: 1, task_name: `Web_${num ? 'Semi-Auto' : 'Fully-Auto'}`, task_type: num, task_num: Number(value) };
+        const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach'};
+        var taskmsg = { id, task_status: 1, task_name: modeMap[num], task_type: num, task_num: Number(value) };
         this.$store.dispatch('socket/sendTask', taskmsg);
         this.$message.success('sendTask: ', taskmsg);
         this.isShow = 4;
+        this.toolbar1 = false;
       }).catch(() => {
         this.$message(this.$t('mains.cancel'));
       });

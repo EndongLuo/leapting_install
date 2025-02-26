@@ -11,7 +11,7 @@
 <script>
 import L_table from "@/components/L_table";
 import classifyDiagnostic from "@/components/deviceDiagnostic/classifyDiagnostic";
-import { reqTableData } from "@/api";
+import { getRobot } from "@/api";
 export default {
   components: { L_table, classifyDiagnostic, },
   data() {
@@ -42,12 +42,12 @@ export default {
     };
   },
   mounted() {
-    this.getTableData();
+    // this.getTableData();
   },
   methods: {
     async getTableData() {
-      let res = await reqTableData();
-      this.tableData = res.data.data;
+      // let res = await reqTableData();
+      // this.tableData = res.data.data;
       // console.log(res.data.data);
     },
   },

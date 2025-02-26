@@ -72,6 +72,7 @@ const en = {
     armcontrol:'Arm Control',
     fai: 'Fully-Auto',
     sai: 'Semi-Auto',
+    detach: 'Detach',
     monitor:'Monitor',
     model:'3D Model',
     start:'Start',
@@ -116,7 +117,7 @@ const en = {
   prompt:{
     switchMode: 'Task in progress, please end the task before switching modes.',
     inputErrorMessage: 'Incorrect format',
-    inputNum:'Please enter the number of PVM installations',
+    inputNum:'Please enter the number of PVM',
     uninputNum:'Please enter the number of PVM disassembled',
     prompt:'Prompt',
     lowBattery:'Battery too low'

@@ -370,7 +370,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("diagnostic", ip, { status, list });
     });
 
-
     // 日志
     robotArr[ip].log(async (d) => {
       const device = deviceArr[ip].robotname || '';
