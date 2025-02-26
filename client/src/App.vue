@@ -3,12 +3,12 @@
     <router-view />
 
     <!-- 弹框 -->
-    <el-dialog :visible.sync="dialogs" width="60%" :title="$t('prompt.prompt')" center :append-to-body='true'>
+    <el-dialog :visible.sync="dialogs.dialog" width="60%" :title="$t('prompt.prompt')" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
-        <span style="font-weight: 600;font-size: 24px;">{{ $t(`dialog.${dialog.text}`) }}</span>
+        <span style="font-weight: 600;font-size: 24px;">{{ $t(`dialog.${dialogs.text}`) }}</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button v-for="b, i in dialog.btns" :key="i" @click="dialogfn(b)">{{ $t(`dialog.${b}`) }}</el-button>
+        <el-button v-for="b, i in dialogs.btns" :key="i" @click="dialogfn(b)">{{ $t(`dialogs.${b}`) }}</el-button>
         <el-button type="primary" @click="dialogfn('confirm')">{{ $t(`mains.confirm`) }}</el-button>
       </span>
     </el-dialog>
@@ -25,23 +25,18 @@ export default {
   },
   data() {
     return {
-      dialogs: false,
     };
   },
   computed: {
-    ...mapState('socket', ['rosConnect', 'dialog']),
+    ...mapState('socket', ['rosConnect', 'dialogs']),
   },
   mounted() {
     this.$store.dispatch('socket/init');
   },
   watch: {
-    dialog(val) {
-      if (val.text) this.dialogs = true;
-    },
   },
   methods: {
     dialogfn(val) {
-      this.dialogs = false;
       this.$store.dispatch('socket/sendDialog', val);
     },
   },

@@ -14,6 +14,7 @@ let estopStatus = true;
 let log;
 let rostimers = {};
 let timers = {};
+let dialogMsg = { text: "", btns: [], dialog: true };
 
 async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
   // console.log(robotIPs, robotArr);
@@ -218,6 +219,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     try {
       console.log("sendDialog", ip, data);
       robotArr[ip].sendDialog(data);
+      dialogMsg.dialog = false;
+      socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
       // logger.info(`sendDialog ${ip} ${msg}`);
     } catch (error) {
       logger.error(`sendDialog ${ip} ${data} ${error}`);
@@ -270,17 +273,18 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       // socket.server.of('/XJ').emit("battery", ip, 40);
     })
 
-    // dialog
+    // dialogs
     robotArr[ip].dialog(({ frame_id }) => {
-      let msg = { text: "", btns: [] };
+      // let dialogMsg = { text: "", btns: [] };
+      dialogMsg.dialog = true;
       if (!frame_id.includes("UI")) return;
       if (frame_id.includes(":")) {
         let parts = frame_id.split(":");
-        msg.text = parts[1];
-        msg.btns = parts.slice(2);
-      } else msg.text = frame_id;
+        dialogMsg.text = parts[1];
+        dialogMsg.btns = parts.slice(2);
+      } else dialogMsg.text = frame_id;
 
-      socket.server.of('/XJ').emit("dialog", ip, msg);
+      socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
     });
 
     // flexbe log

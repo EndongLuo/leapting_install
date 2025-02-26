@@ -33,14 +33,14 @@ const translationMaps = new Map([
 
 const state = {
   socket: null,
-  // ips: ['192.168.8.234'],
-  ips: ['10.168.2.178'],
+  ips: ['192.168.8.234'],
+  // ips: ['10.168.5.115'],
   nowIP: localStorage.getItem('nowIP') || '192.168.8.234',
   taskState: {},
   Robot: {},
   Robots: [],
   rosConnect: 0,
-  dialog: {},
+  dialogs: {},
   newDiagnostics: { list: [], list2: [] },
   speed: { linear: 0, angular: 0 },
   battery: 60,
@@ -85,7 +85,7 @@ const mutations = {
   },
   setDialog(state, d) {
     // console.log('setDialog', d);
-    Vue.set(state, 'dialog', d);
+    Vue.set(state, 'dialogs', d);
   },
   // 设置任务状态
   setTaskState(state, { ip, d }) {
@@ -132,9 +132,9 @@ const actions = {
       Vue.set(state, 'battery', d);
     })
 
-    // dialog
-    socket.on('dialog', (ip, d) => {
-      // console.log('dialog', ip, d);
+    // dialogs
+    socket.on('dialogs', (ip, d) => {
+      // console.log('dialogs', ip, d);
       commit('setDialog', d);
     });
 
