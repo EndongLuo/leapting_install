@@ -283,7 +283,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         dialogMsg.text = parts[1];
         dialogMsg.btns = parts.slice(2);
       } else dialogMsg.text = frame_id;
-
+      // console.log("dialog",dialogMsg);
+      
       socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
     });
 
