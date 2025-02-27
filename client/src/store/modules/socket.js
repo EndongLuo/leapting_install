@@ -1,6 +1,23 @@
 import Vue from 'vue';
 import Socket from '@/utils/socketUtil';
 
+const state = {
+  socket: null,
+  ips: ['192.168.8.234'],
+  // ips: ['127.0.0.1'],
+  nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
+  taskState: {},
+  Robot: {},
+  Robots: [],
+  rosConnect: 0,
+  dialogs: {},
+  newDiagnostics: { list: [], list2: [] },
+  speed: { linear: 0, angular: 0 },
+  battery: 60,
+  gitNum: null,
+  gitFeedback: false,
+};
+
 // 创建翻译映射
 const translationMaps = new Map([
   ['comm_status', '通讯'],
@@ -29,24 +46,6 @@ const translationMaps = new Map([
   ['vacuum_pressure', '真空压力2'],
   ['temperature', '温度'],
 ]);
-
-
-const state = {
-  socket: null,
-  ips: ['192.168.8.234'],
-  // ips: ['10.168.5.115'],
-  nowIP: localStorage.getItem('nowIP') || '192.168.8.234',
-  taskState: {},
-  Robot: {},
-  Robots: [],
-  rosConnect: 0,
-  dialogs: {},
-  newDiagnostics: { list: [], list2: [] },
-  speed: { linear: 0, angular: 0 },
-  battery: 60,
-  gitNum: null,
-  gitFeedback: false,
-};
 
 const mutations = {
   SET_NOWIP(state, ip) {

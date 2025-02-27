@@ -1,7 +1,12 @@
+const fs = require('fs');
 const path = require('path');
 const log4js = require('koa-log4');
-const RUNTIME_PATH = path.resolve(__dirname, '../');
-const LOG_PATH = path.join(RUNTIME_PATH, 'log');
+// 定义日志目录
+const logDir = path.join(process.cwd(), 'log');
+// 如果目录不存在，则创建
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
 
 log4js.configure({
   // 日志的输出
@@ -11,7 +16,7 @@ log4js.configure({
       pattern: '-yyyy-MM-dd.log', //生成文件的规则
       alwaysIncludePattern: true, // 文件名始终以日期区分
       encoding: 'utf-8',
-      filename: path.join(LOG_PATH, 'access.log'), //生成文件名,
+      filename: path.join(logDir, 'access.log'), //生成文件名,
       layout: {
         type: "pattern",
         pattern: "[%d{yyyy-MM-dd hh:mm:ss}] [%p] %c - %m"
@@ -22,7 +27,7 @@ log4js.configure({
       pattern: '-yyyy-MM-dd.log',
       alwaysIncludePattern: true,
       encoding: 'utf-8',
-      filename: path.join(LOG_PATH, 'application.log'),
+      filename: path.join(logDir, 'application.log'),
       layout: {
         type: "pattern",
         pattern: "[%d{yyyy-MM-dd hh:mm:ss}] [%p] %c - %m"

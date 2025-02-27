@@ -6,6 +6,12 @@ module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
   publicPath:'/',
+  outputDir: '../dist',
+  devServer: {
+    host: localhost,
+    port: 8888,
+    open: true,
+  },
   
   devServer: {
     // 自动打开浏览器

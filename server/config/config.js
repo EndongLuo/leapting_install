@@ -1,11 +1,8 @@
 module.exports = {
   db: {
-    // host: '10.168.4.100',
-    // host: '10.168.5.100',
-    host: '192.168.8.152',
+    host: '127.0.0.1',
     port: '5432',
     dialect: 'postgres',
-    // database: 'leapting_robot_qs',
     database: 'leapting_install',
     user: 'postgres',
     password: 'root',
