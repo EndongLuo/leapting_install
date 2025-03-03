@@ -145,7 +145,7 @@ const en = {
     withdraw_pvm:'Confirm to withdraw the PVM',
     withdraw:'Withdraw',
     cupoff:'The suction cup will be released after confirmation',
-    down5mm:'The end of the robot arm will be pressed down by 5mm after confirmation',
+    down5mm:'After confirmation, the end of the robotic arm will be pressed down by',
     uninstall:'Is the robot arm in the right position? After confirmation, the robot arm will descend vertically',
     pose_failed:'Data exception, the component will be withdrawn',
     plan_failed:`The spacing is too far, please move the vehicle and confirm`,

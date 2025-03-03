@@ -274,16 +274,16 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     })
 
     // dialogs
-    robotArr[ip].dialog(({ frame_id }) => {
-      // let dialogMsg = { text: "", btns: [] };
+    robotArr[ip].dialog(({seq, frame_id }) => {
       dialogMsg.dialog = true;
+      dialogMsg.seq = seq;
       if (!frame_id.includes("UI")) return;
       if (frame_id.includes(":")) {
         let parts = frame_id.split(":");
         dialogMsg.text = parts[1];
         dialogMsg.btns = parts.slice(2);
       } else dialogMsg.text = frame_id;
-      // console.log("dialog",dialogMsg);
+      console.log("dialog",dialogMsg);
       
       socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
     });

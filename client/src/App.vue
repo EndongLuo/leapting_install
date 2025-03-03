@@ -5,7 +5,7 @@
     <!-- 弹框 -->
     <el-dialog :visible.sync="dialogs.dialog" width="60%" :title="$t('prompt.prompt')" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
-        <span style="font-weight: 600;font-size: 24px;">{{ $t(`dialog.${dialogs.text}`) }}</span>
+        <span style="font-size: 24px;">{{ $t(`dialog.${dialogs.text}`) }} <span style="font-weight: 600;" v-if="dialogs.seq">{{dialogs.seq }}mm</span></span>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button v-for="b, i in dialogs.btns" :key="i" @click="dialogfn(b)">{{ $t(`dialog.${b}`) }}</el-button>

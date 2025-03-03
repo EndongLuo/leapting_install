@@ -145,7 +145,7 @@ const zh = {
     withdraw_pvm: '确认后撤回光伏板',
     withdraw: '撤回',
     cupoff: '确认后将松开吸盘',
-    down5mm: '确认后机械臂末端将下压5mm',
+    down5mm: '确认后机械臂末端将下压',
     uninstall: '机械臂是否在合适位置，确认后机械臂将垂直下降',
     pose_failed: '数据异常，将撤回组件',
     plan_failed: `间距过远，请移动车辆后确认`,
