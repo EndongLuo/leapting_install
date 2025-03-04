@@ -13,7 +13,7 @@ const state = {
   dialogs: {},
   newDiagnostics: { list: [], list2: [] },
   speed: { linear: 0, angular: 0 },
-  battery: 60,
+  battery: 0,
   gitNum: null,
   gitFeedback: false,
 };

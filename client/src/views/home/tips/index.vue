@@ -9,7 +9,7 @@
           <div class="jqr_id" style="color: #34a94d;">{{ $t('robot.connected') }}</div>
 
           <!-- 电池 -->
-          <Battery :quantity="battery" />
+          <Battery :quantity="battery" v-if="battery" />
 
           <!-- 信号 -->
           <!-- <Signal :num="Number(wifi.signal)" /> -->
