@@ -119,6 +119,7 @@ const zh = {
     Loading: '加载中...',
     switchGit: '请选择其他版本',
     mirror: '镜像',
+    video: '图像显示',
   },
   connPrompt: {
     success: '安装机器人已连接。',

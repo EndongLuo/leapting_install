@@ -76,6 +76,7 @@ class RobotModel {
       status: data.status,
       cuplength: data.cuplength,
       bridgegap: data.bridgegap,
+      video: data.video,
     }, {
       where: { id: data.id }
     });

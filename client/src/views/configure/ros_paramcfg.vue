@@ -27,6 +27,11 @@
         </div>
 
         <div class="inbox">
+          <span style="width: 100px;">{{ $t('config.video') }}：</span>
+          <el-switch v-model="robot.video" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
+        </div>
+
+        <div class="inbox">
           <span>{{ $t('config.reminder') }}：</span>
           <div style="width: 200px;"><el-slider v-model="robot.reminder" @change="upDataPVM" :step="5"></el-slider>
           </div>
@@ -47,7 +52,7 @@
               :min="1">
             </el-slider></span>
           <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
-              }}</el-checkbox></span>
+          }}</el-checkbox></span>
           <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button>
           <el-button @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
         </div>
@@ -74,7 +79,16 @@ export default {
   data() {
     return {
       language: this.$i18n.locale,
-      robot: {},
+      robot: {
+        video: 0,
+        reminder: 30,
+        pvmheight: 0,
+        pvmwidth: 0,
+        installgap: 0,
+        cuplength: 0,
+        bridgegap: 0,
+        status: 0
+      },
       t: '',
       HandEyeData: [1, 55],
       mirrorChecked: false
@@ -86,6 +100,11 @@ export default {
   async created() {
     var res = await getRobot();
     this.robot = res.data[0];
+    this.$set(this.robot, 'video', String(this.robot.video));
+    this.$set(this.robot, 'status', String(this.robot.status));
+    localStorage.setItem('video', this.robot.video);   //将用户设置存储到localStorage以便用户下次打开时使用此设置
+    // console.log(this.robot);
+    
   },
   watch: {
     battery(val, oldval) {
@@ -113,6 +132,7 @@ export default {
   methods: {
     async upDataPVM() {
       var res = await updateRobot(this.robot);
+      localStorage.setItem('video', this.robot.video);
 
       if (res.code == 200) {
         this.$message.success('Update success!');
@@ -201,6 +221,7 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    flex-direction: column;
 
     .inbox {
       display: flex;

@@ -61,7 +61,7 @@ TimedTask.belongsTo(Task);
 // sequelize.sync({ alter: true });
 sequelize.sync();
 
-SensorLog.sync({ alter: true }) 
+Robot.sync({ alter: true }) 
 
 module.exports = {
   User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog

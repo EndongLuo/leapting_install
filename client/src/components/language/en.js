@@ -119,6 +119,7 @@ const en = {
     Loading: 'Loading...',
     switchGit: 'Please choose another version',// 请选择其他版本
     mirror: 'Mirror',
+    video: 'Video',
   },
   connPrompt:{
     success:'Connected to Install Robot.',

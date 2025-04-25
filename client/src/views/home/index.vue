@@ -119,7 +119,7 @@
                   （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
                 <div><span class="title">{{ $t('task.starttime') }}:</span>{{ taskState.start_time }}</div>
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
-                }}
+                  }}
                 </div>
                 <div><span class="title">{{ $t('task.InstallSpeed') }}:</span>{{ taskState.last_duration }}</div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
@@ -133,9 +133,9 @@
                 </div>
                 <div class="btns">
                   <el-button class="btn" v-if="taskState.task_status == 2" @click="changeTask(1)">{{ $t('task.continue')
-                  }}</el-button>
+                    }}</el-button>
                   <el-button class="btn" v-if="taskState.task_status == 1" @click="changeTask(2)">{{ $t('task.pause')
-                  }}</el-button>
+                    }}</el-button>
                   <el-button class="btn" v-if="taskState.task_status == 1 || taskState.task_status == 2"
                     @click="changeTask(0)">{{ $t('task.stop') }}</el-button>
                 </div>
@@ -161,7 +161,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" v-if="video">
         <!-- RGB图像 -->
         <div class="win" v-if="rawImg">
           <div class="totitle">
@@ -246,6 +246,7 @@ export default {
       ctof: true, // 粗调-微调（机械臂）
       isShow: 0,
       inDraging: false,
+      video: Number(localStorage.getItem('video')) || 0,
     };
   },
   computed: {
@@ -255,6 +256,9 @@ export default {
     this.$nextTick(() => this.scrollToBottom());
     this.loop1();
     this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
+
+    var v = localStorage.getItem('video');
+    if (!v) localStorage.setItem('video', 0) 
   },
   watch: {
     flexbeLog() {

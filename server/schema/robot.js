@@ -15,6 +15,7 @@ module.exports = function (sequelize, DataTypes) {
     reminder: { type: INTEGER, },
     bridgegap: { type: INTEGER, },
     cuplength: { type: INTEGER, },
+    video: { type: INTEGER, },
   }, {
     tableName: 'robot',
     indexes: [
