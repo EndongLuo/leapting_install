@@ -265,6 +265,13 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       }
     })
 
+    // databaseUpdate
+    robotArr[ip].databaseUpdate((msg) => {
+      var data = Number(msg.data)
+      console.log("databaseUpdate", data);
+      socket.server.of('/XJ').emit("databaseUpdate", ip, data);
+    })
+
     // 速度
     robotArr[ip].speed((msg) => {
       const angular = (msg.twist.twist.angular.z).toFixed(1);
@@ -322,14 +329,20 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       var status = 0;
       var list = [];
       var list2 = [];
+      var estop = false;
       msg.status.forEach((i) => {
         if (i.level === 1) {
           list.push(i);
           status = Math.max(status, i.message);
+          // console.log(i);
+          if (i.name === "joy_estop") {
+            if (i.message === "0") estop = false;
+            if (i.message === "2") estop = true;
+          }
         }
         else if (i.level === 2) list2.push(i);
       });
-      socket.server.of('/XJ').emit("newDiagnostics", ip, { status, list, list2 });
+      socket.server.of('/XJ').emit("newDiagnostics", ip, { status, list, list2, estop });
     });
 
     // 任务状态
@@ -405,12 +418,6 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       }
       socket.server.of('/XJ').emit("log", ip, log);
     });
-
-    // 消息反馈trig
-    robotArr[ip].feedBack((msg) => {
-      socket.server.of('/XJ').emit("feedBack", ip, msg);
-    });
-
 
     // 获取机器人参数
     robotArr[ip].getParam((msg) => {

@@ -95,11 +95,11 @@
     </div>
 
     <!-- 可拖拽框 -->
-    <div style="display: flex; justify-content: flex-end; flex-wrap: wrap;" v-show="isShow || isTask">
+    <div class="dragBox" v-show="isShow || isTask">
 
       <div class="row">
         <!-- 任务状态 -->
-        <div class="win" style="width: 40%;" v-if="taskState.id">
+        <div class="win" v-if="taskState.id">
           <div class="totitle">
             <span>{{ $t('task.taskinfo') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -108,7 +108,7 @@
             <div class="content">
               <div class="taskInfo">
                 <div><span class="title">{{ $t('task.taskid') }}:</span>{{ taskState.id }}</div>
-                <div><span class="title">{{ $t('task.taskname') }}:</span>{{ taskState.task_name }}</div>
+                <!-- <div><span class="title">{{ $t('task.taskname') }}:</span>{{ taskState.task_name }}</div> -->
                 <div><span class="title">{{ $t('task.tasktype') }}:</span>{{ taskState.task_type == 0 ?
                   `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2
                     ?
@@ -123,6 +123,8 @@
                 </div>
                 <div><span class="title">{{ $t('task.InstallSpeed') }}:</span>{{ taskState.last_duration }}</div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
+                <div><span class="title">{{ $t('config.bridgegap') }}:</span><el-switch v-model="robot.status"
+                    @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch></div>
               </div>
               <div class="right">
                 <div class="tiptop">
@@ -200,7 +202,7 @@
 
     <!-- 急停 -->
     <div class="estop">
-      <div class="outer" v-if="!isEstop">
+      <div class="outer" v-if="!Estop">
         <div class="insart"></div>
         <img src="./img/estop.png" alt="" @click="estop('estop_on', true)">
       </div>
@@ -232,6 +234,7 @@ import { mapState } from "vuex";
 import Toast from "@/components/toast";
 import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
+import { getRobot, updateRobot } from '@/api';
 
 export default {
   name: "home",
@@ -247,27 +250,47 @@ export default {
       isShow: 0,
       inDraging: false,
       video: Number(localStorage.getItem('video')) || 0,
+      robot: {},
     };
   },
   computed: {
-    ...mapState("socket", ['rosConnect', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg']),
+    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate']),
   },
   mounted() {
     this.$nextTick(() => this.scrollToBottom());
     this.loop1();
     this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
+    this.getRobot();
 
     var v = localStorage.getItem('video');
-    if (!v) localStorage.setItem('video', 0) 
+    if (!v) localStorage.setItem('video', 0)
   },
   watch: {
     flexbeLog() {
       this.$nextTick(() => {
         this.scrollToBottom();
       });
+    },
+    databaseUpdate(val, oldval) {
+      console.log(val, oldval);
+      if (val) this.getRobot();
+      this.$store.dispatch("socket/statusUpdate");
     }
   },
   methods: {
+    async getRobot() {
+      var res = await getRobot();
+      this.robot = res.data[0];
+      this.$set(this.robot, 'status', String(this.robot.status));
+      // console.log('robot status', this.robot.status);
+    },
+    async upDataPVM() {
+      var res = await updateRobot(this.robot);
+      localStorage.setItem('video', this.robot.video);
+
+      if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+      else this.$message.error(`${this.$t('prompt.updateFailed')}`);
+    },
     winChanged(val) {
       this.isTask = val;
       this.isShow = 1;
@@ -279,7 +302,7 @@ export default {
     // 发送任务
     sendTask(num) {
       var isInstall = this.taskState.task_status == 1 || this.taskState.task_status == 2;
-      if (isInstall) return this.$message.error('任务正在执行中，请等待任务结束后再发送新任务！');
+      if (isInstall) return this.$message.error(`${this.$t('prompt.tasking')}`);
       var id = Math.round(Math.random() * 900000000 + 100000000);
       this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
         confirmButtonText: this.$t('mains.confirm'),
@@ -347,7 +370,7 @@ export default {
     checkRos() {
       if (!this.rosConnect) {
         this.isShow = 0;
-        this.$message.error('The robot is not connected. Please check the connection status before proceeding.');
+        this.$message.error(`${this.$t('prompt.robotNotConnected')}`);
       }
     },
     loop1() {
@@ -490,7 +513,7 @@ export default {
   width: 60px;
   height: 60px;
   position: fixed;
-  top: 20%;
+  top: 16%;
   left: 0;
   z-index: 9999;
   cursor: pointer;
@@ -726,67 +749,74 @@ export default {
   }
 }
 
-.row {
+.dragBox {
   display: flex;
-  width: 90%;
-  height: 36%;
-}
+  // justify-content: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
 
-.win {
-  flex: 1;
-  width: 50%;
-  height: 35%;
-  border: 1px solid #dddddd71;
-  background: #cccccc50;
-  font-size: 14px;
-  box-shadow: 0px 0px 10px #bdbdbd61;
-  overflow: hidden;
-  z-index: 999;
-  border-radius: 5px;
-
-  .totitle {
+  .row {
     display: flex;
-    justify-content: space-between;
-    margin: 10px;
-    font-weight: 600;
-    font-size: 16px;
-    // border-bottom: #000000a6 1px;
+    // width: 90%;
+    width: 80%;
   }
 
-  .contents {
-    width: 100%;
-    height: 222px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    border-top: #00000065 1px solid;
+  .win {
+    flex: 1;
+    width: 50%;
+    border: 1px solid #dddddd71;
+    background: #cccccc50;
+    font-size: 14px;
+    box-shadow: 0px 0px 10px #bdbdbd61;
+    overflow: hidden;
+    z-index: 999;
+    border-radius: 5px;
 
-    &::-webkit-scrollbar {
-      // 滚动条样式
-      width: 3px;
-      height: 3px;
-      border-radius: 3px;
+    .totitle {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      // border-bottom: #000000a6 1px;
     }
 
-    &::-webkit-scrollbar-corner {
-      background-color: transparent;
-    }
+    .contents {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      border-top: #00000065 1px solid;
 
-    &::-webkit-scrollbar-thumb {
-      border-radius: 3px;
-      background: #999999;
-    }
+      &::-webkit-scrollbar {
+        // 滚动条样式
+        width: 3px;
+        height: 3px;
+        border-radius: 3px;
+      }
 
-    &::-webkit-scrollbar-track {
-      border-radius: 0;
-      background: #d6d6d6;
-    }
+      &::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
 
-    .p {
-      margin: 5px 10px;
-      text-overflow: ellipsis;
+      &::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background: #999999;
+      }
+
+      &::-webkit-scrollbar-track {
+        border-radius: 0;
+        background: #d6d6d6;
+      }
+
+      .p {
+        margin: 5px 10px;
+        text-overflow: ellipsis;
+      }
     }
   }
 }
+
 
 .kuang {
   position: fixed;

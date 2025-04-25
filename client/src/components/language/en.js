@@ -124,7 +124,7 @@ const en = {
   connPrompt:{
     success:'Connected to Install Robot.',
     close:'Connection to Install Robot closed.',
-    reconn:'Reconnect'
+    reconn:'Reconnect',
   },
   prompt:{
     switchMode: 'Task in progress, please end the task before switching modes.',
@@ -132,7 +132,12 @@ const en = {
     inputNum:'Please enter the number of PVM',
     uninputNum:'Please enter the number of PVM disassembled',
     prompt:'Prompt',
-    lowBattery:'Battery too low'
+    lowBattery:'Battery too low',
+    updateSuccess:'Update success',
+    updateFailed:'Update failed',
+    noSwitch: 'No need to switch, the current version is:',
+    tasking: 'The task is in progress, please end the task before sending a new task!',
+    robotNotConnected: 'The robot is not connected. Please check the connection status before proceeding.',
   },
   identify:{
     identifyOk:'Successfully Identified.',

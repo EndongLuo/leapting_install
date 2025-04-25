@@ -136,6 +136,12 @@ class Robot extends EventEmitter {
     this.robotStateSub = this.subscribeTopic('/robot_state', 'std_msgs/String', callback);
   }
 
+  // database_update
+  databaseUpdate(callback) {
+    if (this.databaseUpdateSub) this.databaseUpdateSub();
+    this.databaseUpdateSub = this.subscribeTopic('/database_update', 'std_msgs/String', callback);
+  }
+
   // 弹框
   dialog(callback) {
     if (this.dialogSub) this.dialogSub();
@@ -159,6 +165,7 @@ class Robot extends EventEmitter {
     if (this.feedBackSub) this.feedBackSub();
     this.feedBackSub = this.subscribeTopic('/trig', 'std_msgs/Header', callback);
   }
+
   // 获取机器人参数
   getParam(callback) {
     if (this.getParamSub) this.getParamSub();

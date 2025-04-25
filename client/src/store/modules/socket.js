@@ -3,7 +3,7 @@ import Socket from '@/utils/socketUtil';
 
 const state = {
   socket: null,
-  // ips: ['192.168.8.13'],
+  // ips: ['192.168.8.234'],
   ips: ['10.168.2.178'],
   // ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
@@ -78,6 +78,7 @@ const mutations = {
     }
 
     Vue.set(state, 'newDiagnostics', d);
+    Vue.set(state, 'Estop', d.estop);
   },
   flexbeLog(state, d) {
     // console.log('flexbeLog', d);
@@ -119,6 +120,12 @@ const actions = {
       Vue.set(state, 'tag', tag);
       Vue.set(state, 'tags', tags);
       Vue.set(state, 'gitFeedback', gitFeedback);
+    })
+
+    // databaseUpdate
+    socket.on('databaseUpdate', (ip, d) => {
+      console.log('databaseUpdate', ip, d);
+      Vue.set(state, 'databaseUpdate', d);
     })
 
     // 速度
@@ -202,16 +209,6 @@ const actions = {
       }
     })
 
-    // // 消息反馈trig
-    // socket.on('feedBack', (ip, d) => {
-    //   // console.log(d);
-    //   if (d.frame_id == 'git_pull_res') {
-    //     console.log(ip, d);
-    //     if (d.seq == 1) state.gitFeedback = true;
-    //     else state.gitFeedback = false;
-    //   }
-    // })
-
     // action反馈
     socket.on('openFeedback', d => {
       console.log('openFeedback', d);
@@ -222,11 +219,6 @@ const actions = {
       state.openResult = d;
     })
 
-    // RGB图像
-    // robotArr[ip].rawImg((msg) => {
-    //   console.log('rawImg', ip, msg);
-    //   socket.server.of('/XJ').emit("rawImg", ip, msg);
-    // })
     // RGB图像
     socket.on('rawImg', (ip, d) => {
       // console.log('rawImg', ip, `data:image/jpeg;base64, ${d.data}`);
@@ -245,7 +237,6 @@ const actions = {
       state.resImg = `data:image/png;base64, ${d.data}`;
     })
 
-
     return () => clearInterval(timer);
   },
 
@@ -263,6 +254,11 @@ const actions = {
 
   HandEye({ commit, state }, data) {
     state.socket.emit('HandEye', state.ips[0], data);
+  },
+  statusUpdate({ commit, state }) {
+    
+    state.databaseUpdate = 0;
+    console.log('state statusUpdate',state.databaseUpdate);
   },
 
   // 控制底盘与云台

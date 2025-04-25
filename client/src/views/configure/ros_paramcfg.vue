@@ -27,7 +27,7 @@
         </div>
 
         <div class="inbox">
-          <span style="width: 100px;">{{ $t('config.video') }}：</span>
+          <span>{{ $t('config.video') }}：</span>
           <el-switch v-model="robot.video" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
         </div>
 
@@ -48,7 +48,7 @@
 
         <div class="inbox">
           <span>{{ $t('config.handeye') }}：</span>
-          <span style="width: 80px; margin-left: 10px;"><el-slider v-model="HandEyeData" range show-stops :max="55"
+          <span style="width: 100px; margin-left: 10px;"><el-slider v-model="HandEyeData" range show-stops :max="55"
               :min="1">
             </el-slider></span>
           <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
@@ -79,36 +79,21 @@ export default {
   data() {
     return {
       language: this.$i18n.locale,
-      robot: {
-        video: 0,
-        reminder: 30,
-        pvmheight: 0,
-        pvmwidth: 0,
-        installgap: 0,
-        cuplength: 0,
-        bridgegap: 0,
-        status: 0
-      },
+      robot: {},
       t: '',
       HandEyeData: [1, 55],
       mirrorChecked: false
     };
   },
   computed: {
-    ...mapState("socket", ['battery', 'tag', 'gitFeedback', 'tags']),
+    ...mapState("socket", ['battery', 'databaseUpdate', 'tag', 'gitFeedback', 'tags']),
   },
   async created() {
-    var res = await getRobot();
-    this.robot = res.data[0];
-    this.$set(this.robot, 'video', String(this.robot.video));
-    this.$set(this.robot, 'status', String(this.robot.status));
-    localStorage.setItem('video', this.robot.video);   //将用户设置存储到localStorage以便用户下次打开时使用此设置
-    // console.log(this.robot);
-    
+    this.getRobot();
   },
   watch: {
     battery(val, oldval) {
-      console.log(val, oldval, this.robot.reminder);
+      // console.log(val, oldval, this.robot.reminder);
 
       if (val < this.robot.reminder) {
         console.log('电量低');
@@ -121,33 +106,46 @@ export default {
       }
     },
     tag(val, oldval) {
-      // console.log(val, oldval);
-      if (val !== oldval) {
-        if (this.gitFeedback) this.$message.success(`Update success!`);
-        else this.$message.error(`Update failed!`);
+      console.log(val, oldval);
+      if (val !== oldval && oldval) {
+        if (this.gitFeedback) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+        else this.$message.error(`${this.$t('prompt.updateFailed')}`);
         this.loading.close();
       }
+    },
+    databaseUpdate(val, oldval) {
+      // console.log(val, oldval);
+      if (val) this.getRobot();
+      this.$store.dispatch("socket/statusUpdate");
     }
   },
   methods: {
+    // 获取robot参数
+    async getRobot() {
+      var res = await getRobot();
+      this.robot = res.data[0];
+      this.$set(this.robot, 'video', String(this.robot.video));
+      this.$set(this.robot, 'status', String(this.robot.status));
+      localStorage.setItem('video', this.robot.video);
+    },
+
+    // 更新robot参数
     async upDataPVM() {
       var res = await updateRobot(this.robot);
       localStorage.setItem('video', this.robot.video);
 
-      if (res.code == 200) {
-        this.$message.success('Update success!');
-      } else {
-        this.$message.error('Update failed!');
-      }
+      if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+      else this.$message.error(`${this.$t('prompt.updateFailed')}`);
     },
+
+    // 切换语言
     changeLanguage() {
       this.$i18n.locale == 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'   //设置中英文模式
       localStorage.setItem('languageSet', this.$i18n.locale)   //将用户设置存储到localStorage以便用户下次打开时使用此设置
     },
+
     // 发送goal
     HandEye(b) {
-      // arg_keys: ['if_auto_all', 'start_site', 'end_site', 'mirror'],
-      //   arg_values: [`${d.if_auto_all}`, `${d.start_site}`, `${d.end_site}`, `${d.mirror}`]
       var data = {
         if_auto_all: b,
         start_site: this.HandEyeData[0],
@@ -156,9 +154,11 @@ export default {
       }
       this.$store.dispatch("socket/HandEye", data);
     },
-    gitPull(t = '') {
+
+    // 版本更新
+    gitPull(t) {
       if (t == this.tag) {
-        this.$message.error(`当前版本为： ${this.tag}, 无需切换`);
+        this.$message.error(`${this.$t('prompt.noSwitch')} ${this.tag}`);
         return;
       }
       this.$store.dispatch("socket/git", t);
@@ -171,12 +171,10 @@ export default {
       });
 
       if (this.tag == this.tags[0] && t == '') {
-        if (this.gitFeedback) this.$message.success(`Update success!`);
-        else this.$message.error(`Update failed!`);
+        if (this.gitFeedback) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+        else this.$message.error(`${this.$t('prompt.updateFailed')}`);
         this.loading.close();
       }
-
-
     },
   },
 };
@@ -194,7 +192,7 @@ export default {
 
 .pduControl {
   width: 60%;
-  height: 90vh;
+  height: 100%;
   margin-top: -10px;
   padding: 30px 40px;
   border-radius: 5px;

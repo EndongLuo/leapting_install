@@ -132,7 +132,12 @@ const zh = {
     inputNum: '请输入组件数量',
     uninputNum: '请输入拆卸组件数量',
     prompt: '提示',
-    lowBattery: '电量过低'
+    lowBattery: '电量过低',
+    updateSuccess:'更新成功',
+    updateFailed:'更新失败',
+    noSwitch: '无需切换, 当前版本为：',
+    tasking: '任务正在执行中，请等待任务结束后再发送新任务！',
+    robotNotConnected: '机器人未连接，请检查机器人连接状态后再进行操作。',
   },
   identify: {
     identifyOk: '识别成功。',
