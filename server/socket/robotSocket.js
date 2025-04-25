@@ -100,8 +100,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
 
       var goalMessage = new ROSLIB.Message({
         behavior_name: 'HandEyeCalibration',
-        arg_keys: ['if_auto_all'],
-        arg_values: [`${d}`]
+        arg_keys: ['if_auto_all', 'start_site', 'end_site', 'mirror'],
+        arg_values: [`${d.if_auto_all}`, `${d.start_site}`, `${d.end_site}`, `${d.mirror}`]
       });
       var goal = new ROSLIB.Goal({ actionClient, goalMessage, });
 
@@ -228,12 +228,13 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
   });
 
   //Git
-  socket.on("git", (ip) => {
+  socket.on("git", (ip, tag) => {
     try {
-      console.log("git", ip);
-      
-      robotArr[ip].git();
-      logger.info(`git ${ip}`);
+      console.log("git", ip, tag);
+      if (!tag) data = '{"git": {"op": "pull"}}';
+      else data = `{"git": {"op": "checkout", "tag": "${tag}"}}`;
+      robotArr[ip].git(data);
+      logger.info(`git ${ip} ${tag}`);
     } catch (error) {
       logger.error(`git ${ip} ${error}`);
     }
@@ -251,9 +252,17 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     // robot_state
     robotArr[ip].robotState((msg) => {
       // console.log("robotState", msg);
-      msg = JSON.parse(msg.data);
-      var gitNum = msg.git.info.msg
-      socket.server.of('/XJ').emit("robotState", ip, gitNum);
+      try {
+        msg = JSON.parse(msg.data);
+        var tag = msg.git.tag;
+        var tags = msg.git.tags;
+        // 成功反馈
+        var gitFeedback = msg.git.op_done;
+
+        socket.server.of('/XJ').emit("robotState", ip, tag, tags, gitFeedback);
+      } catch (error) {
+        console.log("robotState", msg, error);
+      }
     })
 
     // 速度
@@ -266,7 +275,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     // 电量
     robotArr[ip].battery((msg) => {
       // console.log("battery", msg);
-      let percentage =msg.percentage;
+      let percentage = msg.percentage;
       if (percentage < 0) percentage = 0;
       if (percentage > 100) percentage = 100;
       socket.server.of('/XJ').emit("battery", ip, parseInt(percentage));
@@ -274,7 +283,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     })
 
     // dialogs
-    robotArr[ip].dialog(({seq, frame_id }) => {
+    robotArr[ip].dialog(({ seq, frame_id }) => {
       dialogMsg.dialog = true;
       dialogMsg.seq = seq;
       if (!frame_id.includes("UI")) return;
@@ -283,8 +292,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         dialogMsg.text = parts[1];
         dialogMsg.btns = parts.slice(2);
       } else dialogMsg.text = frame_id;
-      console.log("dialog",dialogMsg);
-      
+      console.log("dialog", dialogMsg);
+
       socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
     });
 
@@ -409,6 +418,23 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("getParam", ip, msg);
     });
 
+    // RGB图像
+    robotArr[ip].rawImg((msg) => {
+      // console.log('rawImg', ip, msg);
+      socket.server.of('/XJ').emit("rawImg", ip, msg);
+    })
+
+    // 深度图像
+    robotArr[ip].depImg((msg) => {
+      // console.log('depImg', ip, msg);
+      socket.server.of('/XJ').emit("depImg", ip, msg);
+    })
+
+    // 分割图像
+    robotArr[ip].resImg((msg) => {
+      // console.log('resImg', ip, msg);
+      socket.server.of('/XJ').emit("resImg", ip, msg);
+    })
   });
 }
 

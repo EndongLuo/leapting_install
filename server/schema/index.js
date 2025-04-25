@@ -15,6 +15,7 @@ const Permission = require('./permission')(sequelize, DataTypes);
 const Log = require('./log')(sequelize, DataTypes);
 const G1_pro = require('./g1_pro')(sequelize, DataTypes);
 const FlexbeLog = require('./flexbe_log')(sequelize, DataTypes);
+const SensorLog = require('./sensor_log')(sequelize, DataTypes);
 
 
 //建立模型之间关联关系
@@ -60,8 +61,8 @@ TimedTask.belongsTo(Task);
 // sequelize.sync({ alter: true });
 sequelize.sync();
 
-// Site.sync({ alter: true })
+SensorLog.sync({ alter: true }) 
 
 module.exports = {
-  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog
+  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog
 }

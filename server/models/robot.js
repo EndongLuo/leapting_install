@@ -1,4 +1,4 @@
-const { Site, Robot, Log } = require('../schema/index');
+const { Site, Robot, Log, SensorLog } = require('../schema/index');
 const { Op } = require("sequelize");
 
 class RobotModel {
@@ -16,7 +16,7 @@ class RobotModel {
   // 获取机器人
   static async getRobot() {
     return await Robot.findAll({
-      where: { status: 1 },
+      // where: { status: 1 },
     });
   }
 
@@ -73,6 +73,9 @@ class RobotModel {
       pvmwidth: data.pvmwidth,
       reminder: data.reminder,
       installgap: data.installgap,
+      status: data.status,
+      cuplength: data.cuplength,
+      bridgegap: data.bridgegap,
     }, {
       where: { id: data.id }
     });
@@ -97,6 +100,18 @@ class RobotModel {
     });
   }
 
+  // 获取传感器日志
+  static async getSensorLog(st, et) {
+    return await SensorLog.findAll({
+      where: {
+        time: {
+          [Op.between]: [st, et]
+        }
+      },
+      order: [['time', 'ASC']], // 可选：按时间排序
+      // limit: 1000,
+    });
+  }
 
 }
 

@@ -75,7 +75,7 @@ app.use(jwt({
 }).unless({
   // 设置login、register接口，可以不需要认证访问
   path: [
-    /\/api\/robot\/robot/,
+    /\/api\/robot/,
     /\/api\/user\/register/,
     /\/api\/user\/login/,
     /\/api\/public\/getCaptcha/,

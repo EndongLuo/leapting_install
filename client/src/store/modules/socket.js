@@ -3,8 +3,9 @@ import Socket from '@/utils/socketUtil';
 
 const state = {
   socket: null,
-  // ips: ['192.168.8.234'],
-  ips: ['127.0.0.1'],
+  // ips: ['192.168.8.13'],
+  ips: ['10.168.2.178'],
+  // ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},
   Robot: {},
@@ -113,9 +114,11 @@ const actions = {
     });
 
     // robotState
-    socket.on('robotState', (ip, d) => {
+    socket.on('robotState', (ip, tag, tags, gitFeedback) => {
       // console.log('robotState', ip, d);
-      Vue.set(state, 'gitNum', d);
+      Vue.set(state, 'tag', tag);
+      Vue.set(state, 'tags', tags);
+      Vue.set(state, 'gitFeedback', gitFeedback);
     })
 
     // 速度
@@ -199,15 +202,15 @@ const actions = {
       }
     })
 
-    // 消息反馈trig
-    socket.on('feedBack', (ip, d) => {
-      // console.log(d);
-      if (d.frame_id == 'git_pull_res') {
-        console.log(ip, d);
-        if (d.seq == 1) state.gitFeedback = true;
-        else state.gitFeedback = false;
-      }
-    })
+    // // 消息反馈trig
+    // socket.on('feedBack', (ip, d) => {
+    //   // console.log(d);
+    //   if (d.frame_id == 'git_pull_res') {
+    //     console.log(ip, d);
+    //     if (d.seq == 1) state.gitFeedback = true;
+    //     else state.gitFeedback = false;
+    //   }
+    // })
 
     // action反馈
     socket.on('openFeedback', d => {
@@ -219,6 +222,30 @@ const actions = {
       state.openResult = d;
     })
 
+    // RGB图像
+    // robotArr[ip].rawImg((msg) => {
+    //   console.log('rawImg', ip, msg);
+    //   socket.server.of('/XJ').emit("rawImg", ip, msg);
+    // })
+    // RGB图像
+    socket.on('rawImg', (ip, d) => {
+      // console.log('rawImg', ip, `data:image/jpeg;base64, ${d.data}`);
+      state.rawImg = `data:image/png;base64, ${d.data}`;
+    })
+
+    // 深度图像
+    socket.on('depImg', (ip, d) => {
+      // console.log('depImg', ip, d);
+      state.depImg = `data:image/png;base64, ${d.data}`;
+    })
+
+    // 分割图像
+    socket.on('resImg', (ip, d) => {
+      // console.log('resImg', ip, d);
+      state.resImg = `data:image/png;base64, ${d.data}`;
+    })
+
+
     return () => clearInterval(timer);
   },
 
@@ -229,9 +256,9 @@ const actions = {
   },
 
   //Git
-  git({ commit, state },) {
-    console.log('state git', state.ips[0]);
-    state.socket.emit('git', state.ips[0]);
+  git({ commit, state }, tag) {
+    console.log('state git', state.ips[0], tag);
+    state.socket.emit('git', state.ips[0], tag);
   },
 
   HandEye({ commit, state }, data) {

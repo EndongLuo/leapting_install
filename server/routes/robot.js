@@ -96,6 +96,7 @@ router.delete('/robot', RobotController.deleteRobot);
  */
 router.get('/log', RobotController.getLog);
 
-
+// getSensorLog
+router.post('/sensorlog', RobotController.getSensorLog);
 
 module.exports = router;

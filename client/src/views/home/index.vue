@@ -95,70 +95,118 @@
     </div>
 
     <!-- 可拖拽框 -->
-    <div style="display: flex; justify-content: flex-end;" v-show="isShow || isTask">
-      <!-- 任务状态 -->
-      <div class="win" style="width: 40%;" v-if="taskState.id">
-        <div class="totitle">
-          <span>{{$t('task.taskinfo')}}</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
-        </div>
-        <div class="contents" ref="contents">
-          <div class="content">
-            <div class="taskInfo">
-              <div><span class="title">{{$t('task.taskid')}}:</span>{{ taskState.id }}</div>
-              <div><span class="title">{{$t('task.taskname')}}:</span>{{ taskState.task_name }}</div>
-              <div><span class="title">{{$t('task.tasktype')}}:</span>{{ taskState.task_type == 0 ? `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2 ? `${$t('install.detach')}` : '' }}</div>
-              <div><span class="title">{{$t('task.taskprogress')}}:</span>{{ (taskState.done_num / taskState.task_num) * 100 }}%
-                （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
-              <div><span class="title">{{$t('task.starttime')}}:</span>{{ taskState.start_time }}</div>
-              <div v-if="taskState.end_time"><span class="title">{{$t('task.endtime')}}:</span>{{ taskState.end_time }}</div>
-              <div><span class="title">{{$t('task.taskstep')}}:</span>{{ taskState.task_step }}</div>
-            </div>
-            <div class="right">
-              <div class="tiptop">
-                <span v-if="taskState.task_status == 3">{{ $t('task.completed') }}</span>
-                <span v-if="taskState.task_status == 2">{{ $t('task.pause') }}</span>
-                <span v-if="taskState.task_status == 1">{{ $t('task.executing') }}</span>
-                <span v-if="taskState.task_status == 0">{{ $t('task.stop') }}</span>
-              </div>
-              <div class="btns">
-                <el-button class="btn" v-if="taskState.task_status == 2" @click="changeTask(1)">{{ $t('task.continue') }}</el-button>
-                <el-button class="btn" v-if="taskState.task_status == 1" @click="changeTask(2)">{{ $t('task.pause') }}</el-button>
-                <el-button class="btn" v-if="taskState.task_status == 1 || taskState.task_status == 2"
-                  @click="changeTask(0)">{{ $t('task.stop') }}</el-button>
-              </div>
-            </div>
+    <div style="display: flex; justify-content: flex-end; flex-wrap: wrap;" v-show="isShow || isTask">
 
+      <div class="row">
+        <!-- 任务状态 -->
+        <div class="win" style="width: 40%;" v-if="taskState.id">
+          <div class="totitle">
+            <span>{{ $t('task.taskinfo') }}</span>
+            <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
+          </div>
+          <div class="contents" ref="contents">
+            <div class="content">
+              <div class="taskInfo">
+                <div><span class="title">{{ $t('task.taskid') }}:</span>{{ taskState.id }}</div>
+                <div><span class="title">{{ $t('task.taskname') }}:</span>{{ taskState.task_name }}</div>
+                <div><span class="title">{{ $t('task.tasktype') }}:</span>{{ taskState.task_type == 0 ?
+                  `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2
+                    ?
+                    `${$t('install.detach')}` : '' }}</div>
+                <div><span class="title">{{ $t('task.taskprogress') }}:</span>{{ (taskState.done_num /
+                  taskState.task_num) *
+                  100 }}%
+                  （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
+                <div><span class="title">{{ $t('task.starttime') }}:</span>{{ taskState.start_time }}</div>
+                <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
+                }}
+                </div>
+                <div><span class="title">{{ $t('task.InstallSpeed') }}:</span>{{ taskState.last_duration }}</div>
+                <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
+              </div>
+              <div class="right">
+                <div class="tiptop">
+                  <span v-if="taskState.task_status == 3">{{ $t('task.completed') }}</span>
+                  <span v-if="taskState.task_status == 2">{{ $t('task.pause') }}</span>
+                  <span v-if="taskState.task_status == 1">{{ $t('task.executing') }}</span>
+                  <span v-if="taskState.task_status == 0">{{ $t('task.stop') }}</span>
+                </div>
+                <div class="btns">
+                  <el-button class="btn" v-if="taskState.task_status == 2" @click="changeTask(1)">{{ $t('task.continue')
+                  }}</el-button>
+                  <el-button class="btn" v-if="taskState.task_status == 1" @click="changeTask(2)">{{ $t('task.pause')
+                  }}</el-button>
+                  <el-button class="btn" v-if="taskState.task_status == 1 || taskState.task_status == 2"
+                    @click="changeTask(0)">{{ $t('task.stop') }}</el-button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- flexbe日志 -->
+        <div class="win" v-if="flexbeLog">
+          <div class="totitle">
+            <span>{{ $t('task.tasklog') }}</span>
+            <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
+          </div>
+          <div class="contents" ref="contents">
+            <div class="p" v-for="l, i in flexbeLog" :key="i" style="">
+              <span>[{{ l.time }}]：</span>
+              <span v-if="l.status_code == 3" style="color: #F56C6C; font-weight: 600;">{{ l.text }}</span>
+              <span v-if="l.status_code == 1" style="color: #E6A23C; font-weight: 600;">{{ l.text }}</span>
+              <span v-if="l.status_code == 0" style="font-weight: 600;">{{ l.text }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <!-- RGB图像 -->
+        <div class="win" v-if="rawImg">
+          <div class="totitle">
+            <span>{{ $t('install.RGB') }}</span>
+            <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
+          </div>
+          <div class="contents" ref="contents">
+            <img :src="rawImg" alt="" style="width: 100%; height: 100%;">
+          </div>
+        </div>
+
+        <!-- 深度图像 -->
+        <div class="win" v-if="depImg">
+          <div class="totitle">
+            <span>{{ $t('install.depth') }}</span>
+            <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
+          </div>
+          <div class="contents" ref="contents">
+            <img :src="depImg" alt="" style="width: 100%; height: 100%;">
+          </div>
+        </div>
+
+        <!-- 分割图像 -->
+        <div class="win" v-if="resImg">
+          <div class="totitle">
+            <span>{{ $t('install.res') }}</span>
+            <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
+          </div>
+          <div class="contents" ref="contents">
+            <img :src="resImg" alt="" style="width: 100%; height: 100%;">
           </div>
         </div>
       </div>
 
-      <!-- flexbe日志 -->
-      <div class="win">
-        <div class="totitle">
-          <span>{{$t('task.tasklog')}}</span>
-          <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
-        </div>
-        <div class="contents" ref="contents">
-          <div class="p" v-for="l, i in flexbeLog" :key="i" style="">
-            <span>[{{ l.time }}]：</span>
-            <span v-if="l.status_code == 3" style="color: #F56C6C; font-weight: 600;">{{ l.text }}</span>
-            <span v-if="l.status_code == 1" style="color: #E6A23C; font-weight: 600;">{{ l.text }}</span>
-            <span v-if="l.status_code == 0" style="font-weight: 600;">{{ l.text }}</span>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- 急停 -->
     <div class="estop">
       <div class="outer" v-if="!isEstop">
         <div class="insart"></div>
-        <img src="./img/estop.png" alt="" @dblclick="estop('estop_on', true)">
+        <img src="./img/estop.png" alt="" @click="estop('estop_on', true)">
       </div>
       <div class="outer" v-else>
         <div class="insart estop_off"></div>
-        <img src="./img/estop.png" alt="" @dblclick="estop('estop_off', false)">
+        <img src="./img/estop.png" alt="" @click="estop('estop_off', false)">
       </div>
     </div>
 
@@ -201,7 +249,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("socket", ['rosConnect', 'flexbeLog', 'taskState']),
+    ...mapState("socket", ['rosConnect', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg']),
   },
   mounted() {
     this.$nextTick(() => this.scrollToBottom());
@@ -235,7 +283,7 @@ export default {
         inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
         inputErrorMessage: this.$t('prompt.inputErrorMessage')
       }).then(({ value }) => {
-        const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach'};
+        const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach' };
         var taskmsg = { id, task_status: 1, task_name: modeMap[num], task_type: num, task_num: Number(value) };
         this.$store.dispatch('socket/sendTask', taskmsg);
         this.$message.success('sendTask: ', taskmsg);
@@ -674,7 +722,14 @@ export default {
   }
 }
 
+.row {
+  display: flex;
+  width: 90%;
+  height: 36%;
+}
+
 .win {
+  flex: 1;
   width: 50%;
   height: 35%;
   border: 1px solid #dddddd71;
@@ -696,7 +751,7 @@ export default {
 
   .contents {
     width: 100%;
-    height: 250px;
+    height: 222px;
     overflow-y: auto;
     overflow-x: hidden;
     border-top: #00000065 1px solid;

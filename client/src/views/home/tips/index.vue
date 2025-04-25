@@ -26,7 +26,7 @@
         </div>
       </div>
 
-      <!-- 机器人弹框 -->
+      <!-- 诊断信息弹框 -->
       <el-dialog :title="$t('nav.diagnostic')" :visible.sync="robotDialogVisible" width="80%" center
         :close-on-click-modal="true">
         <!-- <el-table stripe :data="robotData" border style="width: 100%">
@@ -71,7 +71,8 @@
             {{ d.name }}
           </div>
 
-          <el-divider>More</el-divider>
+          <el-divider>More >> <span @click="onDialogOpened"
+              style="color: #409eff; cursor: pointer;">历史记录</span></el-divider>
 
           <!-- <div style=" width: 100%; height: 60px; line-height: 60px; font-weight: 700; font-size: 24px;">实时数据：</div> -->
           <div v-for="(d, index) of newDiagnostics.list2" :key="index"
@@ -79,6 +80,14 @@
             <span>{{ d.name }}：</span><span style="font-weight: 700;">{{ d.message }}</span>
             <br />
           </div>
+        </div>
+      </el-dialog>
+
+      <!-- echarts -->
+      <el-dialog :title="$t('nav.sensorlog')" :visible.sync="sensorDialogVisible" width="80%" center
+        :close-on-click-modal="false" @opened="onDialogOpened">
+        <div v-loading="isLoading" :element-loading-text="$t('config.Loading')" style="min-height: 400px;">
+          <div id="sensor-chart" style="height: 400px;"></div>
         </div>
       </el-dialog>
 
@@ -90,6 +99,8 @@
 import { mapState } from "vuex";
 import Battery from "@/components/Battery";
 import Signal from "@/components/Signal";
+import { getSensorLog } from "@/api";
+import * as echarts from 'echarts';
 
 export default {
   name: "home",
@@ -97,11 +108,152 @@ export default {
   data() {
     return {
       robotDialogVisible: false,
+      sensorDialogVisible: false,
+      chart: null,
+      fullData: [],      // 后端一次性返回的全部数据（最长 24h）
+      sensorKeys: [],    // 传感器字段名列表
+      defaultKeys: ['chassis_voltage', 'inverter_voltage', 'vacuum_pressure'],// 默认显示这几项     
+      curRange: [0, 100],      // 当前缩放百分比区间 [startPct, endPct]
+      isLoading: false      // 防止并发请求
     };
   },
   computed: {
     ...mapState('socket', ['rosConnect', 'newDiagnostics', 'speed', 'battery']),
   },
+  mounted() {
+    // this.sensorDialogVisible = true;
+  },
+  methods: {
+    /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
+    async onDialogOpened() {
+      this.robotDialogVisible = false;
+      this.sensorDialogVisible = true;
+      if (this.isLoading) return
+      this.isLoading = true
+      await this.fetchFullData()
+      this.initChart()
+      this.drawChart({ useSampling: true })  // 初始抽样渲染
+      this.isLoading = false
+    },
+
+
+    /** 拉取后端 24h 数据 */
+    async fetchFullData() {
+      const now = Date.now()
+      const st = now - 3600 * 1000
+      const res = await getSensorLog({ st, et: now })
+      const arr = res.data || []
+      this.fullData = arr.map(item => ({
+        ...item,
+        _ts: new Date(item.time).getTime()
+      }))
+      this.sensorKeys = Object.keys(arr[0] || {})
+        .filter(k => k !== 'id' && k !== 'time')
+      if (!this.defaultKeys.length) {
+        this.defaultKeys = [...this.sensorKeys]
+      }
+    },
+
+    /** 初始化 ECharts，仅调用一次 */
+    initChart() {
+      if (!this.chart) {
+        this.chart = echarts.init(document.getElementById('sensor-chart'))
+        this.chart.on('restore', () => {
+          // 比如只还原 dataZoom 区间
+          this.curRange = [0, 100];
+          this.drawChart({ useSampling: false });
+        });
+        // 静态 option
+        const baseOption = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' },
+            formatter: params => {
+              const ts = params[0].value[0]
+              const time = echarts.format.formatTime(
+                'yyyy-MM-dd hh:mm:ss',
+                ts
+              )
+              const lines = params.map(
+                p => `${p.marker}${p.seriesName}: ${p.value[1]}`
+              )
+              return [time, ...lines].join('<br/>')
+            }
+          },
+          legend: {
+            // top: '5%',
+            data: this.sensorKeys,
+            selected: this.sensorKeys.reduce((o, k) => {
+              o[k] = this.defaultKeys.includes(k)
+              return o
+            }, {})
+          },
+          toolbox: {
+            top: '5%',
+            feature: {
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          xAxis: { type: 'time', boundaryGap: false },
+          yAxis: { type: 'value' },
+          dataZoom: [
+            { type: 'inside', start: 0, end: 100 },
+            { type: 'slider', start: 0, end: 100 }
+          ]
+        }
+        this.chart.setOption(baseOption)
+
+        // 记录交互区间
+        this.chart.on('dataZoom', e => {
+          const zr = (e.batch && e.batch[0]) || {}
+          this.curRange = [
+            typeof zr.start === 'number' ? zr.start : 0,
+            typeof zr.end === 'number' ? zr.end : 100
+          ]
+        })
+
+        // 自适应容器
+        window.addEventListener('resize', () => {
+          this.chart.resize()
+        })
+      }
+    },
+
+    /** 核心：更新 series 与 dataZoom，保留类型以支持手动缩放 */
+    drawChart({ useSampling }) {
+      const N = this.fullData.length
+      const [startPct, endPct] = this.curRange
+      const i0 = Math.round((startPct / 100) * (N - 1))
+      const i1 = Math.round((endPct / 100) * (N - 1))
+      let slice = this.fullData
+      if (!useSampling && i1 - i0 < 2000) {
+        slice = this.fullData.slice(i0, i1 + 1)
+      }
+      const series = this.sensorKeys.map(key => ({
+        name: key,
+        type: 'line',
+        sampling: useSampling ? 'lttb' : false,
+        showSymbol: false,
+        data: slice.map(d => [d._ts, d[key] || 0])
+      }))
+      this.chart.setOption(
+        {
+          dataZoom: [
+            { type: 'inside', start: startPct, end: endPct },
+            { type: 'slider', start: startPct, end: endPct }
+          ],
+          series
+        },
+        { replaceMerge: ['series', 'dataZoom'] }
+      )
+    },
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', () => this.chart && this.chart.dispose())
+    this.chart && this.chart.dispose()
+  }
 };
 </script>
 

@@ -17,7 +17,8 @@ const zh = {
     task: '任务',
     diagnostic: '诊断',
     config: '配置',
-    map: '地图'
+    map: '地图',
+    sensorlog: '传感器日志',
   },
   table: {
     send: '发送',
@@ -65,7 +66,8 @@ const zh = {
     taskprogress:'任务进度',
     starttime:'开始时间',
     endtime:'结束时间',
-    taskstep:'任务步骤'
+    taskstep:'任务步骤',
+    InstallSpeed:'安装速率',
   },
   install: {
     control: '机器人操控',
@@ -74,6 +76,9 @@ const zh = {
     sai: '半自动安装',
     detach: '拆卸',
     monitor: '监控',
+    RGB: 'RGB图像',
+    depth: '深度图像',
+    res:'分割图像',
     model: '3D模型',
     pause: '暂停',
     start: '开始',
@@ -108,6 +113,12 @@ const zh = {
     language: '系统语言',
     chinese: '简体中文',
     english: '英文',
+    switch: '切换',
+    bridgegap: '桥架间隙',
+    cuplength: '吸盘长度',
+    Loading: '加载中...',
+    switchGit: '请选择其他版本',
+    mirror: '镜像',
   },
   connPrompt: {
     success: '安装机器人已连接。',

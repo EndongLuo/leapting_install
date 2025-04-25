@@ -13,6 +13,8 @@ module.exports = function (sequelize, DataTypes) {
     installgap: { type: FLOAT, },
     version: { type: STRING, },
     reminder: { type: INTEGER, },
+    bridgegap: { type: INTEGER, },
+    cuplength: { type: INTEGER, },
   }, {
     tableName: 'robot',
     indexes: [

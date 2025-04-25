@@ -17,7 +17,8 @@ const en = {
     task:'Task',
     diagnostic:'Diagnosis',
     config:'Config',
-    map:'Map'
+    map:'Map',
+    sensorlog:'Sensor Log',
   },
   table:{
     send: 'Start',
@@ -66,6 +67,7 @@ const en = {
     starttime:'Start Time',
     endtime:'End Time',
     taskstep:'Task Step',
+    InstallSpeed:'Install Speed',
   },
   install:{
     control:'Chassis Control',
@@ -86,7 +88,10 @@ const en = {
     axis:'Axis',
     global:'Global',
     majoradjust:'Adjust-M',
-    minoradjust:'Adjust-S'
+    minoradjust:'Adjust-S',
+    RGB: 'RGB',
+    depth: 'Depth',
+    res:'Segmentation',
   },
   config:{
     pducontrol:'PDU Control',
@@ -101,13 +106,19 @@ const en = {
     installgap:'Install Gap',
     devicestatus:'Device Status',
     handeye:'Calibration',
-    autohandeye:'Auto Calibration',
-    noautohandeye:'Manual Calibration',
+    autohandeye:'Auto',
+    noautohandeye:'Manual',
     git:'Version',
     update:'Update',
     language: 'Language',
     chinese: 'Chinese',
     english: 'English',
+    switch:'Switch',
+    bridgegap: 'Bridge Gap',
+    cuplength: 'Cup Length',
+    Loading: 'Loading...',
+    switchGit: 'Please choose another version',// 请选择其他版本
+    mirror: 'Mirror',
   },
   connPrompt:{
     success:'Connected to Install Robot.',

@@ -16,6 +16,17 @@
         </div>
 
         <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.cuplength') }}(mm)：</span>
+          <el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input>
+        </div>
+
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.bridgegap') }}(mm)：</span>
+          <el-switch v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
+          <el-input style="margin-left: 10px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>
+        </div>
+
+        <div class="inbox">
           <span>{{ $t('config.reminder') }}：</span>
           <div style="width: 200px;"><el-slider v-model="robot.reminder" @change="upDataPVM" :step="5"></el-slider>
           </div>
@@ -32,15 +43,24 @@
 
         <div class="inbox">
           <span>{{ $t('config.handeye') }}：</span>
-          <el-button @click="HandEye(false)">{{ $t('config.noautohandeye') }}</el-button>
+          <span style="width: 80px; margin-left: 10px;"><el-slider v-model="HandEyeData" range show-stops :max="55"
+              :min="1">
+            </el-slider></span>
+          <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
+              }}</el-checkbox></span>
+          <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button>
           <el-button @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
         </div>
 
         <div class="inbox">
           <span style="width: 100px;">{{ $t('config.git') }}：
-            <span v-if="gitNum" style="margin-left: 10px;color: #949494; font-size: 13px;"> {{ gitNum }} </span>
+            <span v-if="tag" style="margin-left: 10px; color: #949494; font-size: 13px;"> {{ tag }} </span>
           </span>
-          <el-button @click="gitPull">{{ $t('config.update') }}</el-button>
+          <el-button @click="gitPull()" style="margin-right: 10px;">{{ $t('config.update') }}</el-button>
+          <el-select v-model="t" :placeholder="$t('config.switchGit')">
+            <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
+          </el-select>
+          <el-button @click="gitPull(t)">{{ $t('config.switch') }}</el-button>
         </div>
       </div>
     </div>
@@ -54,11 +74,14 @@ export default {
   data() {
     return {
       language: this.$i18n.locale,
-      robot: {}
+      robot: {},
+      t: '',
+      HandEyeData: [1, 55],
+      mirrorChecked: false
     };
   },
   computed: {
-    ...mapState("socket", ['battery', 'gitNum', 'gitFeedback']),
+    ...mapState("socket", ['battery', 'tag', 'gitFeedback', 'tags']),
   },
   async created() {
     var res = await getRobot();
@@ -70,12 +93,20 @@ export default {
 
       if (val < this.robot.reminder) {
         console.log('电量低');
-        
+
         this.$notify({
           title: 'Warning',
           message: 'Battery is low, please charge the robot as soon as possible!',
           type: 'warning'
         });
+      }
+    },
+    tag(val, oldval) {
+      // console.log(val, oldval);
+      if (val !== oldval) {
+        if (this.gitFeedback) this.$message.success(`Update success!`);
+        else this.$message.error(`Update failed!`);
+        this.loading.close();
       }
     }
   },
@@ -95,20 +126,36 @@ export default {
     },
     // 发送goal
     HandEye(b) {
-      this.$store.dispatch("socket/HandEye", b);
+      // arg_keys: ['if_auto_all', 'start_site', 'end_site', 'mirror'],
+      //   arg_values: [`${d.if_auto_all}`, `${d.start_site}`, `${d.end_site}`, `${d.mirror}`]
+      var data = {
+        if_auto_all: b,
+        start_site: this.HandEyeData[0],
+        end_site: this.HandEyeData[1],
+        mirror: this.mirrorChecked
+      }
+      this.$store.dispatch("socket/HandEye", data);
     },
-    gitPull() {
-      this.$store.dispatch("socket/git");
+    gitPull(t = '') {
+      if (t == this.tag) {
+        this.$message.error(`当前版本为： ${this.tag}, 无需切换`);
+        return;
+      }
+      this.$store.dispatch("socket/git", t);
 
-      const loading = this.$loading({
+      this.loading = this.$loading({
         lock: true,
         text: 'Updating...',
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      if (this.gitFeedback) this.$message.success(`Update success!`);
-      else this.$message.error(`Update failed!`);
-      loading.close();
+
+      if (this.tag == this.tags[0] && t == '') {
+        if (this.gitFeedback) this.$message.success(`Update success!`);
+        else this.$message.error(`Update failed!`);
+        this.loading.close();
+      }
+
 
     },
   },
@@ -126,7 +173,7 @@ export default {
 }
 
 .pduControl {
-  width: 50%;
+  width: 60%;
   height: 90vh;
   margin-top: -10px;
   padding: 30px 40px;

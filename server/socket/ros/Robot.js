@@ -125,8 +125,8 @@ class Robot extends EventEmitter {
   }
 
   // Git 
-  git() {
-    this.publish('/robot_command', 'std_msgs/String', { data: '{"git": {"op": "pull"}}' });
+  git(data) {
+    this.publish('/robot_command', 'std_msgs/String', { data });
   }
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
@@ -201,6 +201,24 @@ class Robot extends EventEmitter {
     this.logSub = this.subscribeTopic('/logs', 'rosgraph_msgs/Log', callback);
   }
 
+  // RGB图像
+  rawImg(callback) {
+    if (this.rawImgSub) this.rawImgSub();
+    this.rawImgSub = this.subscribeTopic('/compressed_raw_base64', 'std_msgs/String', callback);
+  }
+
+  // 深度图像
+  depImg(callback) {
+    if (this.depImgSub) this.depImgSub();
+    this.depImgSub = this.subscribeTopic('/compressed_dep_base64', 'std_msgs/String', callback);
+  }
+
+  // 分割图像
+  resImg(callback) {
+    if (this.resImgSub) this.resImgSub();
+    this.resImgSub = this.subscribeTopic('/compressed_res_base64', 'std_msgs/String', callback);
+  }
+  
   // --------------------------------------------------------
 }
 
