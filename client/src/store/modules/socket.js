@@ -3,7 +3,7 @@ import Socket from '@/utils/socketUtil';
 
 const state = {
   socket: null,
-  // ips: ['192.168.8.234'],
+  // ips: ['192.168.8.13'],
   ips: ['10.168.2.178'],
   // ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
@@ -235,6 +235,12 @@ const actions = {
     socket.on('resImg', (ip, d) => {
       // console.log('resImg', ip, d);
       state.resImg = `data:image/png;base64, ${d.data}`;
+    })
+
+    // 机械臂运动深度
+    socket.on('armDep', (ip, d) => {
+      // console.log('armDep', ip, d);
+      Vue.set(state, 'armDep', d);
     })
 
     return () => clearInterval(timer);

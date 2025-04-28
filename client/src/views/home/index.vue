@@ -100,6 +100,7 @@
       <div class="row">
         <!-- 任务状态 -->
         <div class="win" v-if="taskState.id">
+          <!-- <div class="win" > -->
           <div class="totitle">
             <span>{{ $t('task.taskinfo') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -254,7 +255,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate']),
+    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep']),
   },
   mounted() {
     this.$nextTick(() => this.scrollToBottom());
@@ -275,9 +276,22 @@ export default {
       console.log(val, oldval);
       if (val) this.getRobot();
       this.$store.dispatch("socket/statusUpdate");
-    }
+    },
+    armDep(val) {
+      console.log('armDep', val);
+
+      if (val) this.armNotification(val);
+    },
   },
   methods: {
+    armNotification({ x, y, z, w, Z }) {
+      const h = this.$createElement;
+      this.$notify({
+        title: '机械臂深度',
+        duration: 3000,
+        message: h('i', { style: 'color: teal' }, `X:${x} Y:${y} Z:${z} W:${w} Z:${Z}`)
+      });
+    },
     async getRobot() {
       var res = await getRobot();
       this.robot = res.data[0];
@@ -783,7 +797,7 @@ export default {
 
     .contents {
       width: 100%;
-      height: 100%;
+      height: 235px;
       overflow-y: auto;
       overflow-x: hidden;
       border-top: #00000065 1px solid;

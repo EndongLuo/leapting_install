@@ -442,6 +442,22 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       // console.log('resImg', ip, msg);
       socket.server.of('/XJ').emit("resImg", ip, msg);
     })
+
+    // 机械臂运动深度
+    robotArr[ip].armDep((msg) => {
+      // console.log('armDep', ip, msg);
+      var {position, orientation} = msg.pose
+      var Z = position.z;
+      var { x, y, z, w } = orientation;
+      var pose={
+        x: x.toFixed(4),
+        y: y.toFixed(4),
+        z: z.toFixed(4),
+        w: w.toFixed(4),
+        Z: Z.toFixed(4)
+      }
+      socket.server.of('/XJ').emit("armDep", ip, pose);
+    })
   });
 }
 

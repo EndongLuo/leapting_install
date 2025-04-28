@@ -225,6 +225,12 @@ class Robot extends EventEmitter {
     if (this.resImgSub) this.resImgSub();
     this.resImgSub = this.subscribeTopic('/compressed_res_base64', 'std_msgs/String', callback);
   }
+
+  // 机械臂运动深度
+  armDep(callback) {
+    if (this.armDepSub) this.armDepSub();
+    this.armDepSub = this.subscribeTopic('/res_plane3', 'geometry_msgs/PoseStamped', callback);
+  }
   
   // --------------------------------------------------------
 }
