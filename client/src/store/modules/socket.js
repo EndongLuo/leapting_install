@@ -222,19 +222,22 @@ const actions = {
     // RGB图像
     socket.on('rawImg', (ip, d) => {
       // console.log('rawImg', ip, `data:image/jpeg;base64, ${d.data}`);
-      state.rawImg = `data:image/png;base64, ${d.data}`;
+      var rawImg = `data:image/png;base64, ${d.data}`;
+      Vue.set(state, 'rawImg', rawImg);
     })
 
     // 深度图像
     socket.on('depImg', (ip, d) => {
       // console.log('depImg', ip, d);
-      state.depImg = `data:image/png;base64, ${d.data}`;
+      var depImg = `data:image/png;base64, ${d.data}`;
+      Vue.set(state, 'depImg', depImg);
     })
 
     // 分割图像
     socket.on('resImg', (ip, d) => {
       // console.log('resImg', ip, d);
-      state.resImg = `data:image/png;base64, ${d.data}`;
+      var resImg = `data:image/png;base64, ${d.data}`;
+      Vue.set(state, 'resImg', resImg);
     })
 
     // 机械臂运动深度

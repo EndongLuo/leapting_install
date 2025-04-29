@@ -56,12 +56,11 @@ TimedTask.belongsTo(Task);
 // FlexbeLog.belongsTo(Site);
 
 
-//创建表
-// sequelize.sync({ force: true });  
-// sequelize.sync({ alter: true });
-sequelize.sync();
+// 创建表 { force: true }  { alter: true }
+// sequelize.sync({ force: true }); 
+sequelize.sync({ alter: true });
 
-Robot.sync({ alter: true }) 
+// Robot.sync({ alter: true }) 
 
 module.exports = {
   User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog
