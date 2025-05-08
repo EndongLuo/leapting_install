@@ -72,7 +72,7 @@
           </div>
 
           <el-divider>More >> <span @click="onDialogOpened"
-              style="color: #409eff; cursor: pointer;">历史记录</span></el-divider>
+              style="color: #409eff; cursor: pointer;">{{$t('nav.historicalRecords')}}</span></el-divider>
 
           <!-- <div style=" width: 100%; height: 60px; line-height: 60px; font-weight: 700; font-size: 24px;">实时数据：</div> -->
           <div v-for="(d, index) of newDiagnostics.list2" :key="index"

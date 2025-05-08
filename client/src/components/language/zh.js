@@ -10,7 +10,8 @@ const zh = {
     cancel: '取消',
     edit: '编辑',
     goback: '返回',
-    save: '保存'
+    save: '保存',
+
   },
   nav: {
     index: '首页',
@@ -19,6 +20,7 @@ const zh = {
     config: '配置',
     map: '地图',
     sensorlog: '传感器日志',
+    historicalRecords: '历史记录'
   },
   table: {
     send: '发送',
@@ -120,6 +122,12 @@ const zh = {
     switchGit: '请选择其他版本',
     mirror: '镜像',
     video: '图像显示',
+    line_gap: '直线间距',
+    pvm_thickness: '光伏板厚度',
+    cell_length: '电池片长度',
+    hole_gap: '孔间距',
+    pvmedge_hole_gap: '孔边间距',
+    reboot: '重启',
   },
   connPrompt: {
     success: '安装机器人已连接。',
@@ -138,6 +146,8 @@ const zh = {
     noSwitch: '无需切换, 当前版本为：',
     tasking: '任务正在执行中，请等待任务结束后再发送新任务！',
     robotNotConnected: '机器人未连接，请检查机器人连接状态后再进行操作。',
+    cancelReboot: '取消重启',
+    confirmReboot: '确认重启？',
   },
   identify: {
     identifyOk: '识别成功。',

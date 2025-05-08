@@ -69,14 +69,18 @@ class RobotModel {
   // 更新机器人信息
   static async updateRobot(data) {
     return await Robot.update({
-      pvmheight: data.pvmheight,
-      pvmwidth: data.pvmwidth,
+      pvmheight: data.pvmheight || 2278,
+      pvmwidth: data.pvmwidth || 1134,
+      pvm_thickness: data.pvm_thickness || 30,
       reminder: data.reminder,
-      installgap: data.installgap,
       status: data.status,
-      cuplength: data.cuplength,
-      bridgegap: data.bridgegap,
-      video: data.video,
+      cuplength: data.cuplength || 80,
+      bridgegap: data.bridgegap || 100,
+      video: data.video || 0,
+      line_gap: data.line_gap || 50,
+      cell_length: data.cell_length || 92.5,
+      hole_gap: data.hole_gap || 400,
+      pvmedge_hole_gap: data.pvmedge_hole_gap || 25,
     }, {
       where: { id: data.id }
     });

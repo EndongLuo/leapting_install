@@ -9,10 +9,26 @@
           <span style="width: 386px;">{{ $t('config.pvmsize') }}(mm)：</span>
           <el-input v-model="robot.pvmheight" @blur="upDataPVM"></el-input>
           <el-input v-model="robot.pvmwidth" @blur="upDataPVM"></el-input>
+          <el-input v-model="robot.pvm_thickness" @blur="upDataPVM"></el-input>
         </div>
         <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.installgap') }}(mm)：</span>
-          <el-input v-model="robot.installgap" @blur="upDataPVM"></el-input>
+          <span style="width: 232px;">{{ $t('config.line_gap') }}(mm)：</span>
+          <el-input v-model="robot.line_gap" @blur="upDataPVM"></el-input>
+        </div>
+
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.cell_length') }}(mm)：</span>
+          <el-input v-model="robot.cell_length" @blur="upDataPVM"></el-input>
+        </div>
+
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.pvmedge_hole_gap') }}(mm)：</span>
+          <el-input v-model="robot.pvmedge_hole_gap" @blur="upDataPVM"></el-input>
+        </div>
+
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.hole_gap') }}(mm)：</span>
+          <el-input v-model="robot.hole_gap" @blur="upDataPVM"></el-input>
         </div>
 
         <div class="inbox">
@@ -66,6 +82,8 @@
             <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
           </el-select>
           <el-button @click="gitPull(t)">{{ $t('config.switch') }}</el-button>
+          <el-button type="danger" @click="reboot">{{ $t('config.reboot') }}</el-button>
+
         </div>
       </div>
     </div>
@@ -120,6 +138,26 @@ export default {
     }
   },
   methods: {
+    reboot() {
+      this.$confirm(`${this.$t('prompt.confirmReboot')}`, `${this.$t('prompt.prompt')}`, {
+        confirmButtonText: `${this.$t('mains.confirm')}`,
+        cancelButtonText: `${this.$t('mains.cancel')}`,
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: `${this.$t('config.reboot')}`
+        });
+        // console.log('重启');
+        var taskmsg = { task_status: -1, task_name: 'reboot' };
+        this.$store.dispatch('socket/sendTask', taskmsg);
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: `${this.$t('prompt.cancelReboot')}`
+        });
+      });
+    },
     // 获取robot参数
     async getRobot() {
       var res = await getRobot();
@@ -152,7 +190,10 @@ export default {
         end_site: this.HandEyeData[1],
         mirror: this.mirrorChecked
       }
-      this.$store.dispatch("socket/HandEye", data);
+      // this.$store.dispatch("socket/HandEye", data);
+      var taskmsg = { id: -1, task_name: `${JSON.stringify(data)}`, task_type: 4, task_status: 1 };
+      this.$store.dispatch('socket/sendTask', taskmsg);
+      this.$router.push('/');
     },
 
     // 版本更新

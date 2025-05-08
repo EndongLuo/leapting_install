@@ -113,19 +113,21 @@
                 <div><span class="title">{{ $t('task.tasktype') }}:</span>{{ taskState.task_type == 0 ?
                   `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2
                     ?
-                    `${$t('install.detach')}` : '' }}</div>
-                <div><span class="title">{{ $t('task.taskprogress') }}:</span>{{ (taskState.done_num /
-                  taskState.task_num) *
-                  100 }}%
+                    `${$t('install.detach')}` : taskState.task_type == 4
+                      ?
+                      `${$t('config.handeye')}` : '' }}</div>
+                <div><span class="title">{{ $t('task.taskprogress') }}:</span>
+                  {{ (taskState.done_num / taskState.task_num) * 100 || 0 }}%
                   （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
                 <div><span class="title">{{ $t('task.starttime') }}:</span>{{ taskState.start_time }}</div>
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
-                  }}
+                }}
                 </div>
-                <div><span class="title">{{ $t('task.InstallSpeed') }}:</span>{{ taskState.last_duration }}</div>
+                <div><span class="title" v-if="taskState.last_duration">{{ $t('task.InstallSpeed') }}:</span>{{
+                  taskState.last_duration }}</div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
-                <div><span class="title">{{ $t('config.bridgegap') }}:</span><el-switch v-model="robot.status"
-                    @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch></div>
+                <div v-if="taskState.task_type != 4"><span class="title" >{{ $t('config.bridgegap') }}:</span><el-switch
+                    v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch></div>
               </div>
               <div class="right">
                 <div class="tiptop">
@@ -136,9 +138,9 @@
                 </div>
                 <div class="btns">
                   <el-button class="btn" v-if="taskState.task_status == 2" @click="changeTask(1)">{{ $t('task.continue')
-                    }}</el-button>
+                  }}</el-button>
                   <el-button class="btn" v-if="taskState.task_status == 1" @click="changeTask(2)">{{ $t('task.pause')
-                    }}</el-button>
+                  }}</el-button>
                   <el-button class="btn" v-if="taskState.task_status == 1 || taskState.task_status == 2"
                     @click="changeTask(0)">{{ $t('task.stop') }}</el-button>
                 </div>

@@ -19,6 +19,7 @@ const en = {
     config:'Config',
     map:'Map',
     sensorlog:'Sensor Log',
+    historicalRecords:'Historical Records',
   },
   table:{
     send: 'Start',
@@ -120,6 +121,12 @@ const en = {
     switchGit: 'Please choose another version',// 请选择其他版本
     mirror: 'Mirror',
     video: 'Video',
+    line_gap: 'Line Gap',
+    pvm_thickness: 'PVM Thickness',
+    cell_length: 'Cell Length',
+    hole_gap: 'Hole Gap',
+    pvmedge_hole_gap: 'PVM Edge Hole Gap',
+    reboot: 'Reboot',
   },
   connPrompt:{
     success:'Connected to Install Robot.',
@@ -138,6 +145,8 @@ const en = {
     noSwitch: 'No need to switch, the current version is:',
     tasking: 'The task is in progress, please end the task before sending a new task!',
     robotNotConnected: 'The robot is not connected. Please check the connection status before proceeding.',
+    cancelReboot: 'Reboot canceled',
+    confirmReboot: 'Confirm reboot?',
   },
   identify:{
     identifyOk:'Successfully Identified.',
