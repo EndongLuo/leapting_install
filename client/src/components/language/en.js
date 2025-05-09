@@ -173,7 +173,7 @@ const en = {
     cupoff:'The suction cup will be released after confirmation',
     down5mm:'After confirmation, the end of the robotic arm will be pressed down by',
     uninstall:'Is the robot arm in the right position? After confirmation, the robot arm will descend vertically',
-    pose_failed:'Data exception, the component will be withdrawn',
+    pose_failed:'Data exception, Please restart the program',
     plan_failed:`The spacing is too far, please move the vehicle and confirm`,
     identification_failure:'Identification timeout, please try again...',
     sec_identification_failure:`Please confirm after fine-tuning, or install manually`,

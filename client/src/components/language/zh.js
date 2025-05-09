@@ -174,7 +174,7 @@ const zh = {
     cupoff: '确认后将松开吸盘',
     down5mm: '确认后机械臂末端将下压',
     uninstall: '机械臂是否在合适位置，确认后机械臂将垂直下降',
-    pose_failed: '数据异常，将撤回组件',
+    pose_failed: '数据异常，请重启程序',
     plan_failed: `间距过远，请移动车辆后确认`,
     identification_failure: '识别超时 请重试。。。',
     sec_identification_failure: `请微调后确认，或手动安装`,
