@@ -129,6 +129,13 @@ class Robot extends EventEmitter {
     this.publish('/robot_command', 'std_msgs/String', { data });
   }
 
+  // 诊断日志响应
+  diaglogResponse(data) {
+    console.log('--------------',data);
+    
+    this.publish('/diaglog_response', 'task/task_dialog', data);
+  }
+
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
   // robot_state
   robotState(callback) {
@@ -146,6 +153,12 @@ class Robot extends EventEmitter {
   dialog(callback) {
     if (this.dialogSub) this.dialogSub();
     this.dialogSub = this.subscribeTopic('/dialog', 'std_msgs/Header', callback);
+  }
+
+  // 诊断日志请求
+  diaglogRequest(callback) {
+    if (this.diaglogRequestSub) this.diaglogRequestSub();
+    this.diaglogRequestSub = this.subscribeTopic('/diaglog_request', 'task/task_dialog', callback);
   }
 
   // flexbe log

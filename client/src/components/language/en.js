@@ -127,6 +127,7 @@ const en = {
     hole_gap: 'Hole Gap',
     pvmedge_hole_gap: 'PVM Edge Hole Gap',
     reboot: 'Reboot',
+    gitInfo: 'Version Information',
   },
   connPrompt:{
     success:'Connected to Install Robot.',

@@ -128,6 +128,7 @@ const zh = {
     hole_gap: '孔间距',
     pvmedge_hole_gap: '孔边间距',
     reboot: '重启',
+    gitInfo: '版本信息',
   },
   connPrompt: {
     success: '安装机器人已连接。',

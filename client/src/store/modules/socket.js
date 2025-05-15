@@ -3,15 +3,16 @@ import Socket from '@/utils/socketUtil';
 
 const state = {
   socket: null,
-  // ips: ['192.168.8.13'],
-  ips: ['10.168.2.178'],
-  // ips: ['127.0.0.1'],
+  // ips: ['192.168.8.234'],
+  // ips: ['10.168.2.178'],
+  ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},
   Robot: {},
   Robots: [],
   rosConnect: 0,
   dialogs: {},
+  diaglogRequest: {},
   newDiagnostics: { list: [], list2: [] },
   speed: { linear: 0, angular: 0 },
   battery: 0,
@@ -38,10 +39,10 @@ const translationMaps = new Map([
   ['battery_current', '电池总电流'],
   ['hydraulic_voltage', '液压输出电压'],
   ['chassis_voltage', '底盘接触器电压'],
-  ['inverter_voltage', ' 逆变输出电压'],
-  ['hydraulic_status', '液压输出'],
-  ['chassis_status', '底盘输出'],
-  ['inverter_status', '逆变输出'],
+  ['inverter_voltage', ' 逆变输入电压'],
+  ['hydraulic_status', '拖车供电'],
+  ['chassis_status', '底盘供电'],
+  ['inverter_status', '逆变输入'],
   ['charger_status', '充电枪插入'],
   ['vacuum1_pressure', '真空压力1'],
   ['vacuum_pressure', '真空压力2'],
@@ -92,6 +93,10 @@ const mutations = {
   setTaskState(state, { ip, d }) {
     state.taskState = d;
   },
+  diaglogRequest(state, diaglogRequest) {
+    // console.log('diaglogRequest', btns, en, cn);
+    Vue.set(state, 'diaglogRequest', diaglogRequest);
+  }
 };
 
 const actions = {
@@ -115,11 +120,12 @@ const actions = {
     });
 
     // robotState
-    socket.on('robotState', (ip, tag, tags, gitFeedback) => {
+    socket.on('robotState', (ip, tag, tags, gitFeedback, gitInfo) => {
       // console.log('robotState', ip, d);
       Vue.set(state, 'tag', tag);
       Vue.set(state, 'tags', tags);
       Vue.set(state, 'gitFeedback', gitFeedback);
+      Vue.set(state, 'gitInfo', gitInfo);
     })
 
     // databaseUpdate
@@ -146,6 +152,12 @@ const actions = {
       // console.log('dialogs', ip, d);
       commit('setDialog', d);
     });
+
+    // diaglogRequest
+    socket.on('diaglogRequest', (ip, d) => {
+      // console.log('diaglogRequest', ip, d);
+      commit('diaglogRequest', d);
+    })
 
     // flexbeLog
     socket.on('flexbeLog', (ip, d) => {
@@ -255,6 +267,11 @@ const actions = {
     state.socket.emit('sendDialog', { ip: state.ips[0], data });
   },
 
+  diaglogResponse({ commit, state }, data) {
+    // console.log('state diaglogResponse', data);
+    state.socket.emit('diaglogResponse', { ip: state.ips[0], data });
+  },
+
   //Git
   git({ commit, state }, tag) {
     console.log('state git', state.ips[0], tag);
@@ -264,10 +281,10 @@ const actions = {
   HandEye({ commit, state }, data) {
     state.socket.emit('HandEye', state.ips[0], data);
   },
+
   statusUpdate({ commit, state }) {
-    
     state.databaseUpdate = 0;
-    console.log('state statusUpdate',state.databaseUpdate);
+    console.log('state statusUpdate', state.databaseUpdate);
   },
 
   // 控制底盘与云台

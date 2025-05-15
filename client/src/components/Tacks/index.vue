@@ -5,7 +5,7 @@
           <span v-if="taskState.task_status == 2">{{ $t('task.pause') }}</span>
           <span v-if="taskState.task_status == 1">{{ $t('task.executing') }}</span>
           <span v-if="taskState.task_status == 0">{{ $t('task.stop') }}</span></span>)</span>
-      <span><b>{{ $t('task.progress') }}：</b>{{ (taskState.done_num / taskState.task_num) * 100 || 0 }}%
+      <span><b>{{ $t('task.progress') }}：</b>{{ (taskState.done_num / taskState.task_num).toFixed(4) * 100 || 0 }}%
         （{{ taskState.done_num }}/{{ taskState.task_num }}）</span>
       <!-- <span class="taskbox"><b>{{ $t('task.step') }}：</b>{{ taskState.task_step }}</span> -->
     </div>

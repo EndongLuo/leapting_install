@@ -15,6 +15,7 @@ let log;
 let rostimers = {};
 let timers = {};
 let dialogMsg = { text: "", btns: [], dialog: true };
+let diaglogRequest = { btns: [], dialog: true };
 
 async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
   // console.log(robotIPs, robotArr);
@@ -227,6 +228,18 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   });
 
+  // 诊断日志响应
+  socket.on("diaglogResponse", ({ ip, data }) => {
+    try {
+      console.log("diaglogResponse", ip, data);
+      robotArr[ip].diaglogResponse({ outcome: data, outcomecn: '', cn: '', en: '' });
+      diaglogRequest.dialog = false;
+      socket.server.of('/XJ').emit("diaglogRequest", ip, diaglogRequest);
+    } catch (error) {
+      logger.error(`diaglogResponse ${ip} ${error}`);
+    }
+  })
+
   //Git
   socket.on("git", (ip, tag) => {
     try {
@@ -238,7 +251,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     } catch (error) {
       logger.error(`git ${ip} ${error}`);
     }
-  })
+  });
+
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
 
@@ -251,15 +265,16 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
 
     // robot_state
     robotArr[ip].robotState((msg) => {
-      // console.log("robotState", msg);
+      console.log("robotState", msg);
       try {
         msg = JSON.parse(msg.data);
         var tag = msg.git.tag;
         var tags = msg.git.tags;
         // 成功反馈
         var gitFeedback = msg.git.op_done;
+        var gitInfo = msg.git.info;
 
-        socket.server.of('/XJ').emit("robotState", ip, tag, tags, gitFeedback);
+        socket.server.of('/XJ').emit("robotState", ip, tag, tags, gitFeedback, gitInfo);
       } catch (error) {
         console.log("robotState", msg, error);
       }
@@ -304,6 +319,21 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
     });
 
+    // diaglogRequest
+    robotArr[ip].diaglogRequest(({ outcome, outcomecn, en, cn }) => {
+      diaglogRequest.dialog = true;
+      const btnEnArr = outcome.split(':');
+      diaglogRequest.btns = outcomecn.split(':')
+        .map((btnCnBase64, i) => ({
+          cn: Buffer.from(btnCnBase64, 'base64').toString('utf-8'),
+          en: btnEnArr[i] || ''
+        }));
+      diaglogRequest.cn = Buffer.from(cn, 'base64').toString('utf-8');
+      diaglogRequest.en = en;
+      // console.log("diaglogRequest", diaglogRequest);
+      socket.server.of('/XJ').emit("diaglogRequest", ip, diaglogRequest);
+    })
+
     // flexbe log
     robotArr[ip].flexbeLog(async (msg) => {
       const isDuplicate = flexbeLogs.some((log) => `[${log.time}]: ${log.text}` === msg.text);
@@ -325,7 +355,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
 
     // newDiagnostics
     robotArr[ip].newDiagnostics((msg) => {
-      // console.log('robot Socket newDiagnostics');
+      // console.log('robot Socket newDiagnostics',msg);
       var status = 0;
       var list = [];
       var list2 = [];
@@ -342,6 +372,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         }
         else if (i.level === 2) list2.push(i);
       });
+      // console.log("newDiagnostics",list2);
+
       socket.server.of('/XJ').emit("newDiagnostics", ip, { status, list, list2, estop });
     });
 
@@ -446,10 +478,10 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     // 机械臂运动深度
     robotArr[ip].armDep((msg) => {
       // console.log('armDep', ip, msg);
-      var {position, orientation} = msg.pose
+      var { position, orientation } = msg.pose
       var Z = position.z;
       var { x, y, z, w } = orientation;
-      var pose={
+      var pose = {
         x: x.toFixed(4),
         y: y.toFixed(4),
         z: z.toFixed(4),

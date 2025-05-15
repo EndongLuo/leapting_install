@@ -117,7 +117,7 @@
                       ?
                       `${$t('config.handeye')}` : '' }}</div>
                 <div><span class="title">{{ $t('task.taskprogress') }}:</span>
-                  {{ (taskState.done_num / taskState.task_num) * 100 || 0 }}%
+                  {{ (taskState.done_num / taskState.task_num).toFixed(4) * 100 || 0 }}%
                   （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
                 <div><span class="title">{{ $t('task.starttime') }}:</span>{{ taskState.start_time }}</div>
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time

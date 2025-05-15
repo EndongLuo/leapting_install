@@ -77,7 +77,7 @@
           <!-- <div style=" width: 100%; height: 60px; line-height: 60px; font-weight: 700; font-size: 24px;">实时数据：</div> -->
           <div v-for="(d, index) of newDiagnostics.list2" :key="index"
             style="border: #ebeef5 1px solid; margin: -1px 0 0 -1px; padding: 20px 10px; width: 25%; display: flex ;font-size: 16px;">
-            <span>{{ d.name }}：</span><span style="font-weight: 700;">{{ d.message }}</span>
+            <span>{{ d.name }}：</span><span style="font-weight: 700; margin-right: 5px;">{{ d.message }} </span> {{ d.hardware_id }}
             <br />
           </div>
         </div>
