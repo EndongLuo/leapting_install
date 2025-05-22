@@ -4,8 +4,8 @@ import Socket from '@/utils/socketUtil';
 const state = {
   socket: null,
   // ips: ['192.168.8.234'],
-  // ips: ['10.168.2.178'],
-  ips: ['127.0.0.1'],
+  ips: ['10.168.2.178'],
+  // ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},
   Robot: {},
@@ -34,6 +34,7 @@ const translationMaps = new Map([
   ['PLC', 'PLC'],
   ['CAMERA', '相机'],
   ['IMU', 'IMU'],
+  ['LASER', '激光雷达'],
   ['ARM', '机械臂'],
   ['battery_voltage', '电池电压'],
   ['battery_current', '电池总电流'],

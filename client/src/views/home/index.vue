@@ -99,8 +99,8 @@
 
       <div class="row">
         <!-- 任务状态 -->
-        <div class="win" v-if="taskState.id">
-          <!-- <div class="win" > -->
+        <!-- <div class="win" v-if="taskState.id"> -->
+        <div class="win">
           <div class="totitle">
             <span>{{ $t('task.taskinfo') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -118,15 +118,20 @@
                       `${$t('config.handeye')}` : '' }}</div>
                 <div><span class="title">{{ $t('task.taskprogress') }}:</span>
                   {{ (taskState.done_num / taskState.task_num).toFixed(4) * 100 || 0 }}%
-                  （{{ taskState.done_num }}/{{ taskState.task_num }}）</div>
+                  （{{ taskState.done_num || 0 }}/{{ taskState.task_num || 0 }}）</div>
                 <div><span class="title">{{ $t('task.starttime') }}:</span>{{ taskState.start_time }}</div>
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
                 }}
                 </div>
-                <div><span class="title" v-if="taskState.last_duration">{{ $t('task.InstallSpeed') }}:</span>{{
-                  taskState.last_duration }}</div>
+                <div v-if="taskState.last_duration&&taskState.task_type !== 2">
+                  <!-- <span class="title" v-if="taskState.last_duration">{{ $t('task.InstallSpeed') }}:</span> -->
+                  <span class="title">{{ $t('task.InstallSpeed') }}:</span>
+                  {{ taskState.last_duration }}
+                  <span @click="onDialogOpened(taskState.id)"
+                    style="color:#409EFF;text-decoration: underline; cursor:pointer">{{ $t('nav.historySpeed') }}</span>
+                </div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
-                <div v-if="taskState.task_type != 4"><span class="title" >{{ $t('config.bridgegap') }}:</span><el-switch
+                <div v-if="taskState.task_type != 4"><span class="title">{{ $t('config.bridgegap') }}:</span><el-switch
                     v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch></div>
               </div>
               <div class="right">
@@ -227,6 +232,14 @@
       </div>
     </div>
 
+    <!-- 历史速率echarts -->
+    <el-dialog :title="$t('nav.historySpeed')" :visible.sync="isHistorySpeed" width="80%" center
+      :close-on-click-modal="false">
+      <div v-loading="isLoading" :element-loading-text="$t('config.Loading')" style="min-height: 400px;">
+        <div id="historySpeed-chart" style="height: 400px;"></div>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -237,7 +250,9 @@ import { mapState } from "vuex";
 import Toast from "@/components/toast";
 import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
-import { getRobot, updateRobot } from '@/api';
+import { getRobot, updateRobot, setTaskInfo, getHistorySpeed } from '@/api';
+import * as echarts from 'echarts';
+import {date} from '@/utils/date';
 
 export default {
   name: "home",
@@ -254,6 +269,10 @@ export default {
       inDraging: false,
       video: Number(localStorage.getItem('video')) || 0,
       robot: {},
+      isHistorySpeed: false,
+      isLoading: false,      // 防止并发请求
+      chart: null,
+      historySpeedData: []
     };
   },
   computed: {
@@ -284,8 +303,126 @@ export default {
 
       if (val) this.armNotification(val);
     },
+    isHistorySpeed(val) {
+      if (!val) this.chart = null;
+    },
+    taskState(val, oldval) {
+      // console.log('taskState', val);
+      if (val.task_status !== oldval.task_status && (val.task_status === 3 || val.task_status === 0)) {
+        console.log('任务完成');
+
+        this.winClose()
+      }
+
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', () => this.chart && this.chart.dispose())
+    this.chart && this.chart.dispose()
   },
   methods: {
+    /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
+    async onDialogOpened(id) {
+      console.log('onDialogOpenedid', id);
+
+      // id = 456456456;
+      this.isHistorySpeed = true;
+      if (this.isLoading) return
+      this.isLoading = true
+      await this.getHistorySpeed(id)
+      this.initChart(id)
+      // this.drawChart({ useSampling: true })  // 初始抽样渲染
+      this.isLoading = false
+    },
+    async getHistorySpeed(id) {
+      console.log('getHistorySpeed');
+
+      var res = await getHistorySpeed(id);
+      console.log('res', res);
+      this.historySpeedData = res.data;
+
+
+    },
+    /** 初始化 ECharts，仅调用一次 */
+    initChart(id) {
+      if (!this.chart) {
+        this.chart = echarts.init(document.getElementById('historySpeed-chart'));
+
+        const xNums = this.historySpeedData.map(item => item.num);
+        const yDurations = this.historySpeedData.map(item => item.duration);
+
+        // console.log(date(this.historySpeedData[0].time));
+        
+        var option = {
+          title: {
+            text: `ID: ${id}`
+          },
+          tooltip: {
+            trigger: 'axis',
+            formatter: params => {
+              // params is an array since trigger:'axis'
+              const p = params[0];
+              // show num, duration and maybe time
+              const idx = p.dataIndex;
+              const t = this.historySpeedData[idx].time;
+              return `组件：第 ${p.axisValue} 块<br/>
+              速率: ${p.data.toFixed(2)} S<br/>
+              时间: ${date(t)}`;
+            }
+          },
+          legend: {
+            show: false,
+          },
+          toolbox: {
+            show: true,
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              dataView: { readOnly: false },
+              magicType: { type: ['line'] },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: xNums
+          },
+          yAxis: {
+            type: 'value',
+            axisLabel: {
+              formatter: '{value} S'
+            }
+          },
+          series: [
+            {
+              name: 'History Speed',
+              type: 'line',
+              data: yDurations,
+              markPoint: {
+                data: [
+                  { type: 'max', name: 'Max' },
+                  { type: 'min', name: 'Min' }
+                ]
+              },
+              markLine: {
+                data: [{ type: 'average', name: 'Avg' }]
+              }
+            },
+          ]
+        };
+
+        this.chart.setOption(option);
+
+        // 自适应容器
+        window.addEventListener('resize', () => {
+          this.chart.resize()
+        })
+      }
+    },
+
     armNotification({ x, y, z, w, Z }) {
       const h = this.$createElement;
       this.$notify({
@@ -325,14 +462,23 @@ export default {
         cancelButtonText: this.$t('mains.cancel'),
         inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
         inputErrorMessage: this.$t('prompt.inputErrorMessage')
-      }).then(({ value }) => {
+      }).then(async ({ value }) => {
         const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach' };
         var taskmsg = { id, task_status: 1, task_name: modeMap[num], task_type: num, task_num: Number(value) };
         this.$store.dispatch('socket/sendTask', taskmsg);
-        this.$message.success('sendTask: ', taskmsg);
+
+        var taskinfo = { id, taskId: num, task_state: 1, result: value }
+        // console.log('taskinfo', taskinfo);
+
+        var res = await setTaskInfo(taskinfo);
+        console.log('res', res);
+
+        this.$message.success('任务发送成功');
         this.isShow = 4;
         this.toolbar1 = false;
-      }).catch(() => {
+      }).catch((error) => {
+        console.log('sendTask error', error);
+
         this.$message(this.$t('mains.cancel'));
       });
 

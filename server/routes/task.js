@@ -3,6 +3,9 @@ const TaskController = require('../controllers/task');
 
 router.prefix('/api/task')  // 路由器前缀
 
+// 获取安装历史速率
+router.get('/historyspeed', TaskController.getHistorySpeed);
+
 /**
  * @swagger
  * /api/task/task:

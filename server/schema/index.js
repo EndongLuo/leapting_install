@@ -16,6 +16,7 @@ const Log = require('./log')(sequelize, DataTypes);
 const G1_pro = require('./g1_pro')(sequelize, DataTypes);
 const FlexbeLog = require('./flexbe_log')(sequelize, DataTypes);
 const SensorLog = require('./sensor_log')(sequelize, DataTypes);
+const PVMTable = require('./pvm_table')(sequelize, DataTypes);
 
 
 //建立模型之间关联关系
@@ -47,6 +48,10 @@ Task.belongsTo(Robot);
 Task.hasMany(TaskInfo, { onDelete: 'CASCADE' });
 TaskInfo.belongsTo(Task);
 
+// 任务信息与速率：一个任务信息可有多个速率，一个速率只属于这个任务信息
+TaskInfo.hasMany(PVMTable, { onDelete: 'CASCADE' });
+PVMTable.belongsTo(TaskInfo);
+
 // 定时任务与任务：一个任务可有多个定时任务，一个定时任务只有一个任务模版执行
 Task.hasMany(TimedTask, { onDelete: 'CASCADE' });
 TimedTask.belongsTo(Task);
@@ -63,5 +68,5 @@ sequelize.sync({ alter: true });
 // Robot.sync({ alter: true }) 
 
 module.exports = {
-  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog
+  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog, PVMTable
 }

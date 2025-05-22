@@ -6,11 +6,21 @@ const {
   ResultInfo,
   Security,
   G1_pro,
-  FlexbeLog
+  FlexbeLog,
+  PVMTable
 } = require("../schema/index");
 const { sequelize } = require("../config/db");
 const { Op } = require("sequelize");
 class TaskModel {
+  // 获取安装历史速率
+  static async getHistorySpeed(taskinfoId) {
+    console.log("getHistorySpeed",taskinfoId);
+    
+    return await PVMTable.findAll({
+      where: { taskinfoId, },
+      order: [["num", "ASC"]],
+    })
+  }
 
    // 获取Flexbe日志
    static async getFlexbeLog(id, time) {
@@ -208,7 +218,7 @@ class TaskModel {
       odom: data.task_odom,
       path: data.path,
       task_state: data.task_state,
-      result: data.progress,
+      result: data.result,
       start_time: data.start_time,
       end_time: data.end_time,
       taskId: data.taskId,

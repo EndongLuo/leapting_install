@@ -14,6 +14,27 @@ const recognitionTypes = {
 };
 
 class TaskController {
+  // 获取安装历史速率
+  static async getHistorySpeed(ctx) {
+    const id = ctx.query.id;
+    // console.log(id);
+    
+    const res = await TaskModel.getHistorySpeed(id);
+    // console.log('getHistorySpeed',res);
+    
+    if (res) {
+      ctx.body = {
+        code: 200,
+        msg: "获取安装历史速率成功",
+        data: res,
+      };
+    } else {
+      ctx.body = {
+        code: 400,
+        msg: "获取安装历史速率失败",
+      };
+    }
+  }
   /**
    * 创建任务
    * @param ctx
@@ -354,7 +375,7 @@ class TaskController {
   static async setTaskInfo(ctx) {
     try {
       const data = ctx.request.body;
-      // console.log(data);
+      console.log(data);
       const res = await TaskModel.setTaskInfo(data);
 
       if (res) {
