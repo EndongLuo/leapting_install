@@ -74,7 +74,7 @@ const zh = {
   install: {
     control: '机器人操控',
     armcontrol: '机械臂操控',
-    fai: '全自动安装',
+    fai: '自动安装',
     sai: '半自动安装',
     detach: '拆卸',
     monitor: '监控',
@@ -93,7 +93,8 @@ const zh = {
     axis: '轴',
     global: '全局',
     majoradjust: '粗调',
-    minoradjust: '微调'
+    minoradjust: '微调',
+    QRcode: '扫码安装'
   },
   config: {
     pducontrol: 'PDU 控制',
@@ -129,6 +130,7 @@ const zh = {
     pvmedge_hole_gap: '孔边间距',
     reboot: '重启',
     gitInfo: '版本信息',
+    robotName: '设备名称'
   },
   connPrompt: {
     success: '安装机器人已连接。',

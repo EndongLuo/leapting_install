@@ -73,7 +73,7 @@ const en = {
   install:{
     control:'Chassis Control',
     armcontrol:'Arm Control',
-    fai: 'Fully-Auto',
+    fai: 'Auto',
     sai: 'Semi-Auto',
     detach: 'Detach',
     monitor:'Monitor',
@@ -93,6 +93,8 @@ const en = {
     RGB: 'RGB',
     depth: 'Depth',
     res:'Segmentation',
+    QRcode: 'QRcode Auto',
+    robotName: 'Robot Name'
   },
   config:{
     pducontrol:'PDU Control',

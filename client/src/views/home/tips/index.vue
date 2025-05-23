@@ -6,7 +6,7 @@
         <div class="jqr_id" v-if="!rosConnect" style="color: #f56c6c;"> {{ $t('robot.notconnect') }} </div>
 
         <div v-else class="left_info" @click="robotDialogVisible = true">
-          <div class="jqr_id" style="color: #34a94d;">{{ $t('robot.connected') }}</div>
+          <div class="jqr_id" style="color: #34a94d;">{{ $t('robot.connected') + '-' +robotName }}</div>
 
           <!-- 电池 -->
           <Battery :quantity="battery" v-if="battery" />
@@ -105,6 +105,7 @@ import * as echarts from 'echarts';
 export default {
   name: "home",
   components: { Signal, Battery },
+  props: ["robotName"],
   data() {
     return {
       robotDialogVisible: false,
@@ -249,7 +250,6 @@ export default {
       )
     },
   },
-
   beforeDestroy() {
     window.removeEventListener('resize', () => this.chart && this.chart.dispose())
     this.chart && this.chart.dispose()

@@ -81,6 +81,7 @@ class RobotModel {
       cell_length: data.cell_length || 92.5,
       hole_gap: data.hole_gap || 400,
       pvmedge_hole_gap: data.pvmedge_hole_gap || 25,
+      robotname: data.robotname
     }, {
       where: { id: data.id }
     });

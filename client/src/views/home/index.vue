@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div style="display: flex; justify-content: space-between;">
-      <Tips />
+      <Tips :robotName="robotName" />
       <Tasks @winChanged="winChanged" />
     </div>
 
@@ -20,10 +20,10 @@
         </div>
 
         <!-- 半自动安装 -->
-        <div class="btn" :title="$t('install.sai')" @click="sendTask(1)">
+        <!-- <div class="btn" :title="$t('install.sai')" @click="sendTask(1)">
           <img src="./img/bauto.png" alt="">
           <span>{{ $t('install.sai') }}</span>
-        </div>
+        </div> -->
 
         <!-- 自动安装 -->
         <div class="btn" :title="$t('install.fai')" @click="sendTask(0)">
@@ -105,7 +105,7 @@
             <span>{{ $t('task.taskinfo') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
           </div>
-          <div class="contents" ref="contents">
+          <div class="contents" style="height: 275px;" ref="contents">
             <div class="content">
               <div class="taskInfo">
                 <div><span class="title">{{ $t('task.taskid') }}:</span>{{ taskState.id }}</div>
@@ -127,7 +127,8 @@
                   taskState.last_duration }}</div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
                 <div v-if="taskState.task_type != 4"><span class="title" >{{ $t('config.bridgegap') }}:</span><el-switch
-                    v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch></div>
+                    v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
+                    <el-input style="margin-left: 10px; width: 100px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>(mm)</div>
               </div>
               <div class="right">
                 <div class="tiptop">
@@ -156,7 +157,7 @@
             <span>{{ $t('task.tasklog') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
           </div>
-          <div class="contents" ref="contents">
+          <div class="contents" style="height: 275px;" ref="contents">
             <div class="p" v-for="l, i in flexbeLog" :key="i" style="">
               <span>[{{ l.time }}]：</span>
               <span v-if="l.status_code == 3" style="color: #F56C6C; font-weight: 600;">{{ l.text }}</span>
@@ -217,12 +218,15 @@
 
     <!-- 工具箱 -->
     <div class="tool">
-      <div class="outer" :style="{ height: toolbar1 ? '165px' : '50px' }">
-        <div class="inner">
+      <div class="outer" :style="{ height: toolbar1 ? '185px' : '50px' }">
+        <div class="inner" @click="checkRos">
           <i class="el-icon-suitcase" @click="toolbar1 = !toolbar1"></i>
-          <img src="./img/joy.png" alt="" @click="toolbar(3)">
-          <img src="./img/arm.png" alt="" @click="toolbar(4)">
-          <img src="./img/chai.png" style="margin-top: 5px;" alt="拆卸" @click="sendTask(2)">
+          <!-- <img src="./img/joy.png" alt="" @click="toolbar(3)"> -->
+          <!-- <img src="./img/arm.png" alt="" @click="toolbar(4)"> -->
+          <!-- <img src="./img/QRcode.png" alt="扫码安装" @click="qrcodeTask()">
+          <span>{{ $t('install.QRcode') }}</span> -->
+          <img src="./img/chai.png"  alt="拆卸" @click="sendTask(2)">
+          <span>{{ $t('install.detach') }}</span>
         </div>
       </div>
     </div>
@@ -254,6 +258,8 @@ export default {
       inDraging: false,
       video: Number(localStorage.getItem('video')) || 0,
       robot: {},
+      robotName: "", //设备名称
+      isConncect: false,  // 记录是否连接过server
     };
   },
   computed: {
@@ -284,6 +290,26 @@ export default {
 
       if (val) this.armNotification(val);
     },
+    rosConnect(val){
+      if(val == 1){
+        if(this.isConncect){
+          window.location.reload();
+        }else{
+          this.isConncect = true;
+        }
+      }else{
+        this.isShow = 0;
+        this.isTask = false;
+      }
+    },
+    taskState(oldVal, newVal){
+      if(oldVal.task_status != newVal.task_status){
+        if(oldVal.done_num == newVal.task_num){
+          if(this.isTask){ this.isTask = false; }
+          if(this.isShow){ this.isShow = 0; }
+        }
+      }
+    }
   },
   methods: {
     armNotification({ x, y, z, w, Z }) {
@@ -298,7 +324,8 @@ export default {
       var res = await getRobot();
       this.robot = res.data[0];
       this.$set(this.robot, 'status', String(this.robot.status));
-      // console.log('robot status', this.robot.status);
+      this.robotName = this.robot.robotname;
+      console.log('robot status', this.robot.status);
     },
     async upDataPVM() {
       var res = await updateRobot(this.robot);
@@ -317,13 +344,16 @@ export default {
     },
     // 发送任务
     sendTask(num) {
+      if (!this.rosConnect) {
+        return;
+      }
       var isInstall = this.taskState.task_status == 1 || this.taskState.task_status == 2;
       if (isInstall) return this.$message.error(`${this.$t('prompt.tasking')}`);
       var id = Math.round(Math.random() * 900000000 + 100000000);
       this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
         confirmButtonText: this.$t('mains.confirm'),
         cancelButtonText: this.$t('mains.cancel'),
-        inputPattern: /^\+?[1-9]\d{0,2}$/,  // 三位整数
+        inputPattern: /^[1-9]\d{0,2}$/,  // 三位整数
         inputErrorMessage: this.$t('prompt.inputErrorMessage')
       }).then(({ value }) => {
         const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach' };
@@ -335,13 +365,35 @@ export default {
       }).catch(() => {
         this.$message(this.$t('mains.cancel'));
       });
-
     },
     // 修改任务状态
     changeTask(num) {
       var { id, task_name, task_type, task_num } = this.taskState;
       var taskmsg = { id, task_status: num, task_name, task_type, task_num };
       this.$store.dispatch('socket/sendTask', taskmsg);
+    },
+    //扫码安装任务
+    qrcodeTask(){
+      this.isShow = 0 ;
+      this.isTask = false;
+      // if (!this.rosConnect) {
+      //   return;
+      // }
+      // this.$confirm('第一块板选择', '提示', {
+      //     confirmButtonText: '正面',
+      //     cancelButtonText: '反面',
+      //     type: 'info'
+      //   }).then(() => {
+      //     this.$message({
+      //       type: 'success',
+      //       message: '选择正面!'
+      //     });
+      //   }).catch(() => {
+      //     this.$message({
+      //       type: 'info',
+      //       message: '选择反面'
+      //     });          
+      //   });
     },
     // flexbelog滚动到底部
     scrollToBottom() {
@@ -357,6 +409,7 @@ export default {
     },
     // 机械臂和底盘急停
     estop(arm, base) {
+      this.$message.error('急停按钮已触发');
       this.isEstop = base;
       this.$store.dispatch('socket/armEstop', arm);
       this.$store.dispatch('socket/Estop', base);
@@ -533,13 +586,13 @@ export default {
   left: 0;
   z-index: 9999;
   cursor: pointer;
-
+  padding-left: 20px;
   .outer {
     position: relative;
     width: 60px;
     // height: 126px;
     height: 50px;
-    border-radius: 0 20px 20px 0;
+    border-radius: 30px;
     background-color: #ffffff;
     overflow: hidden;
 
@@ -551,6 +604,7 @@ export default {
       img {
         width: 36px;
         height: 36px;
+        margin-top: 10px;
       }
 
       i {
@@ -560,6 +614,9 @@ export default {
         &:hover {
           color: #409EFF;
         }
+      }
+      span {
+        font-size: 14px;
       }
     }
 

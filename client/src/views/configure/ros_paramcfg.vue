@@ -36,10 +36,15 @@
           <el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input>
         </div>
 
-        <div class="inbox">
+        <!-- <div class="inbox">
           <span style="width: 232px;">{{ $t('config.bridgegap') }}(mm)：</span>
           <el-switch v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
           <el-input style="margin-left: 10px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>
+        </div> -->
+
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.robotName') }}：</span>
+          <el-input  v-model="robot.robotname" @blur="upDataPVM"></el-input>
         </div>
 
         <div class="inbox">
@@ -69,7 +74,7 @@
             </el-slider></span>
           <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
               }}</el-checkbox></span>
-          <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button>
+          <!-- <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button> -->
           <el-button @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
         </div>
 
@@ -179,9 +184,12 @@ export default {
     async getRobot() {
       var res = await getRobot();
       this.robot = res.data[0];
+      this.$set(this.robot, 'robotname', String(this.robot.robotname))
       this.$set(this.robot, 'video', String(this.robot.video));
       this.$set(this.robot, 'status', String(this.robot.status));
       localStorage.setItem('video', this.robot.video);
+      console.log(this.robot);
+      
     },
 
     // 更新robot参数
