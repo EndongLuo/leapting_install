@@ -4,6 +4,7 @@ const localhost = address.ip() || 'localhost';
 
 module.exports = defineConfig({
   transpileDependencies: true,
+  filenameHashing: false,
   lintOnSave: false,
   publicPath:'/',
   outputDir: '../dist',

@@ -320,7 +320,9 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     });
 
     // diaglogRequest
-    robotArr[ip].diaglogRequest(({ outcome, outcomecn, en, cn }) => {
+    robotArr[ip].diaglogRequest(({ outcome, outcomecn, en, cn, object }) => {
+      console.log("diaglogRequest", outcome, outcomecn, en, cn, object);
+      
       diaglogRequest.dialog = true;
       const btnEnArr = outcome.split(':');
       diaglogRequest.btns = outcomecn.split(':')
@@ -330,7 +332,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         }));
       diaglogRequest.cn = Buffer.from(cn, 'base64').toString('utf-8');
       diaglogRequest.en = en;
-      // console.log("diaglogRequest", diaglogRequest);
+      diaglogRequest.type = object;
+      console.log("diaglogRequest", diaglogRequest);
       socket.server.of('/XJ').emit("diaglogRequest", ip, diaglogRequest);
     })
 

@@ -3,7 +3,7 @@
 
     <!-- 电量，避障，组件尺寸 -->
     <div class="pduControl">
-      <h1 class="title">{{ $t('config.basecontrol') }}</h1>
+      <h1 class="title">{{ $t('config.pvmParam') }}</h1>
       <div class="outbox">
         <div class="inbox">
           <span style="width: 386px;">{{ $t('config.pvmsize') }}(mm)：</span>
@@ -31,12 +31,20 @@
           <el-input v-model="robot.hole_gap" @blur="upDataPVM"></el-input>
         </div>
 
+      </div>
+
+      <h1 class="title">{{ $t('config.CalibrationParam') }}</h1>
+      <div class="outbox">
         <div class="inbox">
           <span style="width: 232px;">{{ $t('config.cuplength') }}(mm)：</span>
           <el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input>
         </div>
-
-        <!-- <div class="inbox">
+        <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.uninstall_z') }}(mm)：</span>
+          <el-input v-model="robot.uninstall_z" @blur="upDataPVM"></el-input>
+        </div>
+      </div>
+        <div class="inbox">
           <span style="width: 232px;">{{ $t('config.bridgegap') }}(mm)：</span>
           <el-switch v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
           <el-input style="margin-left: 10px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>
@@ -74,33 +82,41 @@
             </el-slider></span>
           <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
               }}</el-checkbox></span>
-          <!-- <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button> -->
+          <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button>
           <el-button @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
         </div>
 
+       
         <div class="inbox">
           <span style="width: 100px;">{{ $t('config.git') }}：
             <span v-if="tag" style="margin-left: 10px; color: #949494; font-size: 13px;"> {{ tag }} </span>
           </span>
-          <span >
-            <i class="el-icon-warning-outline" style="font-size: 24px; margin-right: 10px;" @click="gitInfoDialogVisible = true"></i>
+          <span>
+            <i class="el-icon-warning-outline" style="font-size: 24px; margin-right: 10px;"
+              @click="gitInfoDialogVisible = true"></i>
           </span>
           <el-button @click="gitPull()" style="margin-right: 10px;">{{ $t('config.update') }}</el-button>
           <el-select v-model="t" :placeholder="$t('config.switchGit')">
             <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
           </el-select>
           <el-button @click="gitPull(t)">{{ $t('config.switch') }}</el-button>
-          <el-button type="danger" @click="reboot">{{ $t('config.reboot') }}</el-button>
-
         </div>
+
+        <div class="inbox">
+          <span style="width: 100px;">{{ $t('config.reboot1') }}：</span>
+          <el-button type="danger" @click="reboot">{{ $t('config.reboot') }}</el-button>
+        </div>
+
       </div>
+
     </div>
 
     <el-dialog :title="$t('config.gitInfo')" :visible.sync="gitInfoDialogVisible" width="60%" center
       :close-on-click-modal="false">
       <div v-if="gitInfo" style="font-size: 18px;">
-        <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">{{ $t('config.git') }}：</span>{{ tag }}</div>
-        
+        <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">{{ $t('config.git') }}：</span>{{ tag }}
+        </div>
+
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新时间：</span>{{ gitInfo.date }}</div>
         <!-- <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">HEAD码：</span>{{ gitInfo.head }}</div> -->
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新内容：</span>{{ gitInfo.msg }}</div>
@@ -272,8 +288,8 @@ export default {
   font-weight: 700;
 
   .title {
-    margin: 15px;
-    font-size: 20px;
+    margin: 20px;
+    font-size: 24px;
     font-weight: 700;
   }
 
@@ -286,6 +302,7 @@ export default {
     flex-wrap: wrap;
     justify-content: space-between;
     flex-direction: column;
+    width: 100%;
 
     .inbox {
       display: flex;

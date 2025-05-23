@@ -1,5 +1,9 @@
-export const date=()=>{
-  var date = new Date();
+export const date=(t)=>{
+  // console.log(t,Date.now());
+  
+  var date = new Date(Number(t));
+  // console.log(date);
+  
   var sign2 = ':';
   var year = date.getFullYear(); // 年
   var month = date.getMonth() + 1; // 月

@@ -76,6 +76,7 @@ app.use(jwt({
   // 设置login、register接口，可以不需要认证访问
   path: [
     /\/api\/robot/,
+    /\/api\/task/,
     /\/api\/user\/register/,
     /\/api\/user\/login/,
     /\/api\/public\/getCaptcha/,

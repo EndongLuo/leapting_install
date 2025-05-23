@@ -57,7 +57,7 @@
           </el-table-column>
         </el-table> -->
         <!-- {{ diagnosticlist }} -->
-        <div style="display: flex; flex-wrap: wrap;justify-content: space-between">
+        <div style="display: flex; flex-wrap: wrap;justify-content: flex-start">
           <div v-for="d of newDiagnostics.list" :key="d.name"
             style="border: #ebeef5 1px solid; margin: -1px 0 0 -1px;padding: 20px 10px; width: 25%;font-size: 16px; display: flex">
             <span v-if="d.message == 3"><i class="el-icon-question"

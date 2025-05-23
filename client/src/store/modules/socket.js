@@ -34,6 +34,7 @@ const translationMaps = new Map([
   ['PLC', 'PLC'],
   ['CAMERA', '相机'],
   ['IMU', 'IMU'],
+  ['LASER', '激光雷达'],
   ['ARM', '机械臂'],
   ['battery_voltage', '电池电压'],
   ['battery_current', '电池总电流'],

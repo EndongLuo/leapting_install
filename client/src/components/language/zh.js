@@ -20,7 +20,8 @@ const zh = {
     config: '配置',
     map: '地图',
     sensorlog: '传感器日志',
-    historicalRecords: '历史记录'
+    historicalRecords: '历史记录',
+    historySpeed: '历史速率',
   },
   table: {
     send: '发送',
@@ -102,7 +103,9 @@ const zh = {
     chassis: '底盘上电',
     inverter: '逆变器上电',
     charge: '充电上电',
-    basecontrol: '基础控制',
+    basecontrol: '基础参数',
+    pvmParam: '组件参数',
+    CalibrationParam: '标定参数',
     avoidance: '避障',
     reminder: '电量提醒',
     pvmsize: '组件尺寸',
@@ -119,6 +122,7 @@ const zh = {
     switch: '切换',
     bridgegap: '桥架间隙',
     cuplength: '吸盘长度',
+    uninstall_z: '拆卸高度',
     Loading: '加载中...',
     switchGit: '请选择其他版本',
     mirror: '镜像',
@@ -129,6 +133,7 @@ const zh = {
     hole_gap: '孔间距',
     pvmedge_hole_gap: '孔边间距',
     reboot: '重启',
+    reboot1: '重启系统',
     gitInfo: '版本信息',
     robotName: '设备名称'
   },
@@ -181,6 +186,8 @@ const zh = {
     plan_failed: `间距过远，请移动车辆后确认`,
     identification_failure: '识别超时 请重试。。。',
     sec_identification_failure: `请微调后确认，或手动安装`,
+    placeQR: '请将二维码放置在支架上',
+    removeQR: '请将二维码移开',
     manual: '手动',
   }
 }
