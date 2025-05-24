@@ -39,21 +39,20 @@
           <span style="width: 232px;">{{ $t('config.cuplength') }}(mm)：</span>
           <el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input>
         </div>
+
         <div class="inbox">
           <span style="width: 232px;">{{ $t('config.uninstall_z') }}(mm)：</span>
           <el-input v-model="robot.uninstall_z" @blur="upDataPVM"></el-input>
         </div>
       </div>
-        <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.bridgegap') }}(mm)：</span>
+
+      <h1 class="title">{{ $t('config.basecontrol') }}</h1>
+      <div class="outbox">
+        <!-- <div class="inbox">
+          <span style="width: 232px;">{{ $t('config.robotName') }}(mm)：</span>
           <el-switch v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
           <el-input style="margin-left: 10px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>
         </div> -->
-
-        <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.robotName') }}：</span>
-          <el-input  v-model="robot.robotname" @blur="upDataPVM"></el-input>
-        </div>
 
         <div class="inbox">
           <span>{{ $t('config.video') }}：</span>
@@ -81,9 +80,9 @@
               :min="1">
             </el-slider></span>
           <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
-              }}</el-checkbox></span>
-          <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button>
-          <el-button @click="HandEye(true)">{{ $t('config.autohandeye') }}</el-button>
+          }}</el-checkbox></span>
+          <!-- <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button> -->
+          <el-button @click="HandEye(true)"  style="margin-left: 10px;">{{ $t('config.autohandeye') }}</el-button>
         </div>
 
        
@@ -120,9 +119,7 @@
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新时间：</span>{{ gitInfo.date }}</div>
         <!-- <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">HEAD码：</span>{{ gitInfo.head }}</div> -->
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新内容：</span>{{ gitInfo.msg }}</div>
-
       </div>
-
     </el-dialog>
   </div>
 </template>
@@ -200,12 +197,9 @@ export default {
     async getRobot() {
       var res = await getRobot();
       this.robot = res.data[0];
-      this.$set(this.robot, 'robotname', String(this.robot.robotname))
       this.$set(this.robot, 'video', String(this.robot.video));
       this.$set(this.robot, 'status', String(this.robot.status));
       localStorage.setItem('video', this.robot.video);
-      console.log(this.robot);
-      
     },
 
     // 更新robot参数
@@ -288,8 +282,8 @@ export default {
   font-weight: 700;
 
   .title {
-    margin: 20px;
-    font-size: 24px;
+    margin: 5px;
+    font-size: 18px;
     font-weight: 700;
   }
 

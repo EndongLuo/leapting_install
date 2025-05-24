@@ -123,17 +123,17 @@
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
                 }}
                 </div>
-                <div v-if="taskState.last_duration&&taskState.task_type !== 2">
+                <div  v-if="taskState.last_duration&&taskState.task_type !== 2">
                   <!-- <span class="title" v-if="taskState.last_duration">{{ $t('task.InstallSpeed') }}:</span> -->
                   <span class="title">{{ $t('task.InstallSpeed') }}:</span>
                   {{ taskState.last_duration }}
-                  <span @click="onDialogOpened(taskState.id)"
-                    style="color:#409EFF;text-decoration: underline; cursor:pointer">{{ $t('nav.historySpeed') }}</span>
+                  <el-button type="primary" size="mini" @click="onDialogOpened(taskState.id)">{{ $t('nav.historySpeed') }}</el-button>
+                  <!-- <span @click="onDialogOpened(taskState.id)" style="color:#409EFF;text-decoration: underline; cursor:pointer"></span> -->
                 </div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
                 <div v-if="taskState.task_type != 4"><span class="title" >{{ $t('config.bridgegap') }}:</span><el-switch
                     v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
-                  <el-input style="margin-left: 10px; width: 100px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>(mm)</div>
+                  <el-input style="margin-left: 10px; width: 80px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>(mm)</div>
               </div>
               <div class="right">
                 <div class="tiptop">
@@ -223,15 +223,19 @@
 
     <!-- 工具箱 -->
     <div class="tool">
-      <div class="outer" :style="{ height: toolbar1 ? '185px' : '50px' }">
+      <div class="outer" :style="{ height: toolbar1 ? '275px' : '50px' }">
         <div class="inner" @click="checkRos">
           <i class="el-icon-suitcase" @click="toolbar1 = !toolbar1"></i>
           <!-- <img src="./img/joy.png" alt="" @click="toolbar(3)"> -->
           <!-- <img src="./img/arm.png" alt="" @click="toolbar(4)"> -->
-          <!-- <img src="./img/QRcode.png" alt="扫码安装" @click="qrcodeTask()">
-          <span>{{ $t('install.QRcode') }}</span> -->
-          <img src="./img/chai.png"  alt="拆卸" @click="sendTask(2)">
-          <span>{{ $t('install.detach') }}</span>
+          <div class="box">
+            <img src="./img/QRcode.png" alt="扫码安装" @click="qrcodeTask()">
+            <span>{{ $t('install.QRcode') }}</span>
+          </div>
+          <div class="box">
+            <img src="./img/chai.png"  alt="拆卸" @click="sendTask(2)">
+            <span>{{ $t('install.detach') }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -314,8 +318,7 @@ export default {
       // console.log('taskState', val);
       if (val.task_status !== oldval.task_status && (val.task_status === 3 || val.task_status === 0)) {
         console.log('任务完成');
-
-        this.winClose()
+        this.winClose();
       }
   },
   rosConnect(val){
@@ -326,8 +329,7 @@ export default {
           this.isConncect = true;
         }
       }else{
-        this.isShow = 0;
-        this.isTask = false;
+        this.winClose();
       }
     }
 },
@@ -632,6 +634,7 @@ export default {
       font-weight: 600;
       margin-right: 5px;
     }
+    
   }
 
   .right {
@@ -657,7 +660,10 @@ export default {
       }
     }
   }
-
+  ::v-deep .el-input__inner{
+    height: 22px;
+    line-height: 22px;
+  }
 
 }
 
@@ -732,22 +738,35 @@ export default {
       flex-direction: column;
       align-items: center;
 
-      img {
-        width: 36px;
-        height: 36px;
-        margin-top: 10px;
-      }
-
       i {
-        font-size: 36px;
+        font-size: 40px;
         margin-top: 10px;
 
         &:hover {
           color: #409EFF;
         }
       }
-      span {
-        font-size: 14px;
+      .box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        // background: #cccccc50;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #a0a0a03a;
+
+        img {
+          width: 36px;
+          height: 36px;
+          margin-top: 10px;
+        }
+        span {
+          font-size: 14px;
+        }
       }
     }
 
