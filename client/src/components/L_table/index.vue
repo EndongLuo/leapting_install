@@ -18,7 +18,7 @@
         </el-table-column>
       </div>
 
-      <el-table-column fixed="right" label="Operate" width="150">
+      <el-table-column fixed="right" label="Operate" width="150" v-if="isShowOperate">
         <template slot-scope="scope">
           <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">
             分配角色
@@ -62,11 +62,11 @@
 <script>
 import { mapState } from 'vuex';
 export default {
-  props: ["tableData", "column", "tableName"],
+  props: ["tableData", "column", "tableName", "isShowOperate"],
   data() {
     return {
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 6,
       pageCount: 5,
       // status:false,
     };

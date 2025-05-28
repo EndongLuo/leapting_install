@@ -105,7 +105,7 @@
             <span>{{ $t('task.taskinfo') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
           </div>
-          <div class="contents" style="height: 275px;" ref="contents">
+          <div class="contents" ref="contents">
             <div class="content">
               <div class="taskInfo">
                 <div><span class="title">{{ $t('task.taskid') }}:</span>{{ taskState.id }}</div>
@@ -162,7 +162,7 @@
             <span>{{ $t('task.tasklog') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
           </div>
-          <div class="contents" style="height: 275px;" ref="contents">
+          <div class="contents" ref="contents">
             <div class="p" v-for="l, i in flexbeLog" :key="i" style="">
               <span>[{{ l.time }}]：</span>
               <span v-if="l.status_code == 3" style="color: #F56C6C; font-weight: 600;">{{ l.text }}</span>
@@ -229,12 +229,16 @@
           <!-- <img src="./img/joy.png" alt="" @click="toolbar(3)"> -->
           <!-- <img src="./img/arm.png" alt="" @click="toolbar(4)"> -->
           <div class="box">
-            <img src="./img/QRcode.png" alt="扫码安装" @click="qrcodeTask()">
-            <span>{{ $t('install.QRcode') }}</span>
+            <img src="./img/QRcode.png" alt="扫码安装" @click="InstallFirstTask()">
+            <span>{{ $t('install.InstallFirstPVM') }}</span>
           </div>
           <div class="box">
             <img src="./img/chai.png"  alt="拆卸" @click="sendTask(2)">
             <span>{{ $t('install.detach') }}</span>
+          </div>
+          <div class="box">
+            <img src="./img/parking.png" alt="停车位置" @click="newSendTask(3,'StartInstallCheck', {})">
+            <span>{{ $t('install.StartInstallCheck') }}</span>
           </div>
         </div>
       </div>
@@ -258,9 +262,10 @@ import { mapState } from "vuex";
 import Toast from "@/components/toast";
 import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
-import { getRobot, updateRobot, setTaskInfo, getHistorySpeed } from '@/api';
+import { getRobot, updateRobot, setTaskInfo, getHistorySpeed, setLog } from '@/api';
 import * as echarts from 'echarts';
 import {date} from '@/utils/date';
+import { Descriptions } from "element-ui";
 
 export default {
   name: "home",
@@ -441,6 +446,7 @@ export default {
       this.$notify({
         title: '机械臂深度',
         duration: 3000,
+        offset: 80,
         message: h('i', { style: 'color: teal' }, `X:${x} Y:${y} Z:${z} W:${w} Z:${Z}`)
       });
     },
@@ -457,12 +463,13 @@ export default {
 
       if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
       else this.$message.error(`${this.$t('prompt.updateFailed')}`);
+      this.setLogInfo('warning', '参数修改', this.robot);
     },
     winChanged(val) {
       this.isTask = val;
       this.isShow = 1;
     },
-    winClose() {
+    async winClose() {
       this.isTask = false;
       this.isShow = 0;
     },
@@ -493,9 +500,9 @@ export default {
         this.$message.success('任务发送成功');
         this.isShow = 4;
         this.toolbar1 = false;
+        this.setLogInfo('info', '任务下发', modeMap[num]);
       }).catch((error) => {
         console.log('sendTask error', error);
-
         this.$message(this.$t('mains.cancel'));
       });
     },
@@ -504,29 +511,59 @@ export default {
       var { id, task_name, task_type, task_num } = this.taskState;
       var taskmsg = { id, task_status: num, task_name, task_type, task_num };
       this.$store.dispatch('socket/sendTask', taskmsg);
+      this.setLogInfo('warning', '任务操作', 'task_status:' + num);
+    },
+    // 操作行为记录
+    async setLogInfo(level, operation_type, description){
+        var loginfo = {
+          device: this.robotName,
+          level: level,
+          time: date(new Date()),
+          tag: this.robot.robot_type,
+          msg: operation_type,
+          description: description,
+          siteId: 1
+        }
+        var logres = await setLog(loginfo);
+        console.log('log', logres);
+    },
+
+    //新的接口任务发送
+    async newSendTask(task_id ,task_name, params){
+      var isInstall = this.taskState.task_status == 1 || this.taskState.task_status == 2;
+      if (isInstall) return this.$message.error(`${this.$t('prompt.tasking')}`);
+      var id = Math.round(Math.random() * 900000000 + 100000000);
+      var taskmsg = { id, task_status: 1, task_name: task_name, task_type: 99, task_num: 1, param: JSON.stringify(params) };
+      this.$store.dispatch('socket/sendTask', taskmsg);
+      var taskinfo = { id, taskId: task_id, task_state: 4, result: 1 }
+      // console.log('taskinfo', taskinfo);
+      var res =  await setTaskInfo(taskinfo);
+      console.log('res', res);
+      
+      this.$message.success('任务发送成功');
+      this.isShow = 4;
+      this.toolbar1 = false;
+      this.setLogInfo('info', '任务下发', task_name);
     },
     //扫码安装任务
-    qrcodeTask(){
-      this.isShow = 0 ;
-      this.isTask = false;
-      // if (!this.rosConnect) {
-      //   return;
-      // }
-      // this.$confirm('第一块板选择', '提示', {
-      //     confirmButtonText: '正面',
-      //     cancelButtonText: '反面',
-      //     type: 'info'
-      //   }).then(() => {
-      //     this.$message({
-      //       type: 'success',
-      //       message: '选择正面!'
-      //     });
-      //   }).catch(() => {
-      //     this.$message({
-      //       type: 'info',
-      //       message: '选择反面'
-      //     });          
-      //   });
+    InstallFirstTask(){
+      if (!this.rosConnect) {
+        return;
+      }
+      this.$confirm(this.$t('prompt.selectFirstPVM'), this.$t('prompt.prompt'), {
+          confirmButtonText: this.$t('prompt.front'),
+          cancelButtonText: this.$t('prompt.back'),
+          distinguishCancelAndClose: true,
+          type: 'info'
+        }).then(() => {
+          this.newSendTask(1,'InstallFirstPVM', {first_back: false});
+        }).catch((val) => {
+          if (val === 'close') {
+            return;
+          } else {
+            this.newSendTask(1,'InstallFirstPVM', {first_back: true});
+          }         
+        });
     },
     // flexbelog滚动到底部
     scrollToBottom() {
@@ -546,6 +583,7 @@ export default {
       this.isEstop = base;
       this.$store.dispatch('socket/armEstop', arm);
       this.$store.dispatch('socket/Estop', base);
+      this.setLogInfo('warning', '急停按钮', arm + base);
     },
     arm(axle, rot = 0) {
       var frame_id = 'jtc';
@@ -668,20 +706,21 @@ export default {
 }
 
 .estop {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   position: fixed;
-  top: 45%;
+  top: 50%;
   left: 0;
   // background: #F56C6C;
   z-index: 9999;
   cursor: pointer;
+  margin-left: 15px;
 
   .outer {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
 
     .insart {
@@ -1006,7 +1045,7 @@ export default {
 
     .contents {
       width: 100%;
-      height: 235px;
+      height: 230px;
       overflow-y: auto;
       overflow-x: hidden;
       border-top: #00000065 1px solid;

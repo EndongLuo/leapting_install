@@ -142,6 +142,11 @@ export default {
           url: require('./assets/img/diaglog/ARM/11.jpg'),
           title: '11.正常启动'
         }],
+        PARK: [{
+          id: 1,
+          url: require('./assets/img/diaglog/PARK/PARK1.jpg'),
+          title: '如图所示'
+        }]
       },
       swiperOption: {
         // autoplay: {
@@ -170,7 +175,7 @@ export default {
   },
   watch: {
     diaglogRequest(val) {
-      // console.log('diaglogRequest', val);
+      console.log('diaglogRequest', val);
       if (val.dialog) {
         this.showDialog(val);
       }
@@ -215,7 +220,7 @@ export default {
       const buttonsHtml = val.btns
         .map(
           (b, i) =>
-            `<button class="custom-dialog-btn" data-val="${b.en}" style="margin: 10px;background-color: #fff; border:1px solid #409EFF; color: #409EFF; border-radius: 4px; padding: 10px 20px; font-size: 14px; cursor: pointer;">${this.lang === 'zh' ? b.cn : b.en
+            `<button class="custom-dialog-btn" data-val="${b.en}" style="margin: 10px;background-color: #fff; border:1px solid #409EFF; color: #409EFF; border-radius: 4px; padding: 5px 20px; font-size: 14px; cursor: pointer;">${this.lang === 'zh' ? b.cn : b.en
             }</button>`
         )
         .join('');
@@ -227,6 +232,8 @@ export default {
       this.notification = this.$notify({
         title: this.$t('prompt.prompt'),
         dangerouslyUseHTMLString: true,
+        duration: 0,
+        offset: 80,
         message: `
       <div id="custom-dialog-wrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <span style="font-size:16px;">${text} ${this.diaglogRequest.type === '' ? '' : tuli} </span>

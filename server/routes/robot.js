@@ -95,6 +95,7 @@ router.delete('/robot', RobotController.deleteRobot);
  *         description: 获取失败
  */
 router.get('/log', RobotController.getLog);
+router.post('/log', RobotController.setLog);
 
 // getSensorLog
 router.post('/sensorlog', RobotController.getSensorLog);

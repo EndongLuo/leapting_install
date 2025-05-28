@@ -1,4 +1,5 @@
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
+import { first } from 'lodash';
 
 const zh = {
   language: {
@@ -22,6 +23,9 @@ const zh = {
     sensorlog: '传感器日志',
     historicalRecords: '历史记录',
     historySpeed: '历史速率',
+    operationRecords: '操作记录',
+    operationLog: '上位机操作日志',
+    errorData: '异常数据'
   },
   table: {
     send: '发送',
@@ -78,6 +82,10 @@ const zh = {
     fai: '自动安装',
     sai: '半自动安装',
     detach: '拆卸',
+    'Web_Fully-Auto': '自动安装',
+    Web_Detach: '拆卸',
+    InstallFirstPVM: '首块安装',
+    StartInstallCheck: '停车检查',
     monitor: '监控',
     RGB: 'RGB图像',
     depth: '深度图像',
@@ -95,7 +103,6 @@ const zh = {
     global: '全局',
     majoradjust: '粗调',
     minoradjust: '微调',
-    QRcode: '扫码安装'
   },
   config: {
     pducontrol: 'PDU 控制',
@@ -156,6 +163,10 @@ const zh = {
     robotNotConnected: '机器人未连接，请检查机器人连接状态后再进行操作。',
     cancelReboot: '取消重启',
     confirmReboot: '确认重启？',
+    selectFirstPVM: "第一块板选择",
+    front: '正面',
+    back: '反面',
+    confirmUSB: '请确认插入U盘，选择需要拷贝的数据类别:'
   },
   identify: {
     identifyOk: '识别成功。',

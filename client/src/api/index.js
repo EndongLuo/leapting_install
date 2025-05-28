@@ -30,3 +30,15 @@ export const setTaskInfo = data => request.post(`/task/taskinfo`, data);
  * @returns {Object}
  */
 export const getHistorySpeed = id => request.get(`/task/historyspeed?id=${id}`);
+
+/**
+ * @description 添加上位机行为操作记录
+ * @returns {Object}
+ */
+export const setLog = data => request.post(`/robot/log`, data);
+
+/**
+ * @description 添加上位机行为操作记录
+ * @returns {Object}
+ */
+export const getLog = data => request.get(`/robot/log`, data);

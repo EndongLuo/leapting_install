@@ -203,6 +203,40 @@ class RobotController {
     }
   }
 
+  
+  /**
+   * 创建任务信息
+   * @param ctx
+   * @returns {Promise.<void>}
+   */
+  static async setLog(ctx) {
+    try {
+      const data = ctx.request.body;
+      console.log('addlog', data);
+      const res = await RobotModel.addLog(data);
+
+      if (res) {
+        // console.log(res);
+        console.log("添加上位机操作记录成功");
+        ctx.body = {
+          code: 200,
+          msg: "创建上位机操作记录成功",
+          data: res,
+        };
+      } else {
+        ctx.body = {
+          code: 400,
+          msg: "创建上位机操作记录失败",
+        };
+      }
+    } catch (error) {
+      console.error("创建上位机操作记录错误", error);
+      ctx.body = {
+        code: 500,
+        msg: "创建上位机操作记录错误",
+      };
+    }
+  }
 
 }
 

@@ -71,8 +71,11 @@
             {{ d.name }}
           </div>
 
-          <el-divider>More >> <span @click="onDialogOpened"
-              style="color: #409eff; cursor: pointer;">{{$t('nav.historicalRecords')}}</span></el-divider>
+          <el-divider>More >> 
+            <span @click="onDialogOpened" style="color: #409eff; cursor: pointer;">{{$t('nav.historicalRecords')}}</span>
+            >>
+            <span @click="onWebLogDialogOpened" style="color: #409eff; cursor: pointer;">{{$t('nav.operationRecords')}}</span>
+          </el-divider>
 
           <!-- <div style=" width: 100%; height: 60px; line-height: 60px; font-weight: 700; font-size: 24px;">实时数据：</div> -->
           <div v-for="(d, index) of newDiagnostics.list2" :key="index"
@@ -91,6 +94,14 @@
         </div>
       </el-dialog>
 
+      <!-- echarts -->
+      <el-dialog :title="$t('nav.operationLog')" :visible.sync="opeartionDialogVisible" width="80%" center
+        :close-on-click-modal="false" @opened="onWebLogDialogOpened">
+        <div v-loading="isLoading" :element-loading-text="$t('config.Loading')" style="min-height: 400px;">
+          <L_table :tableData = opeartionlogData :column = column :isShowOperate = isShowOperate />
+        </div>
+      </el-dialog>
+
     </div>
   </div>
 </template>
@@ -99,23 +110,50 @@
 import { mapState } from "vuex";
 import Battery from "@/components/Battery";
 import Signal from "@/components/Signal";
-import { getSensorLog } from "@/api";
+import L_table from "@/components/L_table";
+import { getSensorLog, setTaskInfo, setLog, getLog } from "@/api";
+import {date} from '@/utils/date';
 import * as echarts from 'echarts';
 
 export default {
   name: "home",
-  components: { Signal, Battery },
+  components: { Signal, Battery, L_table},
   props: ["robotName"],
   data() {
     return {
       robotDialogVisible: false,
       sensorDialogVisible: false,
+      opeartionDialogVisible: false,
       chart: null,
       fullData: [],      // 后端一次性返回的全部数据（最长 24h）
       sensorKeys: [],    // 传感器字段名列表
       defaultKeys: ['chassis_voltage', 'inverter_voltage', 'vacuum_pressure'],// 默认显示这几项     
       curRange: [0, 100],      // 当前缩放百分比区间 [startPct, endPct]
-      isLoading: false      // 防止并发请求
+      isLoading: false,      // 防止并发请求
+      opeartionlogData: [], // 行为操作日志数据
+      isShowOperate: false,
+      column:[
+        {
+          prop:'description',
+          label:'描述'
+        },
+        {
+          prop:'id',
+          label:'编号'
+        },
+        {
+          prop:'device',
+          label:'设备'
+        },
+        {
+          prop:'time',
+          label:'时间'
+        },
+        {
+          prop:'msg',
+          label:'类型'
+        }
+      ]
     };
   },
   computed: {
@@ -125,6 +163,25 @@ export default {
     // this.sensorDialogVisible = true;
   },
   methods: {
+    //新的接口任务发送
+    async newSendTask(task_id ,task_name, params){
+      var id = Math.round(Math.random() * 900000000 + 100000000);
+      var taskmsg = { id, task_status: 1, task_name: task_name, task_type: 99, task_num: 1, param: JSON.stringify(params) };
+      this.$store.dispatch('socket/sendTask', taskmsg);
+      var taskinfo = { id, taskId: task_id, task_state: 1, result: 1 }
+      var res =  await setTaskInfo(taskinfo);
+      console.log('res', res);
+      this.$message.success('任务发送成功');
+    },
+
+    /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
+    async onWebLogDialogOpened() {
+      this.opeartionDialogVisible = true;
+      var res = await getLog({siteId : 1});
+      this.opeartionlogData = res.data;
+      console.log(res);
+    },
+
     /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
     async onDialogOpened() {
       this.robotDialogVisible = false;
@@ -193,7 +250,27 @@ export default {
             top: '5%',
             feature: {
               restore: {},
-              saveAsImage: {}
+              myUSB: {
+                show: true,
+                title: '下载到USB',
+                icon: 'path://M826.5 833.2H190.8c-11 0-20-9-20-20V495.5c0-11 9-20 20-20s20 9 20 20v297.7h595.7V495.5c0-11 9-20 20-20s20 9 20 20v317.7c0 11.1-8.9 20-20 20z M508.6 669.6c-5.1 0-10.2-2-14.1-5.9L335.6 504.8c-7.8-7.8-7.8-20.5 0-28.3 7.8-7.8 20.5-7.8 28.3 0l144.8 144.8 144.8-144.8c7.8-7.8 20.5-7.8 28.3 0 7.8 7.8 7.8 20.5 0 28.3l-159 158.9c-3.9 4-9 5.9-14.2 5.9z M508.5 656.8c-11 0-20-9-20-20V177.7c0-11 9-20 20-20s20 9 20 20v459.1c0 11.1-8.9 20-20 20z',
+                onclick: (e) => {
+                  this.$confirm(this.$t('prompt.confirmUSB'), this.$t('prompt.prompt'), {
+                    confirmButtonText: this.$t('prompt.sensorlog'),
+                    cancelButtonText: this.$t('prompt.errorData'),
+                    distinguishCancelAndClose: true,
+                    type: 'info'
+                  }).then(() => {
+                    this.newSendTask(4, 'FromDatabaseToUSB', {table_name: 'sensor_log'});
+                  }).catch((val) => {
+                    if (val === 'close') {
+                      return;
+                    } else {
+                      this.newSendTask(4, 'FromDatabaseToUSB', {table_name: 'error_data'});
+                    }         
+                  });
+                }
+              },
             }
           },
           xAxis: { type: 'time', boundaryGap: false },

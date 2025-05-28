@@ -21,6 +21,9 @@ const en = {
     sensorlog: 'Sensor Log',
     historicalRecords: 'Historical Records',
     historySpeed: 'History Speed',
+    operationRecords: 'Opeartion Records',
+    operationLog: 'Web Opeartion Log',
+    errorData: 'Error Data'
   },
   table: {
     send: 'Start',
@@ -77,6 +80,10 @@ const en = {
     fai: 'Fully-Auto',
     sai: 'Semi-Auto',
     detach: 'Detach',
+    'Web_Fully-Auto': 'Fully-Auto',
+    Web_Detach: 'Detach',
+    InstallFirstPVM: 'Install First',
+    StartInstallCheck: 'Install Check',
     monitor: 'Monitor',
     model: '3D Model',
     start: 'Start',
@@ -153,6 +160,10 @@ const en = {
     robotNotConnected: 'The robot is not connected. Please check the connection status before proceeding.',
     cancelReboot: 'Reboot canceled',
     confirmReboot: 'Confirm reboot?',
+    selectFirstPVM: 'The first piece of PVM selection: ',
+    front: 'Front',
+    back: 'Back',
+    confirmUSB: 'Make sure to insert the USB flash drive and select the data category to be copied:'
   },
   identify: {
     identifyOk: 'Successfully Identified.',
