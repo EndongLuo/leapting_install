@@ -3,7 +3,7 @@ import Socket from '@/utils/socketUtil';
 
 const state = {
   socket: null,
-  // ips: ['192.168.8.234'],
+  // ips: ['192.168.147.9'],
   // ips: ['10.168.2.178'],
   ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
@@ -26,7 +26,7 @@ const translationMaps = new Map([
   ['estop_status', '急停'],
   ['robot_status', '机械臂控制'],
   ['battery_voltage_alarm', '电池电压报警'],
-  ['overcurrent_alarm', '放电过流报警'],
+  ['overcurrent_alarm', '漏电报警'],
   ['sensor_status', '传感器'],
   ['joy_estop', '遥控器急停'],
   ['whisker_status', '触须'],
@@ -277,6 +277,11 @@ const actions = {
   git({ commit, state }, tag) {
     console.log('state git', state.ips[0], tag);
     state.socket.emit('git', state.ips[0], tag);
+  },
+
+  // 版本离线更新
+  offlineUpdate({ commit, state }, data) {
+    state.socket.emit('offlineUpdate', state.ips[0], data);
   },
 
   HandEye({ commit, state }, data) {

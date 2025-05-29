@@ -84,6 +84,7 @@ const en = {
     Web_Detach: 'Detach',
     InstallFirstPVM: 'Install First',
     StartInstallCheck: 'Install Check',
+    handeye: 'Calibration',
     monitor: 'Monitor',
     model: '3D Model',
     start: 'Start',
@@ -121,6 +122,7 @@ const en = {
     noautohandeye: 'Manual',
     git: 'Version',
     update: 'Update',
+    offlineUpdate: 'Offline Update',
     language: 'Language',
     chinese: 'Chinese',
     english: 'English',
@@ -134,12 +136,13 @@ const en = {
     video: 'Video',
     line_gap: 'Line Gap',
     pvm_thickness: 'PVM Thickness',
-    cell_length: 'Cell Length',
+    cell_length: 'Cell Width',
     hole_gap: 'Hole Gap',
     pvmedge_hole_gap: 'PVM Edge Hole Gap',
     reboot: 'Reboot',
     reboot1: 'Reboot Robot',
     gitInfo: 'Version Information',
+    gitSwitch: 'Version Switching',
   },
   connPrompt: {
     success: 'Connected to Install Robot.',
@@ -163,7 +166,10 @@ const en = {
     selectFirstPVM: 'The first piece of PVM selection: ',
     front: 'Front',
     back: 'Back',
-    confirmUSB: 'Make sure to insert the USB flash drive and select the data category to be copied:'
+    confirmUSB: 'Make sure to insert the USB flash drive and select the data category to be copied:',
+    confirmUpdateType: 'Please select the category that needs to be updated:',
+    partiallyUpdated: 'Partially Updated',
+    allUpdated: 'ALL Updated'
   },
   identify: {
     identifyOk: 'Successfully Identified.',
@@ -197,6 +203,12 @@ const en = {
     placeQR: 'Please place the QR code',
     removeQR: 'Please remove the QR code',
     manual: 'Manual',
+    updating: 'updating',
+    updatesuccess: 'updateSuccess',
+    Restartimmediately: 'Restartimmediately',
+    Restartlater: 'Restartlater',
+    NOPACKAGE: 'No Find Update Package',
+    NOUSB: 'No Find USB Device'
   }
 }
 

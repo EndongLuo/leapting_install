@@ -6,11 +6,14 @@
         <div class="jqr_id" v-if="!rosConnect" style="color: #f56c6c;"> {{ $t('robot.notconnect') }} </div>
 
         <div v-else class="left_info" @click="robotDialogVisible = true">
-          <div class="jqr_id" style="color: #34a94d;">{{ $t('robot.connected') + '-' +robotName }}</div>
+          <div class="jqr_id" style="color: #34a94d;">
+            {{ $t('robot.connected') + '-' +robotName }}
+            
+          </div>
 
           <!-- 电池 -->
           <Battery :quantity="battery" v-if="battery" />
-
+          
           <!-- 信号 -->
           <!-- <Signal :num="Number(wifi.signal)" /> -->
 

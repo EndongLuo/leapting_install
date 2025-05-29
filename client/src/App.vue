@@ -5,12 +5,14 @@
     <!-- 弹框 -->
     <el-dialog :visible.sync="dialogs.dialog" width="60%" :title="$t('prompt.prompt')" center :append-to-body='true'>
       <div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
-        <span style="font-size: 24px;">{{ $t(`dialog.${dialogs.text}`) }} <span style="font-weight: 600;"
+        <span style="font-size: 24px;">{{ $t(`dialog.${dialogs.text}`) }} {{ numberText }} <span style="font-weight: 600;"
             v-if="dialogs.seq">{{ dialogs.seq }}mm</span></span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button v-for="b, i in dialogs.btns" :key="i" @click="diaglogResponse(b)">{{ $t(`dialog.${b}`) }}</el-button>
-        <el-button type="primary" @click="dialogfn('confirm')">{{ $t(`mains.confirm`) }}</el-button>
+        <span  v-for="b, i in dialogs.btns" style="margin-right: 10px;">
+          <el-button v-if="!/\d/.test(b)" :key="i" @click="diaglogResponse(b)">{{ $t(`dialog.${b}`) }}</el-button>
+        </span>
+        <el-button  type="primary" @click="dialogfn('confirm')">{{ $t(`mains.confirm`) }}</el-button>
       </span>
     </el-dialog>
 
@@ -60,6 +62,7 @@ import layout from "./views/layout";
 import { mapState } from 'vuex';
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper';
 import 'swiper/css/swiper.css';
+import { number } from "echarts";
 export default {
   name: "App",
   components: {
@@ -159,7 +162,8 @@ export default {
           type: 'fraction'
         }
       },
-      notification: null
+      notification: null,
+      numberText: '', //针对dialog反馈第二个：后面出现数字提示，不用来作为按钮显示，增加到提示内
     };
   },
   components: { Swiper, SwiperSlide },
@@ -175,7 +179,6 @@ export default {
   },
   watch: {
     diaglogRequest(val) {
-      console.log('diaglogRequest', val);
       if (val.dialog) {
         this.showDialog(val);
       }
@@ -186,6 +189,11 @@ export default {
       else setTimeout(() => {
         this.notification && this.notification.close()
       }, 4500);
+    },
+    dialogs(d){
+      if(/\d/.test(d.btns[0])){
+        this.numberText = d.btns[0] + '个文件';
+      }     
     }
   },
   methods: {

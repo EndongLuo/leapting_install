@@ -110,12 +110,12 @@
               <div class="taskInfo">
                 <div><span class="title">{{ $t('task.taskid') }}:</span>{{ taskState.id }}</div>
                 <!-- <div><span class="title">{{ $t('task.taskname') }}:</span>{{ taskState.task_name }}</div> -->
-                <div><span class="title">{{ $t('task.tasktype') }}:</span>{{ taskState.task_type == 0 ?
+                <div><span class="title">{{ $t('task.tasktype') }}:</span>
+                <!-- {{ taskState.task_type == 0 ?
                   `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2
-                    ?
-                    `${$t('install.detach')}` : taskState.task_type == 4
-                      ?
-                      `${$t('config.handeye')}` : '' }}</div>
+                    ? `${$t('install.detach')}` : taskState.task_type == 4 ? `${$t('config.handeye')}` : '' }} -->
+                  {{ $t(`install.${taskState.task_name}`) }}
+                </div>
                 <div><span class="title">{{ $t('task.taskprogress') }}:</span>
                   {{ (taskState.done_num / taskState.task_num).toFixed(4) * 100 || 0 }}%
                   （{{ taskState.done_num || 0 }}/{{ taskState.task_num || 0 }}）</div>
@@ -545,7 +545,7 @@ export default {
       this.toolbar1 = false;
       this.setLogInfo('info', '任务下发', task_name);
     },
-    //扫码安装任务
+    //首块安装任务
     InstallFirstTask(){
       if (!this.rosConnect) {
         return;

@@ -253,6 +253,19 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   });
 
+  //离线更新
+  socket.on('offlineUpdate', (ip, type) => {
+    try{
+      robotArr[ip].offlineUpdate({
+        seq: 1,
+        frame_id: type
+      });
+      logger.info(`offlineUpdate ${ip} ${tag}`);
+    }catch (error) {
+      logger.error(`offlineUpdate ${ip} ${error}`);
+    }
+  });
+
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
 

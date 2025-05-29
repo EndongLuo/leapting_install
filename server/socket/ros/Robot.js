@@ -132,10 +132,14 @@ class Robot extends EventEmitter {
   // 诊断日志响应
   diaglogResponse(data) {
     console.log('--------------',data);
-    
     this.publish('/diaglog_response', 'task/task_dialog', data);
   }
 
+  // 版本离线更新
+  offlineUpdate(data) {
+    console.log('offlineUpdate_type', data);
+    this.publish('/offline_update', 'std_msgs/Header', data);
+  }
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
   // robot_state
   robotState(callback) {

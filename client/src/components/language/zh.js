@@ -85,7 +85,8 @@ const zh = {
     'Web_Fully-Auto': '自动安装',
     Web_Detach: '拆卸',
     InstallFirstPVM: '首块安装',
-    StartInstallCheck: '停车检查',
+    StartInstallCheck: '安装检查',
+    handeye: '手眼标定',
     monitor: '监控',
     RGB: 'RGB图像',
     depth: '深度图像',
@@ -122,7 +123,8 @@ const zh = {
     autohandeye: '自动标定',
     noautohandeye: '手动标定',
     git: '当前版本',
-    update: '更新',
+    update: '在线更新',
+    offlineUpdate: '离线更新',
     language: '系统语言',
     chinese: '简体中文',
     english: '英文',
@@ -136,13 +138,13 @@ const zh = {
     video: '图像显示',
     line_gap: '直线间距',
     pvm_thickness: '光伏板厚度',
-    cell_length: '电池片长度',
+    cell_length: '电池片宽度',
     hole_gap: '孔间距',
     pvmedge_hole_gap: '孔边间距',
     reboot: '重启',
     reboot1: '重启系统',
     gitInfo: '版本信息',
-    robotName: '设备名称'
+    gitSwitch: '版本切换',
   },
   connPrompt: {
     success: '安装机器人已连接。',
@@ -166,7 +168,10 @@ const zh = {
     selectFirstPVM: "第一块板选择",
     front: '正面',
     back: '反面',
-    confirmUSB: '请确认插入U盘，选择需要拷贝的数据类别:'
+    confirmUSB: '请确认插入U盘，选择需要拷贝的数据类别:',
+    confirmUpdateType: '请选择需要更新的类别：',
+    partiallyUpdated: '部分更新',
+    allUpdated: '全部更新',
   },
   identify: {
     identifyOk: '识别成功。',
@@ -200,6 +205,12 @@ const zh = {
     placeQR: '请将二维码放置在支架上',
     removeQR: '请将二维码移开',
     manual: '手动',
+    updating: '更新中',
+    updatesuccess: '更新成功',
+    Restartimmediately: '立即重启',
+    Restartlater: '稍后重启',
+    NOPACKAGE: '未检测到更新包',
+    NOUSB: '未检测到U盘'
   }
 }
 

@@ -87,14 +87,16 @@
 
        
         <div class="inbox">
-          <span style="width: 100px;">{{ $t('config.git') }}：
-            <span v-if="tag" style="margin-left: 10px; color: #949494; font-size: 13px;"> {{ tag }} </span>
-          </span>
-          <span>
-            <i class="el-icon-warning-outline" style="font-size: 24px; margin-right: 10px;"
-              @click="gitInfoDialogVisible = true"></i>
-          </span>
+          <span style="width: 100px;">{{ $t('config.git') }}：</span>
+          <span v-if="tag" style="margin-left: 10px; color: #949494; font-size: 13px;"> {{ tag }} </span>
+          <span> <i class="el-icon-warning-outline" style="font-size: 24px; margin-right: 10px;" @click="gitInfoDialogVisible = true"></i> </span>
           <el-button @click="gitPull()" style="margin-right: 10px;">{{ $t('config.update') }}</el-button>
+          <el-button @click="offlineUpdate()" style="margin-right: 10px;">{{ $t('config.offlineUpdate') }}</el-button>
+          
+        </div>
+
+        <div class="inbox">
+          <span>{{ $t('config.gitSwitch') }}：</span>
           <el-select v-model="t" :placeholder="$t('config.switchGit')">
             <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
           </el-select>
@@ -251,6 +253,25 @@ export default {
         else this.$message.error(`${this.$t('prompt.updateFailed')}`);
         this.loading.close();
       }
+    },
+
+    //U盘更新
+    offlineUpdate(){
+      this.$confirm(this.$t('prompt.confirmUpdateType'), this.$t('prompt.prompt'), {
+          confirmButtonText: this.$t('prompt.partiallyUpdated'),
+          cancelButtonText: this.$t('prompt.allUpdated'),
+          distinguishCancelAndClose: true,
+          type: 'info'
+        }).then(() => {
+           this.$store.dispatch('socket/offlineUpdate', 'update');
+        }).catch((val) => {
+          if (val === 'close') {
+            return;
+          } else {
+            this.$store.dispatch('socket/offlineUpdate', 'update_git');
+          }         
+        });
+
     },
   },
 };
