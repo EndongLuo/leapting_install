@@ -1,9 +1,9 @@
 module.exports = {
   db: {
-    host: '127.0.0.1',
+    // host: '127.0.0.1',
     // host: '192.168.8.152',
     // host: '192.168.8.234',
-    // host: '10.168.2.178',
+    host: '10.168.2.178',
     port: '5432',
     dialect: 'postgres',
     database: 'leapting_install',

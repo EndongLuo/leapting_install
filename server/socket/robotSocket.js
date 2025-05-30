@@ -314,8 +314,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         dialogMsg.text = parts[1];
         dialogMsg.btns = parts.slice(2);
       } else dialogMsg.text = frame_id;
-      console.log("dialog", dialogMsg);
-
+      console.log("dialog", dialogMsg); 
       socket.server.of('/XJ').emit("dialogs", ip, dialogMsg);
     });
 
@@ -384,22 +383,25 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     robotArr[ip].taskState(async (msg) => {
       socket.server.of('/XJ').emit("taskState", ip, msg);
       if (!oldState[ip])
-        oldState[ip] = { state: "", id: 0, start_time: "" };
-      if (msg.task_type !== oldState[ip].state) {
+        oldState[ip] = { state: "", id: 0, start_time: "",end_time: "",odom:0 };
+      if (msg.task_status !== oldState[ip].state) {
 
         if (msg.id == 0) {
           msg.id = oldState[ip].id;
           msg.start_time = oldState[ip].start_time;
-          msg.progress = 0;
+          msg.end_time = oldState[ip].end_time;
+          msg.odom = oldState[ip].odom;
         } else {
-          oldState[ip].state = msg.task_type;
+          oldState[ip].state = msg.task_status;
           oldState[ip].id = msg.id;
           oldState[ip].start_time = msg.start_time;
+          oldState[ip].end_time = msg.end_time;
+          oldState[ip].odom = msg.donenum || 0;
         }
         try {
           var res = await updateTaskInfo(msg);
           if (res[0]) console.log("taskState updated", ip, res);
-          oldState[ip].state = msg.task_type;
+          oldState[ip].state = msg.task_status;
           // console.log('oldState[ip].id',oldState[ip].id);
         } catch (error) {
           console.error("Failed to update task info:", error);

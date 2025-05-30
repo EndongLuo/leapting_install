@@ -4,8 +4,8 @@ import Socket from '@/utils/socketUtil';
 const state = {
   socket: null,
   // ips: ['192.168.8.234'],
-  // ips: ['10.168.2.178'],
-  ips: ['127.0.0.1'],
+  ips: ['10.168.2.178'],
+  // ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},
   Robot: {},
@@ -41,6 +41,14 @@ const translationMaps = new Map([
   ['hydraulic_voltage', '液压输出电压'],
   ['chassis_voltage', '底盘接触器电压'],
   ['inverter_voltage', ' 逆变输入电压'],
+
+  ['inverter_current_a', '逆变器A相电流'],
+  ['inverter_voltage_a', ' 逆变器A相电压'],
+  ['inverter_current_b', '逆变器B相电流'],
+  ['inverter_voltage_b', ' 逆变器B相电压'],
+  ['inverter_current_c', '逆变器C相电流'],
+  ['inverter_voltage_c', ' 逆变器C相电压'],
+
   ['hydraulic_status', '拖车供电'],
   ['chassis_status', '底盘供电'],
   ['inverter_status', '逆变输入'],
