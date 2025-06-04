@@ -11,7 +11,12 @@ const state = {
   Robot: {},
   Robots: [],
   rosConnect: 0,
-  dialogs: {},
+  dialogs: {
+    dialog: false,
+    seq: 0,
+    text: 'identification_failure',
+    btns: []
+  },
   diaglogRequest: {},
   newDiagnostics: { list: [], list2: [] },
   speed: { linear: 0, angular: 0 },

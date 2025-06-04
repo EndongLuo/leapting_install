@@ -191,6 +191,7 @@ export default {
       }, 4500);
     },
     dialogs(d){
+      this.numberText = '';
       if(/\d/.test(d.btns[0])){
         this.numberText = d.btns[0] + '个文件';
       }     
@@ -238,13 +239,13 @@ export default {
 
       // 先显示通知
       this.notification = this.$notify({
-        title: this.$t('prompt.prompt'),
+        title: this.$t('prompt.prompt') + ':' + text,
         dangerouslyUseHTMLString: true,
         duration: 0,
         offset: 80,
         message: `
       <div id="custom-dialog-wrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <span style="font-size:16px;">${text} ${this.diaglogRequest.type === '' ? '' : tuli} </span>
+        <span style="font-size:16px;"> ${this.diaglogRequest.type === '' ? '' : tuli} </span>
         <div style="margin-top: 16px;">
           ${buttonsHtml}
         </div>
@@ -318,6 +319,7 @@ export default {
     diaglogResponse(val) {
       this.$store.dispatch('socket/diaglogResponse', val);
       this.isShowDialog = false;
+      this.dialogs.dialog = false;
     },
   },
 };
