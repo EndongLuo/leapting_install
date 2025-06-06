@@ -252,6 +252,18 @@
       </div>
     </el-dialog>
 
+    <el-card class="diagnostics-card" style="position: absolute; bottom: 5px; right: 10px; font-size: 14px;">
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.battery_voltage')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.battery_current')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.vacuum1_pressure')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.vacuum_pressure')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_current_a')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_voltage_a')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_current_b')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_voltage_b')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_current_c')] }}</div>
+      <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_voltage_c')] }}</div>
+    </el-card>
   </div>
 </template>
 
@@ -287,11 +299,14 @@ export default {
       isHistorySpeed: false,
       isLoading: false,      // 防止并发请求
       chart: null,
-      historySpeedData: []
+      historySpeedData: [],
+      diagnosticsObj: {
+
+      },
     };
   },
   computed: {
-    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep']),
+    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep', 'newDiagnostics']),
   },
   mounted() {
     this.$nextTick(() => this.scrollToBottom());
@@ -325,8 +340,8 @@ export default {
         console.log('任务完成');
         this.winClose();
       }
-  },
-  rosConnect(val){
+    },
+    rosConnect(val){
       if(val == 1){
         if(this.isConncect){
           window.location.reload();
@@ -336,8 +351,16 @@ export default {
       }else{
         this.winClose();
       }
+    },
+    
+    newDiagnostics(val){
+      let d = val.list2;
+      if(d.length < 1) return;
+      d.forEach( item => {
+        this.diagnosticsObj[item.name] = item.name + ': ' + item.message + ' ' + item.hardware_id;
+      })
     }
-},
+  },
   methods: {
     /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
     async onDialogOpened(id) {
@@ -490,20 +513,16 @@ export default {
         const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach' };
         var taskmsg = { id, task_status: 1, task_name: modeMap[num], task_type: num, task_num: Number(value) };
         this.$store.dispatch('socket/sendTask', taskmsg);
-
         var taskinfo = { id, taskId: num, task_state: 1, result: value }
         // console.log('taskinfo', taskinfo);
-
         var res = await setTaskInfo(taskinfo);
         console.log('res', res);
-
         this.$message.success('任务发送成功');
         this.isShow = 4;
         this.toolbar1 = false;
         this.setLogInfo('info', '任务下发', modeMap[num]);
       }).catch((error) => {
         console.log('sendTask error', error);
-        this.$message(this.$t('mains.cancel'));
       });
     },
     // 修改任务状态
@@ -511,7 +530,7 @@ export default {
       var { id, task_name, task_type, task_num } = this.taskState;
       var taskmsg = { id, task_status: num, task_name, task_type, task_num };
       this.$store.dispatch('socket/sendTask', taskmsg);
-      this.setLogInfo('warning', '任务操作', 'task_status:' + num);
+      this.setLogInfo('warning', '任务操作', 'task_status:' + num == 0 ? '停止任务' : num == 1 ? '继续任务' : '暂停任务');
     },
     // 操作行为记录
     async setLogInfo(level, operation_type, description){
@@ -537,9 +556,8 @@ export default {
       this.$store.dispatch('socket/sendTask', taskmsg);
       var taskinfo = { id, taskId: task_id, task_state: 4, result: 1 }
       // console.log('taskinfo', taskinfo);
-      var res =  await setTaskInfo(taskinfo);
-      console.log('res', res);
-      
+      // var res =  await setTaskInfo(taskinfo);
+      // console.log('res', res);
       this.$message.success('任务发送成功');
       this.isShow = 4;
       this.toolbar1 = false;
@@ -819,6 +837,11 @@ export default {
   display: flex;
   flex-direction: column;
   flex: 1;
+
+  .diagnostics{
+    margin-bottom: 5px !important;
+    color: #34a94d;
+  }
 }
 
 .h_outer {
@@ -1104,6 +1127,5 @@ export default {
       color: #d6d6d6;
     }
   }
-
 }
 </style>

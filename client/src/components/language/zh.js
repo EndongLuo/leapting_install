@@ -128,7 +128,7 @@ const zh = {
     language: '系统语言',
     chinese: '简体中文',
     english: '英文',
-    switch: '切换',
+    switch: '确认切换',
     bridgegap: '桥架间隙',
     cuplength: '吸盘长度',
     uninstall_z: '拆卸高度',
@@ -145,6 +145,7 @@ const zh = {
     reboot1: '重启系统',
     gitInfo: '版本信息',
     gitSwitch: '版本切换',
+    obstacle: '避障间距'
   },
   connPrompt: {
     success: '安装机器人已连接。',
@@ -169,9 +170,10 @@ const zh = {
     front: '正面',
     back: '反面',
     confirmUSB: '请确认插入U盘，选择需要拷贝的数据类别:',
-    confirmUpdateType: '请选择需要更新的类别：',
+    confirmUpdateType: '确认U盘插入后，请选择离线更新的类别：',
     partiallyUpdated: '部分更新',
     allUpdated: '全部更新',
+    gitUpdated: 'git库更新'
   },
   identify: {
     identifyOk: '识别成功。',
@@ -211,6 +213,18 @@ const zh = {
     Restartlater: '稍后重启',
     NOPACKAGE: '未检测到更新包',
     NOUSB: '未检测到U盘'
+  },
+  diagnostics: {
+    'battery_voltage': '电池电压',
+    'battery_current': '电池总电流',
+    'vacuum1_pressure': '真空压力1',
+    'vacuum_pressure': '真空压力2',
+    'inverter_current_a': '逆变器A相电流',
+    'inverter_voltage_a': '逆变器A相电压',
+    'inverter_current_b': '逆变器B相电流',
+    'inverter_voltage_b': '逆变器B相电压',
+    'inverter_current_c': '逆变器C相电流',
+    'inverter_voltage_c':'逆变器C相电压',
   }
 }
 

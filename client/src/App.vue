@@ -239,13 +239,13 @@ export default {
 
       // 先显示通知
       this.notification = this.$notify({
-        title: this.$t('prompt.prompt') + ':' + text,
+        title: this.$t('prompt.prompt'),
         dangerouslyUseHTMLString: true,
         duration: 0,
         offset: 80,
         message: `
       <div id="custom-dialog-wrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <span style="font-size:16px;"> ${this.diaglogRequest.type === '' ? '' : tuli} </span>
+        <span style="font-size:16px;"> ${text} ${this.diaglogRequest.type === '' ? '' : tuli} </span>
         <div style="margin-top: 16px;">
           ${buttonsHtml}
         </div>

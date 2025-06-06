@@ -260,12 +260,24 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         seq: 1,
         frame_id: type
       });
-      logger.info(`offlineUpdate ${ip} ${tag}`);
+      logger.info(`offlineUpdate ${ip} ${type}`);
     }catch (error) {
       logger.error(`offlineUpdate ${ip} ${error}`);
     }
   });
 
+  // 避障更新
+  socket.on('obstacleUpdate', (ip, data) => {
+    try{
+      robotArr[ip].obstacleUpdate({
+        seq: 98,
+        frame_id: JSON.stringify(data)
+      });
+      logger.info(`obstacleUpdate ${ip} ${data}`);
+    }catch (error) {
+      logger.error(`obstacleUpdate ${ip} ${error}`);
+    }
+  })
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
 

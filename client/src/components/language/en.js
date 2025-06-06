@@ -169,7 +169,9 @@ const en = {
     confirmUSB: 'Make sure to insert the USB flash drive and select the data category to be copied:',
     confirmUpdateType: 'Please select the category that needs to be updated:',
     partiallyUpdated: 'Partially Updated',
-    allUpdated: 'ALL Updated'
+    allUpdated: 'ALL Updated',
+    gitUpdated: 'Git Updated',
+    obstacle: 'Obstacle Setting'
   },
   identify: {
     identifyOk: 'Successfully Identified.',
@@ -209,6 +211,18 @@ const en = {
     Restartlater: 'Restartlater',
     NOPACKAGE: 'No Find Update Package',
     NOUSB: 'No Find USB Device'
+  },
+  diagnostics: {
+    'battery_voltage': 'battery_voltage',
+    'battery_current': 'battery_current',
+    'vacuum1_pressure': 'vacuum1_pressure',
+    'vacuum_pressure': 'vacuum_pressure',
+    'inverter_current_a': 'inverter_current_a',
+    'inverter_voltage_a': 'inverter_voltage_a',
+    'inverter_voltage_a': 'inverter_voltage_a',
+    'inverter_voltage_a': 'inverter_voltage_a',
+    'inverter_current_c': 'inverter_current_c',
+    'inverter_voltage_c': 'inverter_voltage_c',
   }
 }
 

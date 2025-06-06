@@ -140,6 +140,13 @@ class Robot extends EventEmitter {
     console.log('offlineUpdate_type', data);
     this.publish('/offline_update', 'std_msgs/Header', data);
   }
+  
+  // 避障参数更新
+  obstacleUpdate(data) {
+    console.log('obstacleUpdate', data);
+    this.publish('/trig', 'std_msgs/Header', data);
+  }
+
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
   // robot_state
   robotState(callback) {

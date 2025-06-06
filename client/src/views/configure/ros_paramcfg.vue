@@ -6,29 +6,43 @@
       <h1 class="title">{{ $t('config.pvmParam') }}</h1>
       <div class="outbox">
         <div class="inbox">
-          <span style="width: 386px;">{{ $t('config.pvmsize') }}(mm)：</span>
-          <el-input v-model="robot.pvmheight" @blur="upDataPVM"></el-input>
-          <el-input v-model="robot.pvmwidth" @blur="upDataPVM"></el-input>
-          <el-input v-model="robot.pvm_thickness" @blur="upDataPVM"></el-input>
+          <span class="param_name">{{ $t('config.pvmsize') }}(mm)：</span>
+          <div class="param_set">
+            <div> <el-input  v-model="robot.pvmheight" @blur="upDataPVM"></el-input></div>
+            <div> <el-input  v-model="robot.pvmwidth" @blur="upDataPVM"></el-input></div>
+            <div> <el-input  v-model="robot.pvm_thickness" @blur="upDataPVM"></el-input></div>
+          </div>
         </div>
         <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.line_gap') }}(mm)：</span>
-          <el-input v-model="robot.line_gap" @blur="upDataPVM"></el-input>
-        </div>
-
-        <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.cell_length') }}(mm)：</span>
-          <el-input v-model="robot.cell_length" @blur="upDataPVM"></el-input>
-        </div>
-
-        <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.pvmedge_hole_gap') }}(mm)：</span>
-          <el-input v-model="robot.pvmedge_hole_gap" @blur="upDataPVM"></el-input>
+          <span class="param_name">{{ $t('config.line_gap') }}(mm)：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="robot.line_gap" @blur="upDataPVM"></el-input></div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">图例示教</el-button></div>
+          </div>
         </div>
 
         <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.hole_gap') }}(mm)：</span>
-          <el-input v-model="robot.hole_gap" @blur="upDataPVM"></el-input>
+          <span class="param_name">{{ $t('config.cell_length') }}(mm)：</span>
+          <div class="param_set">
+            <div class="input_info"> <el-input v-model="robot.cell_length" @blur="upDataPVM"></el-input></div> 
+            <div class="btn"> <el-button plain size="mini" type="primary" @click="showTuli('cell_length')">图例示教</el-button></div>
+          </div>
+        </div>
+
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.pvmedge_hole_gap') }}(mm)：</span>
+          <div class="param_set">
+            <div class="input_info"> <el-input v-model="robot.pvmedge_hole_gap" @blur="upDataPVM"></el-input></div>
+            <div class="btn"> <el-button plain size="mini" type="primary" @click="showTuli('pvmedge_hole_gap')">图例示教</el-button></div>
+          </div>
+        </div>
+
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.hole_gap') }}(mm)：</span>
+          <div  class="param_set" >
+            <div class="input_info"><el-input v-model="robot.hole_gap" @blur="upDataPVM"></el-input></div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('hole_gap')">图例示教</el-button></div>
+          </div>
         </div>
 
       </div>
@@ -36,13 +50,19 @@
       <h1 class="title">{{ $t('config.CalibrationParam') }}</h1>
       <div class="outbox">
         <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.cuplength') }}(mm)：</span>
-          <el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input>
+          <span class="param_name">{{ $t('config.cuplength') }}(mm)：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input></div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('cuplength')">图例示教</el-button></div>
+          </div>
         </div>
 
         <div class="inbox">
-          <span style="width: 232px;">{{ $t('config.uninstall_z') }}(mm)：</span>
-          <el-input v-model="robot.uninstall_z" @blur="upDataPVM"></el-input>
+          <span class="param_name">{{ $t('config.uninstall_z') }}(mm)：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="robot.uninstall_z" @blur="upDataPVM"></el-input> </div>
+            <div class="btn"><el-button plain size="mini" type="primary">图例示教</el-button></div>
+          </div>
         </div>
       </div>
 
@@ -55,57 +75,81 @@
         </div> -->
 
         <div class="inbox">
-          <span>{{ $t('config.video') }}：</span>
-          <el-switch v-model="robot.video" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
-        </div>
-
-        <div class="inbox">
-          <span>{{ $t('config.reminder') }}：</span>
-          <div style="width: 200px;"><el-slider v-model="robot.reminder" @change="upDataPVM" :step="5"></el-slider>
+          <span class="param_name">{{ $t('config.obstacle') }}：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="obstacleLength"  @blur="updateObstacleEnable"><template slot="append">m</template></el-input></div>
+            <div class="btn"><el-switch v-model="obstacleEnable" @change="obstacleSet" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>{{ obstacleEnable == 1  ? '已开' : '已禁' }}</div>
           </div>
-          <div style="margin-left: 10px;">{{ robot.reminder }}%</div>
         </div>
 
         <div class="inbox">
-          <span>{{ $t('config.language') }}：</span>
-          <el-select v-model="language" placeholder="Language" @change="changeLanguage">
-            <el-option :label="$t('config.chinese')" value="zh"></el-option>
-            <el-option :label="$t('config.english')" value="en"></el-option>
-          </el-select>
+          <span class="param_name">{{ $t('config.reminder') }}：</span>
+          <div  class="param_set" >
+            <div class="input_info"><el-slider v-model="robot.reminder" @change="upDataPVM" :step="5"></el-slider></div>
+            <div style="margin-left: 10px;">{{ robot.reminder }}%</div>
+          </div>
         </div>
 
         <div class="inbox">
-          <span>{{ $t('config.handeye') }}：</span>
-          <span style="width: 100px; margin-left: 10px;"><el-slider v-model="HandEyeData" range show-stops :max="55"
-              :min="1">
-            </el-slider></span>
-          <span style="margin-left: 15px;"><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')
-          }}</el-checkbox></span>
+          <span class="param_name">{{ $t('config.handeye') }}：</span>
+          <div class="param_set" >
+            <div class="input_info" style="display: flex; align-items: center; justify-content:space-between;">
+              <span><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')}}</el-checkbox></span>
+              <span style="width: 100px; margin-left: 10px;"><el-slider v-model="HandEyeData" range show-stops :max="55" :min="1"> </el-slider></span>
+              <el-button size="mini" @click="HandEye(true)"  style="margin-left: 10px;">{{ $t('config.autohandeye') }}</el-button>
+            </div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('autohandeye')">图例示教</el-button></div>
+          </div>
           <!-- <el-button @click="HandEye(false)" style="margin-left: 10px;">{{ $t('config.noautohandeye') }}</el-button> -->
-          <el-button @click="HandEye(true)"  style="margin-left: 10px;">{{ $t('config.autohandeye') }}</el-button>
         </div>
 
        
         <div class="inbox">
-          <span style="width: 100px;">{{ $t('config.git') }}：</span>
-          <span v-if="tag" style="margin-left: 10px; color: #949494; font-size: 13px;"> {{ tag }} </span>
-          <span> <i class="el-icon-warning-outline" style="font-size: 24px; margin-right: 10px;" @click="gitInfoDialogVisible = true"></i> </span>
-          <el-button @click="gitPull()" style="margin-right: 10px;">{{ $t('config.update') }}</el-button>
-          <el-button @click="offlineUpdate()" style="margin-right: 10px;">{{ $t('config.offlineUpdate') }}</el-button>
-          
+          <span class="param_name">{{ $t('config.git') }}：</span>
+          <div  class="param_set" >
+            <div class="input_info" style="display: flex; align-items: center; justify-content:space-between;">
+              <span v-if="tag" style="color: #949494; font-size: 14px;"> {{ tag }} </span>
+              <span> <i class="el-icon-warning-outline" style="font-size: 20px; margin-right: 10px;" @click="gitInfoDialogVisible = true"></i></span>
+              <el-button size="mini" @click="gitPull()">{{ $t('config.update') }}</el-button>
+            </div>
+            <div class="btn"><el-button size="mini" @click="isOfflineUpdateShow" style="margin-right: 10px;">{{ $t('config.offlineUpdate') }}</el-button></div>
+          </div>
         </div>
 
         <div class="inbox">
-          <span>{{ $t('config.gitSwitch') }}：</span>
-          <el-select v-model="t" :placeholder="$t('config.switchGit')">
-            <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
-          </el-select>
-          <el-button @click="gitPull(t)">{{ $t('config.switch') }}</el-button>
+          <span class="param_name">{{ $t('config.gitSwitch') }}：</span>
+          <div  class="param_set" >
+            <div class="input_info">
+              <el-select v-model="t" :placeholder="$t('config.switchGit')">
+                <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
+              </el-select>
+            </div>
+            <div class="btn"><el-button size="mini" @click="gitPull(t)">{{ $t('config.switch') }}</el-button></div>
+          </div>
         </div>
 
         <div class="inbox">
-          <span style="width: 100px;">{{ $t('config.reboot1') }}：</span>
-          <el-button type="danger" @click="reboot">{{ $t('config.reboot') }}</el-button>
+          <span class="param_name">{{ $t('config.language') }}：</span>
+          <div  class="param_set">
+            <div class="input_info">
+              <el-select v-model="language" placeholder="Language" @change="changeLanguage">
+                <el-option :label="$t('config.chinese')" value="zh"></el-option>
+                <el-option :label="$t('config.english')" value="en"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
+
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.video') }}：</span>
+          <div  class="param_set" > <el-switch v-model="robot.video" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch> </div>
+        </div>
+
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.reboot1') }}：</span>
+          <div  class="param_set" >
+            <div class="input_info"><el-button size="mini" type="danger" @click="reboot">{{ $t('config.reboot') }}</el-button></div>
+          </div>
         </div>
 
       </div>
@@ -123,6 +167,21 @@
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新内容：</span>{{ gitInfo.msg }}</div>
       </div>
     </el-dialog>
+
+    <el-dialog :title="$t('prompt.prompt')" :visible.sync="tuliShow" width="80%" center :close-on-click-modal="false">
+      <div style="text-align: center; height: 430px;">
+        <img class="tuliImg" style="height: 100%; width: 100%;" :src="tuliPath" />
+      </div>
+    </el-dialog>
+
+    <el-dialog :title="$t('prompt.confirmUpdateType')" :visible.sync="offlineUpdateShow" width="80%" center :close-on-click-modal="false">
+      <div style="display: flex; justify-content: center;">
+        <el-button type="primary" @click="offlineUpdate('update_git')">{{ $t('prompt.gitUpdated') }}</el-button>
+        <el-button type="primary" @click="offlineUpdate('update_all')">{{ $t('prompt.allUpdated') }}</el-button>
+        <el-button type="primary" @click="offlineUpdate('update')">{{ $t('prompt.partiallyUpdated') }}</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -138,13 +197,22 @@ export default {
       HandEyeData: [1, 55],
       mirrorChecked: false,
       gitInfoDialogVisible: false,
+      tuliShow: false, 
+      tuliPath: '',
+      obstacleLength: 2.5,
+      obstacleEnable: 0,
+      offlineUpdateShow: false
     };
   },
   computed: {
     ...mapState("socket", ['battery', 'databaseUpdate', 'tag', 'gitFeedback', 'tags', 'gitInfo']),
+    
   },
   async created() {
     this.getRobot();
+    this.obstacleEnable = localStorage.getItem('obstacleEnable');
+    this.obstacleLength = localStorage.getItem('obstacleLength');
+    this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
   },
   watch: {
     battery(val, oldval) {
@@ -256,23 +324,32 @@ export default {
     },
 
     //U盘更新
-    offlineUpdate(){
-      this.$confirm(this.$t('prompt.confirmUpdateType'), this.$t('prompt.prompt'), {
-          confirmButtonText: this.$t('prompt.partiallyUpdated'),
-          cancelButtonText: this.$t('prompt.allUpdated'),
-          distinguishCancelAndClose: true,
-          type: 'info'
-        }).then(() => {
-           this.$store.dispatch('socket/offlineUpdate', 'update');
-        }).catch((val) => {
-          if (val === 'close') {
-            return;
-          } else {
-            this.$store.dispatch('socket/offlineUpdate', 'update_git');
-          }         
-        });
-
+    isOfflineUpdateShow(){
+      this.offlineUpdateShow = true;
     },
+
+    offlineUpdate(type){
+      this.$store.dispatch('socket/offlineUpdate', type);
+      this.offlineUpdateShow = false;
+    },
+
+    showTuli(name){
+      this.tuliPath = '';
+      this.tuliPath = require(`@/assets/img/diaglog/params/${name}.jpg`)
+      this.tuliShow = true;
+    },
+
+    updateObstacleEnable(){
+      localStorage.setItem('obstacleLength', this.obstacleLength);
+      this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
+      this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+    },
+
+    obstacleSet(val) {
+      // 1 enable, 0 disenable
+      localStorage.setItem('obstacleEnable', val);
+      this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
+    }
   },
 };
 </script>
@@ -322,7 +399,33 @@ export default {
     .inbox {
       display: flex;
       align-items: center;
+      width: 100%;
       margin: 10px 20px;
+
+      .param_name{
+        width: 140px;
+      }
+
+      .param_set{
+        display: flex;
+        width: calc(100% - 200px);
+        align-items:center;
+        
+        .input_info{
+          width: 70%;
+        }
+
+        .btn{
+          margin-left: 10px;
+        }
+      }
+      ::v-deep .el-input__inner{
+        height: 28px;
+        line-height: 28px;
+      }
+      ::v-deep .el-input__icon{
+        line-height: 28px;
+      }
     }
   }
 
