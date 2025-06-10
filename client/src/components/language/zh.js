@@ -173,7 +173,10 @@ const zh = {
     confirmUpdateType: '确认U盘插入后，请选择离线更新的类别：',
     partiallyUpdated: '部分更新',
     allUpdated: '全部更新',
-    gitUpdated: 'git库更新'
+    gitUpdated: 'git库更新',
+    obstacle: '设备避障，请检查周围环境',
+    battery: '电量低，请尽快给设备充电',
+    sendTask: '任务发送成功'
   },
   identify: {
     identifyOk: '识别成功。',

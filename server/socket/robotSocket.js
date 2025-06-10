@@ -518,6 +518,13 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       }
       socket.server.of('/XJ').emit("armDep", ip, pose);
     })
+
+    // 避障时 cmd_vel_stop 速度
+    robotArr[ip].obstacled((msg) => {
+      var { linear } = msg;
+      socket.server.of('/XJ').emit("obstacled", ip, linear.x);
+      socket.server.of('/XJ').emit("obstacled", ip, 1);
+    })
   });
 }
 

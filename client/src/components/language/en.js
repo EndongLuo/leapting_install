@@ -143,6 +143,7 @@ const en = {
     reboot1: 'Reboot Robot',
     gitInfo: 'Version Information',
     gitSwitch: 'Version Switching',
+    obstacle: 'Obstacle Setting'
   },
   connPrompt: {
     success: 'Connected to Install Robot.',
@@ -171,7 +172,9 @@ const en = {
     partiallyUpdated: 'Partially Updated',
     allUpdated: 'ALL Updated',
     gitUpdated: 'Git Updated',
-    obstacle: 'Obstacle Setting'
+    obstacle: 'Equipment obstacle avoidance. Please check the surrounding environment!',
+    battery: 'Battery is low, please charge the robot as soon as possible!',
+    sendTask: 'The task was sent successfully.'
   },
   identify: {
     identifyOk: 'Successfully Identified.',

@@ -229,17 +229,17 @@ export default {
       const buttonsHtml = val.btns
         .map(
           (b, i) =>
-            `<button class="custom-dialog-btn" data-val="${b.en}" style="margin: 10px;background-color: #fff; border:1px solid #409EFF; color: #409EFF; border-radius: 4px; padding: 5px 20px; font-size: 14px; cursor: pointer;">${this.lang === 'zh' ? b.cn : b.en
+            `<button class="custom-dialog-btn" data-val="${b.en}" style="margin: 0 10px;background-color: #fff; border:1px solid #409EFF; color: #409EFF; border-radius: 4px; padding: 5px 20px; font-size: 14px; cursor: pointer;">${this.lang === 'zh' ? b.cn : b.en
             }</button>`
         )
         .join('');
 
-      var tuli = `<span style=" color:#409EFF;text-decoration: underline; cursor:pointer" id="show-example-link">图例示教</span>`
+      var tuli = `<span style="color:#409EFF;text-decoration: underline; cursor:pointer" id="show-example-link">图例示教</span>`
 
 
       // 先显示通知
       this.notification = this.$notify({
-        title: this.$t('prompt.prompt'),
+        // title: this.$t('prompt.prompt'),
         dangerouslyUseHTMLString: true,
         duration: 0,
         offset: 80,
@@ -268,6 +268,7 @@ export default {
               // 关闭 notify
               this.notification.close();
               this.notification = null;
+              console.log('diaglogResponse', val);
             });
           });
 
@@ -358,5 +359,14 @@ export default {
   // mix-blend-mode: difference;
   // mix-blend-mode: darken;
   background-color: #fff;
+}
+
+::v-deep .el-dialog {
+  border-radius: 5px;
+  width: calc(60% - 10px);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0px !important;
 }
 </style>

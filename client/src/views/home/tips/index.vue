@@ -174,7 +174,7 @@ export default {
       var taskinfo = { id, taskId: task_id, task_state: 1, result: 1 }
       var res =  await setTaskInfo(taskinfo);
       console.log('res', res);
-      this.$message.success('任务发送成功');
+      this.$message.success(this.$t(`prompt.sendTask`));
     },
 
     /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */

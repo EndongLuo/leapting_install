@@ -114,7 +114,7 @@
                 <!-- {{ taskState.task_type == 0 ?
                   `${$t('install.fai')}` : taskState.task_type == 1 ? `${$t('install.sai')}` : taskState.task_type == 2
                     ? `${$t('install.detach')}` : taskState.task_type == 4 ? `${$t('config.handeye')}` : '' }} -->
-                  {{ $t(`install.${taskState.task_name}`) }}
+                  {{ !taskState.task_name ? '' : $t(`install.${taskState.task_name}`) }}
                 </div>
                 <div><span class="title">{{ $t('task.taskprogress') }}:</span>
                   {{ (taskState.done_num / taskState.task_num).toFixed(4) * 100 || 0 }}%
@@ -300,13 +300,12 @@ export default {
       isLoading: false,      // 防止并发请求
       chart: null,
       historySpeedData: [],
-      diagnosticsObj: {
-
-      },
+      diagnosticsObj: {},
+      obstacleNotifyObj: null
     };
   },
   computed: {
-    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep', 'newDiagnostics']),
+    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep', 'newDiagnostics', 'obstacled']),
   },
   mounted() {
     this.$nextTick(() => this.scrollToBottom());
@@ -330,7 +329,6 @@ export default {
     },
     armDep(val) {
       console.log('armDep', val);
-
       if (val) this.armNotification(val);
     },
     
@@ -359,6 +357,21 @@ export default {
       d.forEach( item => {
         this.diagnosticsObj[item.name] = item.name + ': ' + item.message + ' ' + item.hardware_id;
       })
+    },
+
+    obstacled(val){
+      var that = this;
+      if(val == 0 && that.obstacleNotifyObj == null){
+        that.obstacleNotifyObj = that.$notify({
+          message:`${this.$t('prompt.obstacle')}`,
+          type: 'warning',
+          offset: 80,
+          onClose() {
+            console.log('关闭避障');
+            that.obstacleNotifyObj = null;
+          }
+        });
+      }
     }
   },
   methods: {
@@ -1127,5 +1140,6 @@ export default {
       color: #d6d6d6;
     }
   }
+  
 }
 </style>

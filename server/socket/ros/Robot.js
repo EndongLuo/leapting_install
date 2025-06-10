@@ -50,7 +50,8 @@ class Robot extends EventEmitter {
     return new ROSLIB.Topic({
       ros: this.ros,
       name,
-      messageType
+      messageType,
+      queue_length: 1
     });
   }
 
@@ -255,7 +256,12 @@ class Robot extends EventEmitter {
     if (this.armDepSub) this.armDepSub();
     this.armDepSub = this.subscribeTopic('/res_plane3', 'geometry_msgs/PoseStamped', callback);
   }
-  
+
+  // 避障监听
+  obstacled(callback) {
+    if (this.obstacledSub) this.obstacledSub();
+    this.obstacledSub = this.subscribeTopic('/cmd_vel_stop', 'geometry_msgs/Twist', callback);
+  }
   // --------------------------------------------------------
 }
 

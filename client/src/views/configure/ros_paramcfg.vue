@@ -78,7 +78,9 @@
           <span class="param_name">{{ $t('config.obstacle') }}：</span>
           <div class="param_set">
             <div class="input_info"><el-input v-model="obstacleLength"  @blur="updateObstacleEnable"><template slot="append">m</template></el-input></div>
-            <div class="btn"><el-switch v-model="obstacleEnable" @change="obstacleSet" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>{{ obstacleEnable == 1  ? '已开' : '已禁' }}</div>
+            <div class="btn"><el-switch v-model="obstacleEnable" @change="obstacleSet" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>
+              <span style="font-size: 10px;">{{ obstacleEnable == 1  ? '已启用' : '已禁用' }}</span>
+            </div>
           </div>
         </div>
 
@@ -95,8 +97,10 @@
           <div class="param_set" >
             <div class="input_info" style="display: flex; align-items: center; justify-content:space-between;">
               <span><el-checkbox v-model="mirrorChecked">{{ $t('config.mirror')}}</el-checkbox></span>
-              <span style="width: 100px; margin-left: 10px;"><el-slider v-model="HandEyeData" range show-stops :max="55" :min="1"> </el-slider></span>
-              <el-button size="mini" @click="HandEye(true)"  style="margin-left: 10px;">{{ $t('config.autohandeye') }}</el-button>
+              <span style="width: 100px; margin-left: 10px;">
+                <el-slider v-model="HandEyeData" @change="checkHandEyeData" :max="55"></el-slider>
+              </span>
+              <el-button size="mini" @click="HandEye(true)" style="margin-left: 10px;">{{ $t('config.autohandeye') }}</el-button>
             </div>
             <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('autohandeye')">图例示教</el-button></div>
           </div>
@@ -118,7 +122,7 @@
 
         <div class="inbox">
           <span class="param_name">{{ $t('config.gitSwitch') }}：</span>
-          <div  class="param_set" >
+          <div class="param_set">
             <div class="input_info">
               <el-select v-model="t" :placeholder="$t('config.switchGit')">
                 <el-option v-for="item in tags" :key="item" :label=item :value=item></el-option>
@@ -130,7 +134,7 @@
 
         <div class="inbox">
           <span class="param_name">{{ $t('config.language') }}：</span>
-          <div  class="param_set">
+          <div class="param_set">
             <div class="input_info">
               <el-select v-model="language" placeholder="Language" @change="changeLanguage">
                 <el-option :label="$t('config.chinese')" value="zh"></el-option>
@@ -156,25 +160,27 @@
 
     </div>
 
-    <el-dialog :title="$t('config.gitInfo')" :visible.sync="gitInfoDialogVisible" width="60%" center
+    <!-- 版本详情 -->
+    <el-dialog :title="$t('config.gitInfo')" :visible.sync="gitInfoDialogVisible" center
       :close-on-click-modal="false">
       <div v-if="gitInfo" style="font-size: 18px;">
-        <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">{{ $t('config.git') }}：</span>{{ tag }}
-        </div>
-
+        <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">{{ $t('config.git') }}：</span>{{ tag }}</div>
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新时间：</span>{{ gitInfo.date }}</div>
         <!-- <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">HEAD码：</span>{{ gitInfo.head }}</div> -->
         <div style="margin: 10px;"><span style="font-weight: 700;margin: 10px;">更新内容：</span>{{ gitInfo.msg }}</div>
       </div>
     </el-dialog>
 
-    <el-dialog :title="$t('prompt.prompt')" :visible.sync="tuliShow" width="80%" center :close-on-click-modal="false">
-      <div style="text-align: center; height: 430px;">
-        <img class="tuliImg" style="height: 100%; width: 100%;" :src="tuliPath" />
+    <!-- 图例示教展示 -->
+    <el-dialog :visible.sync="tuliShow" height="60%" center :close-on-click-modal="false">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <span style="white-space: pre-wrap; margin-bottom: 10px; width: 60%;">{{ tuliMsg }}</span>
+        <img class="tuliImg" style="height: 60%; width: 60%; border-radius: 5px;" :src="tuliPath" />
       </div>
     </el-dialog>
 
-    <el-dialog :title="$t('prompt.confirmUpdateType')" :visible.sync="offlineUpdateShow" width="80%" center :close-on-click-modal="false">
+    <!-- 离线更新 -->
+    <el-dialog :title="$t('prompt.confirmUpdateType')" :visible.sync="offlineUpdateShow" center :close-on-click-modal="false">
       <div style="display: flex; justify-content: center;">
         <el-button type="primary" @click="offlineUpdate('update_git')">{{ $t('prompt.gitUpdated') }}</el-button>
         <el-button type="primary" @click="offlineUpdate('update_all')">{{ $t('prompt.allUpdated') }}</el-button>
@@ -194,14 +200,23 @@ export default {
       language: this.$i18n.locale,
       robot: {},
       t: '',
-      HandEyeData: [1, 55],
+      HandEyeData: 55,
       mirrorChecked: false,
       gitInfoDialogVisible: false,
       tuliShow: false, 
       tuliPath: '',
       obstacleLength: 2.5,
-      obstacleEnable: 0,
-      offlineUpdateShow: false
+      obstacleEnable: 1,
+      offlineUpdateShow: false,
+      tuliMsg: '',
+      tuliMsgList: {
+        'autohandeye': `自动标定：二维码摆放位置参考图例`,
+        'line_gap': `直线距离：两块相邻组件电池片边缘的间距 \n测量需求：需要组件固定好螺丝，且至少测量10组以上数据求平均值`,
+        'cell_length': '电池片宽度：电池片边沿白线与白线之间的长度\n测量要求：至少测量10片不同位置的电池片宽度取平均值',
+        'pvmedge_hole_gap': '孔边间距：组件侧边沿到孔中心的间距\n',
+        'hole_gap': '孔间距：檩条水平放置时，水平方向两个孔的中心间距\n测量要求：测量右侧孔的右边沿到左侧孔的右边沿之间的长度',
+        'cuplength': '吸盘长度：弹簧杆+吸盘的实际长度\n备注：测量吸盘长度数值写入上位机后参考实际安装组件时吸盘的抓取位，如果抓取组件时下压过多可对应减少吸盘长度数值，如果抓取组件时未抓取到组件时可对应增加吸盘长度数值',
+      }
     };
   },
   computed: {
@@ -217,13 +232,10 @@ export default {
   watch: {
     battery(val, oldval) {
       // console.log(val, oldval, this.robot.reminder);
-
       if (val < this.robot.reminder) {
         console.log('电量低');
-
         this.$notify({
-          title: 'Warning',
-          message: 'Battery is low, please charge the robot as soon as possible!',
+          message: `${this.$t('prompt.battery')}`,
           type: 'warning'
         });
       }
@@ -291,8 +303,8 @@ export default {
     HandEye(b) {
       var data = {
         if_auto_all: b,
-        start_site: this.HandEyeData[0],
-        end_site: this.HandEyeData[1],
+        start_site: 1,
+        end_site: this.HandEyeData,
         mirror: this.mirrorChecked
       }
       // this.$store.dispatch("socket/HandEye", data);
@@ -328,27 +340,40 @@ export default {
       this.offlineUpdateShow = true;
     },
 
+    // 离线更新
     offlineUpdate(type){
       this.$store.dispatch('socket/offlineUpdate', type);
       this.offlineUpdateShow = false;
     },
 
+    // 展示图例
     showTuli(name){
       this.tuliPath = '';
-      this.tuliPath = require(`@/assets/img/diaglog/params/${name}.jpg`)
+      this.tuliPath = require(`@/assets/img/diaglog/params/${name}.jpg`);
+      this.tuliMsg = this.tuliMsgList[name];
       this.tuliShow = true;
     },
 
-    updateObstacleEnable(){
+    // 更新避障开关
+    updateObstacleEnable() {
       localStorage.setItem('obstacleLength', this.obstacleLength);
       this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
       this.$message.success(`${this.$t('prompt.updateSuccess')}`);
     },
 
+    // 避障距离更新
     obstacleSet(val) {
       // 1 enable, 0 disenable
       localStorage.setItem('obstacleEnable', val);
       this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
+    },
+
+    //检测标定数值
+    checkHandEyeData(val){
+      if(val < 25){
+        this.HandEyeData = 25;
+        this.$message.error(`${this.$t('数值必须大于25')}`);
+      }
     }
   },
 };
@@ -441,5 +466,14 @@ export default {
   justify-content: center;
   margin-top: 15px;
   margin-left: 0 !important;
+}
+
+::v-deep .el-dialog {
+  border-radius: 5px;
+  width: calc(60% - 10px);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0px !important;
 }
 </style>

@@ -45,13 +45,13 @@ const translationMaps = new Map([
   ['battery_current', '电池总电流'],
   ['hydraulic_voltage', '液压输出电压'],
   ['chassis_voltage', '底盘接触器电压'],
-  ['inverter_voltage', ' 逆变输入电压'],
+  ['inverter_voltage', '逆变输入电压'],
   ['inverter_current_a', '逆变器A相电流'],
-  ['inverter_voltage_a', ' 逆变器A相电压'],
+  ['inverter_voltage_a', '逆变器A相电压'],
   ['inverter_current_b', '逆变器B相电流'],
-  ['inverter_voltage_b', ' 逆变器B相电压'],
+  ['inverter_voltage_b', '逆变器B相电压'],
   ['inverter_current_c', '逆变器C相电流'],
-  ['inverter_voltage_c', ' 逆变器C相电压'],
+  ['inverter_voltage_c', '逆变器C相电压'],
   ['hydraulic_status', '拖车供电'],
   ['chassis_status', '底盘供电'],
   ['inverter_status', '逆变输入'],
@@ -270,6 +270,11 @@ const actions = {
       Vue.set(state, 'armDep', d);
     })
 
+    // 避障时 cmd_vel_stop 为0
+    socket.on('obstacled', (ip, d) => {
+      Vue.set(state, 'obstacled', d);
+    })
+
     return () => clearInterval(timer);
   },
 
@@ -368,6 +373,11 @@ const actions = {
     console.log('state armEstop', data);
     state.socket.emit('armEstop', { ip: state.ips[0], data });
   },
+
+  //obstacleUpdate
+  obstacleUpdate({ commit, state }, data){
+    state.socket.emit('obstacleUpdate', { ip: state.ips[0], data });
+  }
 };
 
 export default {
