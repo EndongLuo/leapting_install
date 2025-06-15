@@ -82,7 +82,8 @@ class RobotModel {
       hole_gap: data.hole_gap || 400,
       pvmedge_hole_gap: data.pvmedge_hole_gap || 25,
       uninstall_z: data.uninstall_z || 0,
-      robotname: data.robotname
+      fencing_enable: data.fencing_enable || 0,
+      fencing_distance: data.fencing_distance || 2.5
     }, {
       where: { id: data.id }
     });

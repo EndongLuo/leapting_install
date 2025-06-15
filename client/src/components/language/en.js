@@ -143,7 +143,8 @@ const en = {
     reboot1: 'Reboot Robot',
     gitInfo: 'Version Information',
     gitSwitch: 'Version Switching',
-    obstacle: 'Obstacle Setting'
+    obstacle: 'Obstacle Setting',
+    fencing: 'Electronic Fencing'
   },
   connPrompt: {
     success: 'Connected to Install Robot.',
@@ -213,7 +214,9 @@ const en = {
     Restartimmediately: 'Restartimmediately',
     Restartlater: 'Restartlater',
     NOPACKAGE: 'No Find Update Package',
-    NOUSB: 'No Find USB Device'
+    NOUSB: 'No Find USB Device',
+    electronic_fencing: 'There are obstacles near the electronic fence. Please remove the obstacles and restart the teaching device program.',
+    pressure_threshold: 'The suction cup pressure has dropped below the set threshold, and there is a risk of the component falling. Please pay attention to safety.'
   },
   diagnostics: {
     'battery_voltage': 'battery_voltage',

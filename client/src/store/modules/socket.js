@@ -376,7 +376,8 @@ const actions = {
 
   //obstacleUpdate
   obstacleUpdate({ commit, state }, data){
-    state.socket.emit('obstacleUpdate', { ip: state.ips[0], data });
+    console.log(data);
+    state.socket.emit('obstacleUpdate', state.ips[0], data);
   }
 };
 

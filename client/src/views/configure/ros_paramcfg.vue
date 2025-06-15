@@ -77,10 +77,30 @@
         <div class="inbox">
           <span class="param_name">{{ $t('config.obstacle') }}：</span>
           <div class="param_set">
-            <div class="input_info"><el-input v-model="obstacleLength"  @blur="updateObstacleEnable"><template slot="append">m</template></el-input></div>
-            <div class="btn"><el-switch v-model="obstacleEnable" @change="obstacleSet" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>
+            <div class="input_info"><el-input v-model="obstacleLength"  @blur="obstacleSet('obstacle')"><template slot="append">m</template></el-input></div>
+            <div class="btn"><el-switch v-model="obstacleEnable" @change="obstacleSet('obstacle')" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>
               <span style="font-size: 10px;">{{ obstacleEnable == 1  ? '已启用' : '已禁用' }}</span>
             </div>
+          </div>
+        </div>
+
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.fencing') }}：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="robot.fencing_distance"  @blur="upDataPVM"><template slot="append">m</template></el-input></div>
+            <div class="btn"><el-switch v-model="robot.fencing_enable" @change="upDataPVM" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>
+              <span style="font-size: 10px;">{{ robot.fencing_enable == 1  ? '已启用' : '已禁用' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inbox">
+          <span class="param_name" style="color: #949494; font-size: 14px;">{{ $t('config.fencing') }}：</span>
+          <div  class="param_set" >
+            <div class="input_info" style="display: flex; align-items: center; justify-content:space-between;">
+              <span v-if="tag" style="color: #949494; font-size: 14px;"> flexbe失效时，可使用此开关,默认距离2.5m </span>
+            </div>
+            <div class="btn"><el-switch v-model="fencingEnable" @change="obstacleSet('fencing')" active-value="1" inactive-value="0"></el-switch></div>
           </div>
         </div>
 
@@ -207,6 +227,7 @@ export default {
       tuliPath: '',
       obstacleLength: 2.5,
       obstacleEnable: 1,
+      fencingEnable: 0,
       offlineUpdateShow: false,
       tuliMsg: '',
       tuliMsgList: {
@@ -354,18 +375,30 @@ export default {
       this.tuliShow = true;
     },
 
-    // 更新避障开关
-    updateObstacleEnable() {
-      localStorage.setItem('obstacleLength', this.obstacleLength);
-      this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
-      this.$message.success(`${this.$t('prompt.updateSuccess')}`);
-    },
-
-    // 避障距离更新
-    obstacleSet(val) {
-      // 1 enable, 0 disenable
-      localStorage.setItem('obstacleEnable', val);
-      this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
+    // 避障设置更新
+    obstacleSet(type) {
+      var msg = {
+        seq: 0,
+        frame_id: {
+          enable: false,
+          distance: 2.5
+        }
+      }
+      if(type == 'obstacle'){
+        msg.seq = 98;
+        msg.frame_id.enable = this.obstacleEnable == 1 ? true : false;
+        msg.frame_id.distance = Number(this.obstacleLength);
+        localStorage.setItem('obstacleEnable', this.obstacleEnable);
+        localStorage.setItem('obstacleLength', this.obstacleLength);
+        this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+      }else{
+        msg.seq = 99;
+        msg.frame_id.enable = this.fencingEnable == 1 ? true : false;
+        msg.frame_id.distance = 2.5;
+        if(this.fencingEnable == 1) this.$message.success(`上位机发送启用电子围栏信号`);
+        else this.$message.success(`上位机发送禁用电子围栏信号`);
+      }
+      this.$store.dispatch('socket/obstacleUpdate', msg);
     },
 
     //检测标定数值

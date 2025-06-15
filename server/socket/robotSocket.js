@@ -270,8 +270,8 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
   socket.on('obstacleUpdate', (ip, data) => {
     try{
       robotArr[ip].obstacleUpdate({
-        seq: 98,
-        frame_id: JSON.stringify(data)
+        seq: data.seq,
+        frame_id: JSON.stringify(data.frame_id)
       });
       logger.info(`obstacleUpdate ${ip} ${data}`);
     }catch (error) {

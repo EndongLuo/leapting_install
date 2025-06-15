@@ -100,7 +100,7 @@
       <div class="row">
         <!-- 任务状态 -->
         <!-- <div class="win" v-if="taskState.id"> -->
-        <div class="win">
+        <div class="win" v-if="isShow != 3 && isShow != 4">
           <div class="totitle">
             <span>{{ $t('task.taskinfo') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -157,7 +157,7 @@
         </div>
 
         <!-- flexbe日志 -->
-        <div class="win" v-if="flexbeLog">
+        <div class="win" v-if="flexbeLog && (isShow != 3 && isShow != 4)">
           <div class="totitle">
             <span>{{ $t('task.tasklog') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -531,7 +531,7 @@ export default {
         var res = await setTaskInfo(taskinfo);
         console.log('res', res);
         this.$message.success('任务发送成功');
-        this.isShow = 4;
+        this.isShow = 1;
         this.toolbar1 = false;
         this.setLogInfo('info', '任务下发', modeMap[num]);
       }).catch((error) => {
@@ -572,7 +572,7 @@ export default {
       // var res =  await setTaskInfo(taskinfo);
       // console.log('res', res);
       this.$message.success('任务发送成功');
-      this.isShow = 4;
+      this.isShow = 1;
       this.toolbar1 = false;
       this.setLogInfo('info', '任务下发', task_name);
     },

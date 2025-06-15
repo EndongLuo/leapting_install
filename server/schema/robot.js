@@ -21,6 +21,8 @@ module.exports = function (sequelize, DataTypes) {
     hole_gap: { type: INTEGER, defaultValue: 400 },
     pvmedge_hole_gap: { type: FLOAT, defaultValue: 25 },
     uninstall_z: { type: INTEGER, defaultValue: 350 },
+    fencing_enable: { type: STRING, defaultValue: 0 },
+    fencing_distance: { type: FLOAT, defaultValue: 2.5 },
   }, {
     tableName: 'robot',
     indexes: [

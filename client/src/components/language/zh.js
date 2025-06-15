@@ -145,7 +145,8 @@ const zh = {
     reboot1: '重启系统',
     gitInfo: '版本信息',
     gitSwitch: '版本切换',
-    obstacle: '避障间距'
+    obstacle: '避障间距',
+    fencing: '电子围栏'
   },
   connPrompt: {
     success: '安装机器人已连接。',
@@ -215,7 +216,9 @@ const zh = {
     Restartimmediately: '立即重启',
     Restartlater: '稍后重启',
     NOPACKAGE: '未检测到更新包',
-    NOUSB: '未检测到U盘'
+    NOUSB: '未检测到U盘',
+    electronic_fencing: '电子围栏范围内有障碍物，请移除障碍物并且重新启动示教器程序',
+    pressure_threshold: '吸盘压力已低于设定阈值，组件有掉落风险。请注意安全'
   },
   diagnostics: {
     'battery_voltage': '电池电压',
