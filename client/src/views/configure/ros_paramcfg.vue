@@ -98,7 +98,7 @@
           <span class="param_name" style="color: #949494; font-size: 14px;">{{ $t('config.fencing') }}：</span>
           <div  class="param_set" >
             <div class="input_info" style="display: flex; align-items: center; justify-content:space-between;">
-              <span v-if="tag" style="color: #949494; font-size: 14px;"> flexbe失效时，可使用此开关,默认距离2.5m </span>
+              <span style="color: #949494; font-size: 14px;">向/trig话题发送信号</span>
             </div>
             <div class="btn"><el-switch v-model="fencingEnable" @change="obstacleSet('fencing')" active-value="1" inactive-value="0"></el-switch></div>
           </div>
@@ -394,7 +394,7 @@ export default {
       }else{
         msg.seq = 99;
         msg.frame_id.enable = this.fencingEnable == 1 ? true : false;
-        msg.frame_id.distance = 2.5;
+        msg.frame_id.distance = this.robot.fencing_distance;
         if(this.fencingEnable == 1) this.$message.success(`上位机发送启用电子围栏信号`);
         else this.$message.success(`上位机发送禁用电子围栏信号`);
       }
