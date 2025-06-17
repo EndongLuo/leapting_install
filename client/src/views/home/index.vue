@@ -543,6 +543,17 @@ export default {
       var { id, task_name, task_type, task_num } = this.taskState;
       var taskmsg = { id, task_status: num, task_name, task_type, task_num };
       this.$store.dispatch('socket/sendTask', taskmsg);
+      if(num == 0){
+        var msg = {
+          seq: 99,
+          frame_id: {
+            enable: false,
+            distance: 0
+          }
+        }
+        this.$store.dispatch('socket/obstacleUpdate', msg);
+        this.$message.success('关闭电子围栏');
+      }
       this.setLogInfo('warning', '任务操作', 'task_status:' + num == 0 ? '停止任务' : num == 1 ? '继续任务' : '暂停任务');
     },
     // 操作行为记录
