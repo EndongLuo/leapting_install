@@ -42,3 +42,12 @@ export const setLog = data => request.post(`/robot/log`, data);
  * @returns {Object}
  */
 export const getLog = data => request.get(`/robot/log`, data);
+
+/**
+ * 更新ROS Param
+ * @param {*} data 
+ * @returns 
+ */
+export const updateRobotParam = data => request.put(`/robot/RobotParam`, data);
+
+export const getRobotParam = () => request.get(`/robot/RobotParam`);

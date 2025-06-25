@@ -21,6 +21,10 @@ class RobotModel {
   }
 
   // 获取所有设备
+  /**
+   * 获取所有设备
+   * @returns table data
+   */
   static async getRobotAll() {
     return await Robot.findAll({
       where: { status: 1 },

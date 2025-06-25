@@ -1,8 +1,8 @@
 module.exports = function (sequelize, DataTypes) {
   const { STRING, INTEGER, DATE, TEXT } = DataTypes;
   return sequelize.define('task', {
-    id: { type: INTEGER, primaryKey: true, autoIncrement: true, field: "id", unique: true, },
-    task_name: { type: STRING, allowNull: false, field: "task_name" },
+    id: { type: INTEGER, primaryKey: true, field: "id" },
+    task_name: { type: STRING, allowNull: false, field: "task_name", unique: true },
     nodes: { type: TEXT, },
     done_nodes: { type: TEXT, },
     founder: { type: STRING, },

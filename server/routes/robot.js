@@ -1,5 +1,6 @@
 const router = require('koa-router')()
 const RobotController = require('../controllers/robot');
+const RobotParamController = require('../controllers/robotParam');
 const MapTransformer = require('../utils/mapOffset');
 
 router.prefix('/api/robot')  // 路由器前缀
@@ -99,5 +100,9 @@ router.post('/log', RobotController.setLog);
 
 // getSensorLog
 router.post('/sensorlog', RobotController.getSensorLog);
+
+router.put('/RobotParam', RobotParamController.updateRobotParam);
+router.get('/RobotParam', RobotParamController.getRobotParam);
+
 
 module.exports = router;

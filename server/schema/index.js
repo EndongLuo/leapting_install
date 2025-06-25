@@ -18,7 +18,7 @@ const FlexbeLog = require('./flexbe_log')(sequelize, DataTypes);
 const SensorLog = require('./sensor_log')(sequelize, DataTypes);
 const PVMTable = require('./pvm_table')(sequelize, DataTypes);
 const ErrorData = require('./error_data')(sequelize, DataTypes);
-
+const RobotParam = require('./robot_param')(sequelize, DataTypes);
 
 //建立模型之间关联关系
 
@@ -69,5 +69,5 @@ sequelize.sync({ alter: true });
 // Robot.sync({ alter: true }) 
 
 module.exports = {
-  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog, PVMTable, ErrorData
+  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog, PVMTable, ErrorData, RobotParam
 }

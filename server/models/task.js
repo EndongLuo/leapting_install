@@ -572,5 +572,22 @@ class TaskModel {
       order: [['id', 'ASC']],
     });
   }
+  
+  /**
+   * Task 初始化检查数据是否存在，不存在则自动添加
+   * @param {*} data [{},{}]
+   * @returns 
+   */
+  static async init(data) {
+    return await Task.bulkCreate(data, {
+        ignoreDuplicates: true, // 关键选项：忽略重复项
+    })
+    .then(() => {
+      return 'task_table 初始化数据检测完成';
+    })
+    .catch((error) => {
+      return 'task_table 初始化数据检测异常' + error;
+    });
+  }
 }
 module.exports = TaskModel;

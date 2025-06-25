@@ -147,6 +147,12 @@ class Robot extends EventEmitter {
     console.log('obstacleUpdate', data);
     this.publish('/trig', 'std_msgs/Header', data);
   }
+  
+  //ros param 数据库更新通知ROS节点
+  robotParamUpdate(data) {
+    console.log('robotParamUpdate', data);
+    this.publish('/db_op', 'std_msgs/Header', data);
+  }
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
   // robot_state
@@ -262,6 +268,15 @@ class Robot extends EventEmitter {
     if (this.obstacledSub) this.obstacledSub();
     this.obstacledSub = this.subscribeTopic('/cmd_vel_stop', 'geometry_msgs/Twist', callback);
   }
+
+  electFenceEnable(){
+    var open_fence_bool = new ROSLIB.Param({
+      ros : this.ros,
+      name : '/mid360_elect_fence/open_fence_bool'
+    });
+    return open_fence_bool;
+  }
+
   // --------------------------------------------------------
 }
 

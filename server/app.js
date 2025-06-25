@@ -90,6 +90,9 @@ app.use(jwt({
 /*自定义中间件*/
 const test = require('./middlewares/test')
 app.use(test())
+
+const tableDataInit = require('./middlewares/tableDataInit');
+app.use(tableDataInit())
 /**************/
 const { accessLogger, logger } = require('./utils/logger');
 app.use(accessLogger())
@@ -119,6 +122,7 @@ app.use(koaSwagger({
     url: '/swagger.json', // example path to json
   },
 }))
+
 
 // error-handling
 app.on('error', (err, ctx) => {

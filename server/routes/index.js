@@ -1,5 +1,5 @@
 
-const Router = require('koa-router')
+const Router = require('koa-router');
 
 // 创建实例
 const router = new Router()
@@ -28,5 +28,4 @@ router.use(upload.routes())
 router.use(task.routes())
 router.use(setting.routes())
 router.use(robot.routes())
-
 module.exports = router

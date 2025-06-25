@@ -6,41 +6,56 @@
       <h1 class="title">{{ $t('config.pvmParam') }}</h1>
       <div class="outbox">
         <div class="inbox">
-          <span class="param_name">{{ $t('config.pvmsize') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.pvmsize') }}：</span>
           <div class="param_set">
-            <div> <el-input  v-model="robot.pvmheight" @blur="upDataPVM"></el-input></div>
-            <div> <el-input  v-model="robot.pvmwidth" @blur="upDataPVM"></el-input></div>
-            <div> <el-input  v-model="robot.pvm_thickness" @blur="upDataPVM"></el-input></div>
+            <div class="input_info"> <el-input  v-model="robotParam['/robot_state/pvm_length']" @blur="updateRobotParam('/robot_state/pvm_length', 2278)"><template slot="append">mm</template></el-input></div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">图例示教</el-button></div>
           </div>
         </div>
         <div class="inbox">
-          <span class="param_name">{{ $t('config.line_gap') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.pvmsize') }}：</span>
           <div class="param_set">
-            <div class="input_info"><el-input v-model="robot.line_gap" @blur="upDataPVM"></el-input></div>
+            <div class="input_info"> <el-input  v-model="robotParam['/robot_state/pvm_width']" @blur="updateRobotParam('/robot_state/pvm_width', 1134)"><template slot="append">mm</template></el-input></div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">图例示教</el-button></div>
+          </div>
+        </div>
+        
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.pvmsize') }}：</span>
+          <div class="param_set">
+            <div class="input_info"> <el-input  v-model="robotParam['/robot_state/pvm_thickness']" @blur="updateRobotParam('/robot_state/pvm_thickness', 35)"><template slot="append">mm</template></el-input></div>
+            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">图例示教</el-button></div>
+          </div>
+        </div>
+        
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.line_gap') }}：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="robotParam['/line_gap']" @blur="updateRobotParam('/line_gap', 50)"><template slot="append">mm</template></el-input></div>
             <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">图例示教</el-button></div>
           </div>
         </div>
 
         <div class="inbox">
-          <span class="param_name">{{ $t('config.cell_length') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.cell_length') }}：</span>
           <div class="param_set">
-            <div class="input_info"> <el-input v-model="robot.cell_length" @blur="upDataPVM"></el-input></div> 
+            <div class="input_info"> <el-input v-model="robotParam['/cell_length']" @blur="updateRobotParam('/cell_length', 92.5)"><template slot="append">mm</template></el-input></div> 
             <div class="btn"> <el-button plain size="mini" type="primary" @click="showTuli('cell_length')">图例示教</el-button></div>
           </div>
         </div>
 
         <div class="inbox">
-          <span class="param_name">{{ $t('config.pvmedge_hole_gap') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.pvmedge_hole_gap') }}：</span>
           <div class="param_set">
-            <div class="input_info"> <el-input v-model="robot.pvmedge_hole_gap" @blur="upDataPVM"></el-input></div>
+            <div class="input_info"> <el-input v-model="robotParam['/pvmedge_hole_gap']" @blur="updateRobotParam('/pvmedge_hole_gap', 25)"><template slot="append">mm</template></el-input></div>
             <div class="btn"> <el-button plain size="mini" type="primary" @click="showTuli('pvmedge_hole_gap')">图例示教</el-button></div>
           </div>
         </div>
 
         <div class="inbox">
-          <span class="param_name">{{ $t('config.hole_gap') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.hole_gap') }}：</span>
           <div  class="param_set" >
-            <div class="input_info"><el-input v-model="robot.hole_gap" @blur="upDataPVM"></el-input></div>
+            <div class="input_info"><el-input v-model="robotParam['/hole_gap']" @blur="updateRobotParam('/hole_gap', 400)"><template slot="append">mm</template></el-input></div>
             <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('hole_gap')">图例示教</el-button></div>
           </div>
         </div>
@@ -50,17 +65,17 @@
       <h1 class="title">{{ $t('config.CalibrationParam') }}</h1>
       <div class="outbox">
         <div class="inbox">
-          <span class="param_name">{{ $t('config.cuplength') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.cuplength') }}：</span>
           <div class="param_set">
-            <div class="input_info"><el-input v-model="robot.cuplength" @blur="upDataPVM"></el-input></div>
+            <div class="input_info"><el-input v-model="robotParam['/cup_length']" @blur="updateRobotParam('/cup_length', 80)"><template slot="append">mm</template></el-input></div>
             <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('cuplength')">图例示教</el-button></div>
           </div>
         </div>
 
         <div class="inbox">
-          <span class="param_name">{{ $t('config.uninstall_z') }}(mm)：</span>
+          <span class="param_name">{{ $t('config.uninstall_z') }}：</span>
           <div class="param_set">
-            <div class="input_info"><el-input v-model="robot.uninstall_z" @blur="upDataPVM"></el-input> </div>
+            <div class="input_info"><el-input v-model="robotParam['/uninstall_z']" @blur="updateRobotParam('/uninstall_z', 350)"><template slot="append">mm</template></el-input> </div>
             <div class="btn"><el-button plain size="mini" type="primary">图例示教</el-button></div>
           </div>
         </div>
@@ -77,9 +92,9 @@
         <div class="inbox">
           <span class="param_name">{{ $t('config.obstacle') }}：</span>
           <div class="param_set">
-            <div class="input_info"><el-input v-model="obstacleLength"  @blur="obstacleSet('obstacle')"><template slot="append">m</template></el-input></div>
-            <div class="btn"><el-switch v-model="obstacleEnable" @change="obstacleSet('obstacle')" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>
-              <span style="font-size: 10px;">{{ obstacleEnable == 1  ? '已启用' : '已禁用' }}</span>
+            <div class="input_info"><el-input v-model="robotParam['/trajectory_path/stop_distance']"  @blur="updateRobotParam('/trajectory_path/stop_distance', 2.4)"><template slot="append">m</template></el-input></div>
+            <div class="btn"><el-switch v-model="robotParam['/trajectory_path/enable']" @change="updateRobotParam('/trajectory_path/enable', 0)" active-value="true" inactive-value="false" style="margin-right: 10px;"></el-switch>
+              <span style="font-size: 10px;">{{ robotParam['/trajectory_path/enable'] ? '已启用' : '已禁用' }}</span>
             </div>
           </div>
         </div>
@@ -87,9 +102,9 @@
         <div class="inbox">
           <span class="param_name">{{ $t('config.fencing') }}：</span>
           <div class="param_set">
-            <div class="input_info"><el-input v-model="robot.fencing_distance"  @blur="upDataPVM"><template slot="append">m</template></el-input></div>
-            <div class="btn"><el-switch v-model="robot.fencing_enable" @change="upDataPVM" active-value="1" inactive-value="0" style="margin-right: 10px;"></el-switch>
-              <span style="font-size: 10px;">{{ robot.fencing_enable == 1  ? '已启用' : '已禁用' }}</span>
+            <div class="input_info"><el-input v-model="robotParam['/mid360_elect_fence/detect_dis']"  @blur="updateRobotParam('/mid360_elect_fence/detect_dis', 0)"><template slot="append">m</template></el-input></div>
+            <div class="btn"><el-switch v-model="robotParam['/mid360_elect_fence/open_fence_bool']" @change="updateRobotParam('/mid360_elect_fence/open_fence_bool', 2.0)" active-value="true" inactive-value="false" style="margin-right: 10px;"></el-switch>
+              <span style="font-size: 10px;">{{ robotParam['/mid360_elect_fence/open_fence_bool'] ? '已启用' : '已禁用' }}</span>
             </div>
           </div>
         </div>
@@ -98,17 +113,17 @@
           <span class="param_name" style="color: #949494; font-size: 14px;">{{ $t('config.fencing') }}：</span>
           <div  class="param_set" >
             <div class="input_info" style="display: flex; align-items: center; justify-content:space-between;">
-              <span style="color: #949494; font-size: 14px;">向/trig话题发送信号</span>
+              <span style="color: #949494; font-size: 14px;">向/trig话题发送信号{{ electFenceEnable }}</span>
             </div>
-            <div class="btn"><el-switch v-model="fencingEnable" @change="obstacleSet('fencing')" active-value="1" inactive-value="0"></el-switch></div>
+            <div class="btn"><el-switch v-model="fencingEnable"  @change="obstacleSet('fencing')" active-value="true" inactive-value="false"></el-switch></div>
           </div>
         </div>
 
         <div class="inbox">
           <span class="param_name">{{ $t('config.reminder') }}：</span>
           <div  class="param_set" >
-            <div class="input_info"><el-slider v-model="robot.reminder" @change="upDataPVM" :step="5"></el-slider></div>
-            <div style="margin-left: 10px;">{{ robot.reminder }}%</div>
+            <div class="input_info"><el-slider v-model="robotParam['low_battery']" @change="updateRobotParam('low_battery', 20)" :step="5"></el-slider></div>
+            <div style="margin-left: 10px;">{{ robotParam['low_battery'] }}%</div>
           </div>
         </div>
 
@@ -166,7 +181,7 @@
 
         <div class="inbox">
           <span class="param_name">{{ $t('config.video') }}：</span>
-          <div  class="param_set" > <el-switch v-model="robot.video" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch> </div>
+          <div  class="param_set" > <el-switch v-model="robotParam['video_show']" @change="updateRobotParam('video_show', true)" active-value="true" inactive-value="false"> </el-switch> </div>
         </div>
 
         <div class="inbox">
@@ -213,12 +228,13 @@
 
 <script>
 import { mapState } from "vuex";
-import { getRobot, updateRobot } from '@/api';
+import { getRobot, updateRobot, updateRobotParam, getRobotParam } from '@/api';
 export default {
   data() {
     return {
       language: this.$i18n.locale,
       robot: {},
+      robotParam: {},
       t: '',
       HandEyeData: 55,
       mirrorChecked: false,
@@ -227,7 +243,7 @@ export default {
       tuliPath: '',
       obstacleLength: 2.5,
       obstacleEnable: 1,
-      fencingEnable: 0,
+      fencingEnable: false,
       offlineUpdateShow: false,
       tuliMsg: '',
       tuliMsgList: {
@@ -242,13 +258,14 @@ export default {
   },
   computed: {
     ...mapState("socket", ['battery', 'databaseUpdate', 'tag', 'gitFeedback', 'tags', 'gitInfo']),
-    
+    electFenceEnable: {
+      get() {
+        return this.$store.state.electFenceEnable
+      }
+    }
   },
   async created() {
-    this.getRobot();
-    this.obstacleEnable = localStorage.getItem('obstacleEnable');
-    this.obstacleLength = localStorage.getItem('obstacleLength');
-    this.$store.dispatch('socket/obstacleUpdate', {enable: this.obstacleEnable == 1 ? true : false , distance: Number(this.obstacleLength)});
+    this.getRobotParam();
   },
   watch: {
     battery(val, oldval) {
@@ -273,6 +290,12 @@ export default {
       // console.log(val, oldval);
       if (val) this.getRobot();
       this.$store.dispatch("socket/statusUpdate");
+    },
+
+    electFenceEnable(val){
+      this.fencingEnable = val;
+      
+      console.log('electFenceEnable', this.fencingEnable);
     }
   },
   methods: {
@@ -296,23 +319,48 @@ export default {
         });
       });
     },
-    // 获取robot参数
-    async getRobot() {
-      var res = await getRobot();
-      this.robot = res.data[0];
-      this.$set(this.robot, 'video', String(this.robot.video));
-      this.$set(this.robot, 'status', String(this.robot.status));
-      localStorage.setItem('video', this.robot.video);
+    // // 获取robot参数
+    // async getRobot() {
+    //   var res = await getRobot();
+    //   this.robot = res.data[0];
+    //   this.$set(this.robot, 'video', String(this.robot.video));
+    //   this.$set(this.robot, 'status', String(this.robot.status));
+    //   localStorage.setItem('video', this.robot.video);
+    // },
+
+    async getRobotParam() {
+      var params = {};
+      var res = await getRobotParam();
+      if(Array.isArray(res.data)){
+        res.data.forEach(item => {
+          const name = item.param_name;
+          // .split('/').pop();
+          if(name == 'low_battery'){
+            item.param_value = Number(item.param_value);
+          }
+          params[name] = item.param_value;
+        });
+        this.robotParam = params;
+      }
+      console.log(res.msg, this.robotParam);
     },
 
-    // 更新robot参数
-    async upDataPVM() {
-      var res = await updateRobot(this.robot);
-      localStorage.setItem('video', this.robot.video);
-
-      if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
-      else this.$message.error(`${this.$t('prompt.updateFailed')}`);
+    async updateRobotParam(param_name, default_value) {
+      const res = await updateRobotParam({param_name: param_name, param_value: this.robotParam[param_name], default_value: default_value});
+      if (res.code == 200) {
+        this.$store.dispatch('socket/robotParamUpdate', {seq: 11});
+        this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+      } 
     },
+
+    // // 更新robot参数
+    // async upDataPVM() {
+    //   var res = await updateRobot(this.robot);
+    //   localStorage.setItem('video', this.robot.video);
+
+    //   if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+    //   else this.$message.error(`${this.$t('prompt.updateFailed')}`);
+    // },
 
     // 切换语言
     changeLanguage() {
@@ -393,9 +441,9 @@ export default {
         this.$message.success(`${this.$t('prompt.updateSuccess')}`);
       }else{
         msg.seq = 99;
-        msg.frame_id.enable = this.fencingEnable == 1 ? true : false;
-        msg.frame_id.distance = this.robot.fencing_distance;
-        if(this.fencingEnable == 1) this.$message.success(`上位机发送启用电子围栏信号`);
+        msg.frame_id.enable = this.fencingEnable;
+        msg.frame_id.distance = this.robotParam['/mid360_elect_fence/detect_dis'];
+        if(this.fencingEnable) this.$message.success(`上位机发送启用电子围栏信号`);
         else this.$message.success(`上位机发送禁用电子围栏信号`);
       }
       this.$store.dispatch('socket/obstacleUpdate', msg);

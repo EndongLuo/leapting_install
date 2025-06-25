@@ -7,6 +7,7 @@ const flexbeLogs = [];
 
 //清扫日志相关
 const { addLog } = require("../models/robot");
+const robot = require("../schema/robot");
 const LogLevel = { 1: "DEBUG", 2: "INFO", 4: "WARN", 8: "ERROR", 16: "FATAL" };
 const logs = [];
 const logSet = new Set();
@@ -277,7 +278,20 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }catch (error) {
       logger.error(`obstacleUpdate ${ip} ${error}`);
     }
+  });
+
+  socket.on('robotParamUpdate', (ip, data) => {
+    try{
+      robotArr[ip].robotParamUpdate({
+        seq: data.seq,
+        frame_id: ''
+      });
+      logger.info(`robotParamUpdate ${ip} ${data}`);
+    }catch (error) {
+      logger.error(`robotParamUpdate ${ip} ${error}`);
+    }
   })
+
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
 
@@ -525,6 +539,15 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("obstacled", ip, linear.x);
       socket.server.of('/XJ').emit("obstacled", ip, 1);
     })
+
+    //电子围栏开启状态
+    var open_fence_bool = robotArr[ip].electFenceEnable();
+      setInterval(() => {
+        open_fence_bool.get(function(value) {
+            socket.server.of('/XJ').emit("electFenceEnable", ip, value);
+        });
+      }, 1000);
+    
   });
 }
 

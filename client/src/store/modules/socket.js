@@ -4,8 +4,8 @@ import Socket from '@/utils/socketUtil';
 const state = {
   socket: null,
   // ips: ['192.168.147.9'],
-  // ips: ['10.168.2.178'],
-  ips: ['127.0.0.1'],
+  ips: ['10.168.2.178'],
+  // ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},
   Robot: {},
@@ -275,6 +275,11 @@ const actions = {
       Vue.set(state, 'obstacled', d);
     })
 
+    // 电子围栏开启状态， 读取rosparam
+    socket.on('electFenceEnable', (ip, d) => {
+      Vue.set(state, 'electFenceEnable', d);
+    })
+
     return () => clearInterval(timer);
   },
 
@@ -378,7 +383,14 @@ const actions = {
   obstacleUpdate({ commit, state }, data){
     console.log(data);
     state.socket.emit('obstacleUpdate', state.ips[0], data);
+  },
+
+  //ros param 数据库更新通知ROS节点
+  robotParamUpdate({ commit, state }, data){
+    console.log(data);
+    state.socket.emit('robotParamUpdate', state.ips[0], data);
   }
+  
 };
 
 export default {
