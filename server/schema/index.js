@@ -7,7 +7,7 @@ const { DataTypes } = require('sequelize');
 const User = require('./user')(sequelize, DataTypes);
 const Role = require('./role')(sequelize, DataTypes);
 const Site = require('./site')(sequelize, DataTypes);
-const Robot = require('./robot')(sequelize, DataTypes);
+// const Robot = require('./robot')(sequelize, DataTypes);
 const Task = require('./task')(sequelize, DataTypes);
 const TaskInfo = require('./taskinfo')(sequelize, DataTypes);
 const TimedTask = require('./timedtask')(sequelize, DataTypes);
@@ -36,14 +36,14 @@ Site.belongsToMany(User, { through: 'user_site' });
 
 // 场地与机器人：一个场地有多台机器人，并且一台机器人可以属于多个场地
 // 直接用  Robot.hasMany(Site); 可以吗？
-Robot.belongsToMany(Site, { through: 'robot_site' });
-Site.belongsToMany(Robot, { through: 'robot_site' });
+// Robot.belongsToMany(Site, { through: 'robot_site' });
+// Site.belongsToMany(Robot, { through: 'robot_site' });
 // Robot.belongsTo(Site);
 // Site.hasMany(Robot);
 
 // 机器人与任务：一台机器人可有多个任务，一个任务也可有多台机器人执行
-Robot.hasMany(Task);
-Task.belongsTo(Robot);
+// Robot.hasMany(Task);
+// Task.belongsTo(Robot);
 
 // 任务信息与任务：一个任务可有多个实时任务，一个实时任务只有一个任务模版执行
 Task.hasMany(TaskInfo, { onDelete: 'CASCADE' });
@@ -69,5 +69,5 @@ sequelize.sync({ alter: true });
 // Robot.sync({ alter: true }) 
 
 module.exports = {
-  User, Role, Site, Task, TimedTask, TaskInfo, Robot, G1_pro, Log, FlexbeLog, SensorLog, PVMTable, ErrorData, RobotParam
+  User, Role, Site, Task, TimedTask, TaskInfo, G1_pro, Log, FlexbeLog, SensorLog, PVMTable, ErrorData, RobotParam
 }

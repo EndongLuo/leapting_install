@@ -277,6 +277,13 @@ class Robot extends EventEmitter {
     return open_fence_bool;
   }
 
+  bridgeEnable(){
+    var bridgeEnable = new ROSLIB.Param({
+      ros : this.ros,
+      name : '/bridgeenable'
+    });
+    return bridgeEnable;
+  }
   // --------------------------------------------------------
 }
 

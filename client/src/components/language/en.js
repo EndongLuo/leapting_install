@@ -23,7 +23,6 @@ const en = {
     historySpeed: 'History Speed',
     operationRecords: 'Opeartion Records',
     operationLog: 'Web Opeartion Log',
-    errorData: 'Error Data'
   },
   table: {
     send: 'Start',
@@ -115,6 +114,9 @@ const en = {
     avoidance: 'Avoidance',
     reminder: 'Power Reminder',
     pvmsize: 'PVM Size',
+    pvmlength: 'PVM Length',
+    pvmwidth: 'PVM Width',
+    pvmthickness: 'PVM Thickness',
     installgap: 'Install Gap',
     devicestatus: 'Device Status',
     handeye: 'Calibration',
@@ -144,7 +146,10 @@ const en = {
     gitInfo: 'Version Information',
     gitSwitch: 'Version Switching',
     obstacle: 'Obstacle Setting',
-    fencing: 'Electronic Fencing'
+    fencing: 'Electronic Fencing',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    trigmsg: 'Send a signal to the /trig topic'
   },
   connPrompt: {
     success: 'Connected to Install Robot.',
@@ -175,7 +180,10 @@ const en = {
     gitUpdated: 'Git Updated',
     obstacle: 'Equipment obstacle avoidance. Please check the surrounding environment!',
     battery: 'Battery is low, please charge the robot as soon as possible!',
-    sendTask: 'The task was sent successfully.'
+    sendTask: 'The task was sent successfully.',
+    errorData: 'Error Data',
+    sensorlog: 'Sensor Log',
+    tuli: 'Illustrations Teach'
   },
   identify: {
     identifyOk: 'Successfully Identified.',
@@ -211,6 +219,8 @@ const en = {
     manual: 'Manual',
     updating: 'updating',
     updatesuccess: 'updateSuccess',
+    updateModel: 'Model Update Success',
+    updateUserData: 'UserData Update Sucess',
     Restartimmediately: 'Restartimmediately',
     Restartlater: 'Restartlater',
     NOPACKAGE: 'No Find Update Package',
@@ -225,8 +235,8 @@ const en = {
     'vacuum_pressure': 'vacuum_pressure',
     'inverter_current_a': 'inverter_current_a',
     'inverter_voltage_a': 'inverter_voltage_a',
-    'inverter_voltage_a': 'inverter_voltage_a',
-    'inverter_voltage_a': 'inverter_voltage_a',
+    'inverter_current_b': 'inverter_current_b',
+    'inverter_voltage_b': 'inverter_voltage_b',
     'inverter_current_c': 'inverter_current_c',
     'inverter_voltage_c': 'inverter_voltage_c',
   }

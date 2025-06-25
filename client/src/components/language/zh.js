@@ -117,6 +117,9 @@ const zh = {
     avoidance: '避障',
     reminder: '电量提醒',
     pvmsize: '组件尺寸',
+    pvmlength: '组件长度',
+    pvmwidth: '组件宽度',
+    pvmthickness: '组件厚度',
     installgap: '安装间隙',
     devicestatus: '设备状态',
     handeye: '手眼标定',
@@ -146,7 +149,10 @@ const zh = {
     gitInfo: '版本信息',
     gitSwitch: '版本切换',
     obstacle: '避障间距',
-    fencing: '电子围栏'
+    fencing: '电子围栏',
+    enabled: '已启用',
+    disabled: '已禁用',
+    trigmsg: '向/trig话题发送信号'
   },
   connPrompt: {
     success: '安装机器人已连接。',
@@ -161,6 +167,8 @@ const zh = {
     prompt: '提示',
     lowBattery: '电量过低',
     updateSuccess:'更新成功',
+    updateModel: '成功更新模型仓库',
+    updateUserData: '成功更新用户数据仓库',
     updateFailed:'更新失败',
     noSwitch: '无需切换, 当前版本为：',
     tasking: '任务正在执行中，请等待任务结束后再发送新任务！',
@@ -177,7 +185,10 @@ const zh = {
     gitUpdated: 'git库更新',
     obstacle: '设备避障，请检查周围环境',
     battery: '电量低，请尽快给设备充电',
-    sendTask: '任务发送成功'
+    sendTask: '任务发送成功',
+    errorData: '异常数据',
+    sensorlog: '传感器日志',
+    tuli: '图例示教'
   },
   identify: {
     identifyOk: '识别成功。',

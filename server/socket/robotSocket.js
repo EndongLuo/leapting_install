@@ -311,9 +311,11 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
         var tags = msg.git.tags;
         // 成功反馈
         var gitFeedback = msg.git.op_done;
+        var gitop2 = msg.git.op_done2;
+        var gitop3 = msg.git.op_done2;
         var gitInfo = msg.git.info;
 
-        socket.server.of('/XJ').emit("robotState", ip, tag, tags, gitFeedback, gitInfo);
+        socket.server.of('/XJ').emit("robotState", ip, tag, tags, gitFeedback, gitop2, gitop3, gitInfo);
       } catch (error) {
         console.log("robotState", msg, error);
       }
@@ -542,11 +544,19 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
 
     //电子围栏开启状态
     var open_fence_bool = robotArr[ip].electFenceEnable();
-      setInterval(() => {
-        open_fence_bool.get(function(value) {
-            socket.server.of('/XJ').emit("electFenceEnable", ip, value);
-        });
-      }, 1000);
+    setInterval(() => {
+      open_fence_bool.get(function(value) {
+        socket.server.of('/XJ').emit("electFenceEnable", ip, value);
+      });
+    }, 1000);
+
+    //过桥架间隙是否启用
+    var bridgeEnable = robotArr[ip].bridgeEnable();
+    setInterval(() => {
+      bridgeEnable.get(function(value) {
+        socket.server.of('/XJ').emit("bridgeEnable", ip, value);
+      })
+    }, 1000);
     
   });
 }

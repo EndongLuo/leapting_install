@@ -7,7 +7,7 @@
 
         <div v-else class="left_info" @click="robotDialogVisible = true">
           <div class="jqr_id" style="color: #34a94d;">
-            {{ $t('robot.connected') + '-' +robotName }}
+            {{ $t('robot.connected') + '-' + robotName }}
             
           </div>
 

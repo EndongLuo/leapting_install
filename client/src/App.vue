@@ -234,7 +234,7 @@ export default {
         )
         .join('');
 
-      var tuli = `<span style="color:#409EFF;text-decoration: underline; cursor:pointer" id="show-example-link">图例示教</span>`
+      var tuli = `<span style="color:#409EFF;text-decoration: underline; cursor:pointer" id="show-example-link">{{ $t('prompt.tuli') }}</span>`
 
 
       // 先显示通知
@@ -272,7 +272,7 @@ export default {
             });
           });
 
-          // 图例示教点击事件
+          // {{ $t('prompt.tuli') }}点击事件
           const link = document.getElementById('show-example-link');
           if (link) {
             link.addEventListener('click', () => {
@@ -306,7 +306,7 @@ export default {
     //       align-items: center;
     //       justify-content: center;
     //     ">
-    //       <span style="font-size:16px;">${text} <span  style=" color:#409EFF;text-decoration: underline; cursor:pointer" onClick="isShowDialog = true">图例示教</span></span>
+    //       <span style="font-size:16px;">${text} <span  style=" color:#409EFF;text-decoration: underline; cursor:pointer" onClick="isShowDialog = true">{{ $t('prompt.tuli') }}</span></span>
     //       <div style="margin-top: 16px;">
     //         ${buttonsHtml}
     //       </div>

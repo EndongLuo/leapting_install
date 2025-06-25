@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div style="display: flex; justify-content: space-between;">
-      <Tips :robotName="robotName" />
+      <Tips :robotName="robotParam['robot_name']" />
       <Tasks @winChanged="winChanged" />
     </div>
 
@@ -96,7 +96,6 @@
 
     <!-- 可拖拽框 -->
     <div class="dragBox" v-show="isShow || isTask">
-
       <div class="row">
         <!-- 任务状态 -->
         <!-- <div class="win" v-if="taskState.id"> -->
@@ -132,8 +131,8 @@
                 </div>
                 <div><span class="title">{{ $t('task.taskstep') }}:</span>{{ taskState.task_step }}</div>
                 <div v-if="taskState.task_type != 4"><span class="title" >{{ $t('config.bridgegap') }}:</span><el-switch
-                    v-model="robot.status" @change="upDataPVM" active-value="1" inactive-value="0"> </el-switch>
-                  <el-input style="margin-left: 10px; width: 80px;" v-model="robot.bridgegap" @blur="upDataPVM"></el-input>(mm)</div>
+                    v-model="robotParam['/bridgeenable']" @change="updateRobotParam('/bridgeenable', 0)" active-value="true" inactive-value="false"> </el-switch>
+                  <el-input style="margin-left: 10px; width: 80px;" v-model="robotParam['/bridgegap']" @blur="updateRobotParam('/bridgegap', 100)"></el-input>(mm)</div>
               </div>
               <div class="right">
                 <div class="tiptop">
@@ -172,7 +171,7 @@
           </div>
         </div>
       </div>
-      <div class="row" v-if="video">
+      <div class="row" v-if="robotParam['video_show']">
         <!-- RGB图像 -->
         <div class="win" v-if="rawImg">
           <div class="totitle">
@@ -274,10 +273,9 @@ import { mapState } from "vuex";
 import Toast from "@/components/toast";
 import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
-import { getRobot, updateRobot, setTaskInfo, getHistorySpeed, setLog } from '@/api';
+import { setTaskInfo, getHistorySpeed, setLog, updateRobotParam, getRobotParam } from '@/api';
 import * as echarts from 'echarts';
 import {date} from '@/utils/date';
-import { Descriptions } from "element-ui";
 
 export default {
   name: "home",
@@ -294,6 +292,7 @@ export default {
       inDraging: false,
       video: Number(localStorage.getItem('video')) || 0,
       robot: {},
+      robotParam: {},
       robotName: "", //设备名称
       isConncect: false,  // 记录是否连接过server
       isHistorySpeed: false,
@@ -305,13 +304,13 @@ export default {
     };
   },
   computed: {
-    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep', 'newDiagnostics', 'obstacled']),
+    ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep', 'newDiagnostics', 'obstacled', 'bridgeEnable']),
   },
   mounted() {
     this.$nextTick(() => this.scrollToBottom());
     this.loop1();
     this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
-    this.getRobot();
+    this.getRobotParam();
 
     var v = localStorage.getItem('video');
     if (!v) localStorage.setItem('video', 0)
@@ -372,7 +371,14 @@ export default {
           }
         });
       }
+    },
+    
+    bridgeEnable(val){
+      if(!val){
+        this.robotParam['/bridgeenable'] = 'false';
+      }
     }
+
   },
   methods: {
     /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
@@ -486,20 +492,45 @@ export default {
         message: h('i', { style: 'color: teal' }, `X:${x} Y:${y} Z:${z} W:${w} Z:${Z}`)
       });
     },
-    async getRobot() {
-      var res = await getRobot();
-      this.robot = res.data[0];
-      this.$set(this.robot, 'status', String(this.robot.status));
-      this.robotName = this.robot.robotname;
-      console.log('robot status', this.robot.status);
-    },
-    async upDataPVM() {
-      var res = await updateRobot(this.robot);
-      localStorage.setItem('video', this.robot.video);
+    // async getRobot() {
+    //   var res = await getRobot();
+    //   this.robot = res.data[0];
+    //   this.$set(this.robot, 'status', String(this.robot.status));
+    //   this.robotName = this.robot.robotname;
+    //   console.log('robot status', this.robot.status);
+    // },
+    // async upDataPVM() {
+    //   var res = await updateRobot(this.robot);
+    //   localStorage.setItem('video', this.robot.video);
 
-      if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
-      else this.$message.error(`${this.$t('prompt.updateFailed')}`);
-      this.setLogInfo('warning', '参数修改', this.robot);
+    //   if (res.code == 200) this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+    //   else this.$message.error(`${this.$t('prompt.updateFailed')}`);
+    //   this.setLogInfo('warning', '参数修改', this.robot);
+    // },
+    
+    async getRobotParam() {
+      var params = {};
+      var res = await getRobotParam();
+      if(Array.isArray(res.data)){
+        res.data.forEach(item => {
+          const name = item.param_name;
+          // .split('/').pop();
+          if(name == 'low_battery'){
+            item.param_value = Number(item.param_value);
+          }
+          params[name] = item.param_value;
+        });
+        this.robotParam = params;
+      }
+      console.log(res.msg, this.robotParam);
+    },
+
+    async updateRobotParam(param_name, default_value) {
+      const res = await updateRobotParam({param_name: param_name, param_value: this.robotParam[param_name], default_value: default_value});
+      if (res.code == 200) {
+        this.$store.dispatch('socket/robotParamUpdate', {seq: 11});
+        this.$message.success(`${this.$t('prompt.updateSuccess')}`);
+      } 
     },
     winChanged(val) {
       this.isTask = val;
@@ -562,7 +593,7 @@ export default {
           device: this.robotName,
           level: level,
           time: date(new Date()),
-          tag: this.robot.robot_type,
+          tag: this.robotParam.robot_type,
           msg: operation_type,
           description: description,
           siteId: 1
@@ -596,6 +627,7 @@ export default {
           confirmButtonText: this.$t('prompt.front'),
           cancelButtonText: this.$t('prompt.back'),
           distinguishCancelAndClose: true,
+          customClass:'first-model',
           type: 'info'
         }).then(() => {
           this.newSendTask(1,'InstallFirstPVM', {first_back: false});
@@ -694,6 +726,12 @@ export default {
 </script>
 
 <style scoped lang="less">
+
+::v-deep .first-model .el-button {
+  font-size: 20px !important;
+  margin-left: 20px !important;
+}
+
 .content {
   display: flex;
   justify-content: space-between;
@@ -839,11 +877,11 @@ export default {
         border-radius: 5px;
         margin-bottom: 10px;
         border: 1px solid #a0a0a03a;
+        text-align: center;
 
         img {
           width: 36px;
           height: 36px;
-          margin-top: 10px;
         }
         span {
           font-size: 14px;

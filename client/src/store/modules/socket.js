@@ -4,8 +4,8 @@ import Socket from '@/utils/socketUtil';
 const state = {
   socket: null,
   // ips: ['192.168.147.9'],
-  ips: ['10.168.2.178'],
-  // ips: ['127.0.0.1'],
+  // ips: ['10.168.2.178'],
+  ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},
   Robot: {},
@@ -23,6 +23,8 @@ const state = {
   battery: 0,
   gitNum: null,
   gitFeedback: false,
+  gitop2: false,
+  gitop3: false
 };
 
 // 创建翻译映射
@@ -132,11 +134,13 @@ const actions = {
     });
 
     // robotState
-    socket.on('robotState', (ip, tag, tags, gitFeedback, gitInfo) => {
+    socket.on('robotState', (ip, tag, tags, gitFeedback, gitop2, gitop3, gitInfo) => {
       // console.log('robotState', ip, d);
       Vue.set(state, 'tag', tag);
       Vue.set(state, 'tags', tags);
       Vue.set(state, 'gitFeedback', gitFeedback);
+      Vue.set(state, 'gitop2', gitop2);
+      Vue.set(state, 'gitop3', gitop3);
       Vue.set(state, 'gitInfo', gitInfo);
     })
 
@@ -279,6 +283,11 @@ const actions = {
     socket.on('electFenceEnable', (ip, d) => {
       Vue.set(state, 'electFenceEnable', d);
     })
+    
+     //过桥架间隙是否启用
+    socket.on('bridgeEnable', (ip, d) => {
+      Vue.set(state, 'bridgeEnable', d);
+    })
 
     return () => clearInterval(timer);
   },
@@ -387,7 +396,6 @@ const actions = {
 
   //ros param 数据库更新通知ROS节点
   robotParamUpdate({ commit, state }, data){
-    console.log(data);
     state.socket.emit('robotParamUpdate', state.ips[0], data);
   }
   
