@@ -6,7 +6,7 @@ module.exports = function() {
       const robotParamData= [
         {'id': 1,'param_name': 'robot_name', 'param_type': 'STRING', 'param_value': 'MMR', 'param_class': 'web', 'param_description': '设备名称'},
         {'id': 2,'param_name': 'robot_type', 'param_type': 'STRING', 'param_value': 'MMR', 'param_class': 'web', 'param_description': '设备类型'},
-        {'id': 3,'param_name': 'video_show', 'param_type': 'STRING', 'param_value': 'true', 'param_class': 'web', 'param_description': '是否开启图像'},
+        {'id': 3,'param_name': 'video_show', 'param_type': 'BOOL', 'param_value': 'true', 'param_class': 'web', 'param_description': '是否开启图像'},
         {'id': 4,'param_name': 'robot_ip', 'param_type': 'STRING', 'param_value': '192.168.147.9', 'param_class': 'web', 'param_description': '设备IP'},
         {'id': 5,'param_name': 'low_battery', 'param_type': 'INTEGER', 'param_value': '20', 'param_class': 'web', 'param_description': '电量报警值'},
         {'id': 6,'param_name': '/robot_state/pvm_length', 'param_type': 'INTEGER', 'param_value': '2278', 'param_class': 'ros', 'param_description': '组件长度'},
