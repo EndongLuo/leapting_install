@@ -152,7 +152,8 @@ const zh = {
     fencing: '电子围栏',
     enabled: '已启用',
     disabled: '已禁用',
-    trigmsg: '向/trig话题发送信号'
+    trigmsg: '向/trig话题发送信号',
+    pressure_threshold: '压力阈值'
   },
   connPrompt: {
     success: '安装机器人已连接。',

@@ -269,6 +269,11 @@ class Robot extends EventEmitter {
     this.obstacledSub = this.subscribeTopic('/cmd_vel_stop', 'geometry_msgs/Twist', callback);
   }
 
+  // diagnostics_agg
+  diagnosticsAgg(callback) {
+    if (this.diagnosticsAggSub) this.diagnosticsAggSub();
+    this.diagnosticAggSub = this.subscribeTopic('/diagnostics_agg', 'diagnostic_msgs/DiagnosticArray', callback);
+  }
   electFenceEnable(){
     var open_fence_bool = new ROSLIB.Param({
       ros : this.ros,

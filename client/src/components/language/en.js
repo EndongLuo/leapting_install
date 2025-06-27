@@ -149,7 +149,8 @@ const en = {
     fencing: 'Electronic Fencing',
     enabled: 'Enabled',
     disabled: 'Disabled',
-    trigmsg: 'Send a signal to the /trig topic'
+    trigmsg: 'Send a signal to the /trig topic',
+    pressure_threshold: 'Pressure Tthreshold'
   },
   connPrompt: {
     success: 'Connected to Install Robot.',

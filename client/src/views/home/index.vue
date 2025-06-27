@@ -3,6 +3,7 @@
     <div style="display: flex; justify-content: space-between;">
       <Tips :robotName="robotParam['robot_name']" />
       <Tasks @winChanged="winChanged" />
+      <!-- <el-button type="primary" size="mini" @click="diagnosticsShow = true">诊断信息</el-button> -->
     </div>
 
     <div class="h_outer">
@@ -263,12 +264,19 @@
       <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_current_c')] }}</div>
       <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_voltage_c')] }}</div>
     </el-card>
+
+    <!-- treeDiagnotics -->
+    <!-- <el-dialog title="诊断信息" :visible.sync="diagnosticsShow" width="80%" height="500px" center
+      :close-on-click-modal="false">
+      <DiagnosticTree />
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import Tips from "./tips";
 import Telecontrol from "@/components/Telecontrol";
+import DiagnosticTree from "@/components/deviceDiagnostic/diagnosticTree";
 import { mapState } from "vuex";
 import Toast from "@/components/toast";
 import Tasks from "@/components/Tacks";
@@ -279,7 +287,7 @@ import {date} from '@/utils/date';
 
 export default {
   name: "home",
-  components: { Tips, Telecontrol, Toast, Tasks },
+  components: { Tips, Telecontrol, Toast, Tasks, DiagnosticTree },
   data() {
     return {
       isTask: false,
@@ -300,7 +308,8 @@ export default {
       chart: null,
       historySpeedData: [],
       diagnosticsObj: {},
-      obstacleNotifyObj: null
+      obstacleNotifyObj: null,
+      diagnosticsShow: false
     };
   },
   computed: {
@@ -338,6 +347,11 @@ export default {
         this.winClose();
       }
     },
+
+    /**
+     * 断开重连并刷新界面
+     * @param val 
+     */
     rosConnect(val){
       if(val == 1){
         if(this.isConncect){
@@ -350,6 +364,10 @@ export default {
       }
     },
     
+    /**
+     * 诊断信息右下角显示信息
+     * @param val 
+     */
     newDiagnostics(val){
       let d = val.list2;
       if(d.length < 1) return;
@@ -358,6 +376,10 @@ export default {
       })
     },
 
+    /**
+     * 避障弹窗
+     * @param val 
+     */
     obstacled(val){
       var that = this;
       if(val == 0 && that.obstacleNotifyObj == null){
@@ -373,10 +395,21 @@ export default {
       }
     },
     
+    /**
+     * 过桥加间隙是否启用
+     * @param val 
+     */
     bridgeEnable(val){
       if(!val){
         this.robotParam['/bridgeenable'] = 'false';
       }
+    },
+    
+    /**
+     * 任务信息窗口出来后重置滑动条
+     */
+    isShow(){
+      this.$nextTick(() => this.scrollToBottom());
     }
 
   },
@@ -628,7 +661,15 @@ export default {
           cancelButtonText: this.$t('prompt.back'),
           distinguishCancelAndClose: true,
           customClass:'first-model',
-          type: 'info'
+          type: 'info',
+          beforeClose: (action, instance, done) => {
+            // 动态设置样式
+            const el = document.querySelector('.el-message-box');
+            if (el) {
+              el.style.fontSize = '30px';
+            }
+            done();
+          }
         }).then(() => {
           this.newSendTask(1,'InstallFirstPVM', {first_back: false});
         }).catch((val) => {
@@ -1190,5 +1231,8 @@ export default {
     }
   }
   
+}
+::v-deep .el-dialog{
+  height: calc(100vh - 120px);
 }
 </style>

@@ -6,25 +6,11 @@
       <h1 class="title">{{ $t('config.pvmParam') }}</h1>
       <div class="outbox">
         <div class="inbox">
-          <span class="param_name">{{ $t('config.pvmlength') }}：</span>
+          <span class="param_name">{{ $t('config.pvmsize') }}：</span>
           <div class="param_set">
-            <div class="input_info"> <el-input  v-model="robotParam['/robot_state/pvm_length']" @blur="updateRobotParam('/robot_state/pvm_length', 2278)"><template slot="append">mm</template></el-input></div>
-            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">{{ $t('prompt.tuli') }}</el-button></div>
-          </div>
-        </div>
-        <div class="inbox">
-          <span class="param_name">{{ $t('config.pvmwidth') }}：</span>
-          <div class="param_set">
-            <div class="input_info"> <el-input  v-model="robotParam['/robot_state/pvm_width']" @blur="updateRobotParam('/robot_state/pvm_width', 1134)"><template slot="append">mm</template></el-input></div>
-            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">{{ $t('prompt.tuli') }}</el-button></div>
-          </div>
-        </div>
-        
-        <div class="inbox">
-          <span class="param_name">{{ $t('config.pvmthickness') }}：</span>
-          <div class="param_set">
-            <div class="input_info"> <el-input  v-model="robotParam['/robot_state/pvm_thickness']" @blur="updateRobotParam('/robot_state/pvm_thickness', 35)"><template slot="append">mm</template></el-input></div>
-            <div class="btn"><el-button plain size="mini" type="primary" @click="showTuli('line_gap')">{{ $t('prompt.tuli') }}</el-button></div>
+            <div> <el-input  v-model="robotParam['/robot_state/pvm_length']" @blur="updateRobotParam('/robot_state/pvm_length', 2278)"></el-input></div>
+            <div> <el-input  v-model="robotParam['/robot_state/pvm_width']" @blur="updateRobotParam('/robot_state/pvm_width', 1134)"></el-input></div>
+            <div> <el-input  v-model="robotParam['/robot_state/pvm_thickness']" @blur="updateRobotParam('/robot_state/pvm_thickness', 35)"><template slot="append">mm</template></el-input></div>
           </div>
         </div>
         
@@ -116,9 +102,16 @@
               <span style="color: #949494; font-size: 14px;">{{ $t('config.trigmsg') }}</span>
             </div>
             <div class="btn">
-              <el-switch v-model="electFenceEnable"  @change="obstacleSet('fencing')" :active-value="true" :inactive-value="false"  style="margin-right: 10px;"></el-switch>
-              <span style="font-size: 10px;">{{ electFenceEnable ? $t('config.enabled') : $t('config.disabled') }}</span>
+              <el-switch v-model="fencingEnable"  @change="obstacleSet('fencing')" :active-value="true" :inactive-value="false"  style="margin-right: 10px;"></el-switch>
+              <span style="font-size: 10px;">{{ fencingEnable ? $t('config.enabled') : $t('config.disabled') }}</span>
             </div>
+          </div>
+        </div>
+<!--  -->
+        <div class="inbox">
+          <span class="param_name">{{ $t('config.pressure_threshold') }}：</span>
+          <div class="param_set">
+            <div class="input_info"><el-input v-model="robotParam['/pressure_threshold']"  @blur="updateRobotParam('/pressure_threshold', 500)"><template slot="append">-0.1KPa</template></el-input></div>
           </div>
         </div>
 
@@ -246,7 +239,7 @@ export default {
       tuliPath: '',
       obstacleLength: 2.5,
       obstacleEnable: true,
-      fencingEnable: true,
+      fencingEnable: false,
       offlineUpdateShow: false,
       tuliMsg: '',
       tuliMsgList: {
@@ -438,6 +431,7 @@ export default {
         msg.seq = 99;
         msg.frame_id.enable = this.fencingEnable;
         msg.frame_id.distance = this.robotParam['/mid360_elect_fence/detect_dis'];
+        this.$store.dispatch('socket/robotParamUpdate', this.fencingEnable);
         if(this.fencingEnable) this.$message.success(`上位机发送启用电子围栏信号`);
         else this.$message.success(`上位机发送禁用电子围栏信号`);
       }

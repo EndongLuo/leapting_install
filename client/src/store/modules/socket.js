@@ -289,6 +289,11 @@ const actions = {
       Vue.set(state, 'bridgeEnable', d);
     })
 
+    //diagnostics_agg
+    socket.on('diagnosticsAgg', (ip, d) => {
+      Vue.set(state, 'diagnosticsAgg', d);
+    });
+
     return () => clearInterval(timer);
   },
 
@@ -397,8 +402,12 @@ const actions = {
   //ros param 数据库更新通知ROS节点
   robotParamUpdate({ commit, state }, data){
     state.socket.emit('robotParamUpdate', state.ips[0], data);
+  },
+
+  //设置 param
+  robotParamUpdate({ commit, state }, data){
+    state.socket.emit('setParam', state.ips[0], data);
   }
-  
 };
 
 export default {

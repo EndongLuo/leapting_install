@@ -234,7 +234,7 @@ export default {
         )
         .join('');
 
-      var tuli = `<span style="color:#409EFF;text-decoration: underline; cursor:pointer" id="show-example-link">{{ $t('prompt.tuli') }}</span>`
+      var tuli = `<span style="color:#409EFF;text-decoration: underline; cursor:pointer" id="show-example-link">${this.$t('prompt.tuli')}</span>`
 
 
       // 先显示通知

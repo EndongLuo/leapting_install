@@ -1,6 +1,7 @@
 const ROSLIB = require("roslib");
 const { updateTaskInfo, setFlexbeLog } = require("../models/task");
 const { logger } = require('../utils/logger');
+const { convertToTree } = require('../utils/aggTotree')
 let oldState = {};
 let navPathCache = {};
 const flexbeLogs = [];
@@ -292,6 +293,14 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
     }
   })
 
+  socket.on('setParam', (ip, data) => {
+    try{
+      var open_fence_bool = robotArr[ip].electFenceEnable();
+      open_fence_bool.set(data);
+    }catch(error){
+      logger.error(`setParam ${ip} ${error}`);
+    }
+  })
 
   // ----------------------------- 订 阅 消 息 （subscribe） -------------------------------------------
 
@@ -541,6 +550,12 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
       socket.server.of('/XJ').emit("obstacled", ip, linear.x);
       socket.server.of('/XJ').emit("obstacled", ip, 1);
     })
+
+    // diagnostic_agg
+    robotArr[ip].diagnosticsAgg((msg) => {
+      var agg = convertToTree(msg.status);
+      socket.server.of('/XJ').emit("diagnosticsAgg", ip, agg);
+    });
 
     //电子围栏开启状态
     var open_fence_bool = robotArr[ip].electFenceEnable();
