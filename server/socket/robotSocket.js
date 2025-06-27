@@ -1,7 +1,7 @@
 const ROSLIB = require("roslib");
 const { updateTaskInfo, setFlexbeLog } = require("../models/task");
 const { logger } = require('../utils/logger');
-const { convertToTree } = require('../utils/aggTotree')
+const { buildTreeForElTree } = require('../utils/aggTotree')
 let oldState = {};
 let navPathCache = {};
 const flexbeLogs = [];
@@ -553,7 +553,7 @@ async function robotSocket(socket, robotIPs, robotArr, deviceArr) {
 
     // diagnostic_agg
     robotArr[ip].diagnosticsAgg((msg) => {
-      var agg = convertToTree(msg.status);
+      var agg = buildTreeForElTree(msg.status);
       socket.server.of('/XJ').emit("diagnosticsAgg", ip, agg);
     });
 

@@ -2,14 +2,11 @@
   <div style="overflow-y: auto; height: 100%;">
     <el-button>显示选中节点的label</el-button>
     <el-tree
-        :data="diagnosticsAgg"
+        :data="treeData"
         :props="defaultProps"
-        node-key="id"
-        show-checkbox
-        :default-expand-all="false"
-        :expand-on-click-node="false"
         :default-expanded-keys="expandedKeys"
-        @node-click="handleNodeExpand"
+        :expand-on-click-node="false"
+        @node-expand="handleNodeExpand"
         @node-collapse="handleNodeCollapse"
     ></el-tree>
   </div>
@@ -25,7 +22,7 @@ export default {
       checkedKeys: [], // 存储选中的节点key
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'name'
       },
       // 模拟数据ID生成器
       dataIdCounter: 0
@@ -42,35 +39,51 @@ export default {
     this.stopAutoRefresh();
   },
   methods: {
-    // 树节点展开
+    saveExpandedNodes() {
+      this.expandedKeys = this.$refs.tree.getCurrentExpandedKeys();
+    },
+    
+    restoreExpandedNodes() {
+      this.$nextTick(() => {
+        this.expandedKeys.forEach(key => {
+          this.$refs.tree.setExpanded(key, true);
+        });
+      });
+    },
+    
+    async refreshTreeData() {
+      this.saveExpandedNodes();
+      const newData = await this.fetchTreeData();
+      this.treeData = buildTreeForElTree(newData);
+      this.restoreExpandedNodes();
+    },
+    
+    async fetchTreeData() {
+      // 这里替换为你的实际数据获取逻辑
+      return [...data]; // 使用你的原始数据或从API获取
+    },
+    
     handleNodeExpand(data) {
-      // 保存当前展开的节点
-      let flag = false
-      this.expandedKeys.some(item => {
-        if (item === data.name) { // 判断当前节点是否存在， 存在不做处理
-          flag = true
-          return true
-        }
-      })
-      if (!flag) { // 不存在则存到数组里
-        this.defaultExpandIds.push(data.name)
+      if (!this.expandedKeys.includes(data.id)) {
+        this.expandedKeys.push(data.id);
       }
     },
-    // 树节点关闭
+    
     handleNodeCollapse(data) {
-      // 删除当前关闭的节点
-      this.$nextTick(() => {
-        this.expandedKeys.some((item, i) => {
-          if (item === data.name) {
-            this.expandedKeys.splice(i, 1)
-          }
-        })
-      })
+      const index = this.expandedKeys.indexOf(data.id);
+      if (index > -1) {
+        this.expandedKeys.splice(index, 1);
+      }
     }
-  }, 
+  },
   watch: {
     diagnosticsAgg(val){
-        
+      this.treeData = val;
+      this.$nextTick(() => {
+        this.expandedKeys.forEach(key => {
+          this.$refs.tree.setExpanded(key, true);
+        });
+      });
     }
   }
 
