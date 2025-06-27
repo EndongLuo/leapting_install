@@ -227,7 +227,7 @@ const en = {
     NOPACKAGE: 'No Find Update Package',
     NOUSB: 'No Find USB Device',
     electronic_fencing: 'There are obstacles near the electronic fence. Please remove the obstacles and restart the teaching device program.',
-    pressure_threshold: 'The suction cup pressure has dropped below the set threshold, and there is a risk of the component falling. Please pay attention to safety.'
+    pressure_error: 'The suction cup pressure has dropped below the set threshold, and there is a risk of the component falling. Please pay attention to safety.'
   },
   diagnostics: {
     'battery_voltage': 'battery_voltage',

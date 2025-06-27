@@ -431,7 +431,7 @@ export default {
         msg.seq = 99;
         msg.frame_id.enable = this.fencingEnable;
         msg.frame_id.distance = this.robotParam['/mid360_elect_fence/detect_dis'];
-        this.$store.dispatch('socket/robotParamUpdate', this.fencingEnable);
+        this.$store.dispatch('socket/setParam', this.fencingEnable);
         if(this.fencingEnable) this.$message.success(`上位机发送启用电子围栏信号`);
         else this.$message.success(`上位机发送禁用电子围栏信号`);
       }

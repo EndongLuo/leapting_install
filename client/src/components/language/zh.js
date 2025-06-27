@@ -230,7 +230,7 @@ const zh = {
     NOPACKAGE: '未检测到更新包',
     NOUSB: '未检测到U盘',
     electronic_fencing: '电子围栏范围内有障碍物，请移除障碍物并且重新启动示教器程序',
-    pressure_threshold: '吸盘压力已低于设定阈值，组件有掉落风险。请注意安全'
+    pressure_error: '吸盘压力已低于设定阈值，组件有掉落风险。请注意安全'
   },
   diagnostics: {
     'battery_voltage': '电池电压',
