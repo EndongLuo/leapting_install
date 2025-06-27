@@ -405,7 +405,7 @@ const actions = {
   },
 
   //设置 param
-  robotParamUpdate({ commit, state }, data){
+  setParam({ commit, state }, data){
     state.socket.emit('setParam', state.ips[0], data);
   }
 };
