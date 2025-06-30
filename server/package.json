@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon bin/www",
     "pkg": "pkg . --compress Brotli",
+    "build": "node ncc.config.js",
     "debug": "node --inspect app.js",
     "dev": "./node_modules/.bin/nodemon bin/www",
     "prd": "pm2 start bin/www",
@@ -12,8 +13,12 @@
   },
   "bin": "bin/www",
   "pkg": {
-    "targets": ["node16-linux-arm64"],
-    "assets": ["public"],
+    "targets": [
+      "node16-linux-arm64"
+    ],
+    "assets": [
+      "public"
+    ],
     "outputPath": "../dist"
   },
   "dependencies": {
@@ -55,6 +60,7 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
+    "child_process": "^1.0.2",
     "nodemon": "^1.8.1"
   }
 }

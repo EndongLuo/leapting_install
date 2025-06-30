@@ -109,16 +109,19 @@ app.on('error', err => {logger.error(err); });
 app.use(router.routes()).use(router.allowedMethods());
 
 
-// swagger
-const swagger = require('./utils/swagger')
-app.use(swagger.routes(), swagger.allowedMethods())
-// 配置Swagger-ui
-app.use(koaSwagger({
-  routePrefix: '/swagger', // host at /swagger instead of default /docs
-  swaggerOptions: {
-    url: '/swagger.json', // example path to json
-  },
-}))
+// // swagger
+// const swagger = require('./utils/swagger')
+// app.use(swagger.routes(), swagger.allowedMethods())
+// // 配置Swagger-ui
+// // const swaggerTpl = require('koa2-swagger-ui/dist/index.hbs');
+// app.use(koaSwagger({
+//   routePrefix: '/swagger', // host at /swagger instead of default /docs
+//   swaggerOptions: {
+//     url: '/swagger.json', // example path to json
+//   },
+//   // swaggerTemplate: swaggerTpl.toString()
+//   // swaggerTemplate: swaggerTplBuffer.toString('utf8'),
+// }))
 
 // error-handling
 app.on('error', (err, ctx) => {
