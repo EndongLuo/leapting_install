@@ -156,8 +156,7 @@
         </div>
 
         <!-- flexbe日志 -->
-        <!-- <div class="win" v-if="flexbeLog"> -->
-        <div class="win">
+        <div class="win" v-if="flexbeLog">
           <div class="totitle">
             <span>{{ $t('task.tasklog') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -169,41 +168,6 @@
               <span v-if="l.status_code == 1" style="color: #E6A23C; font-weight: 600;">{{ l.text }}</span>
               <span v-if="l.status_code == 0" style="font-weight: 600;">{{ l.text }}</span>
             </div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
-            <div>assdggggggggg</div>
             <div ref="scrollAnchor"></div>
           </div>
         </div>
