@@ -2,24 +2,85 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// const distPath = path.join(__dirname, '../dist');
-// if (fs.existsSync(distPath)) {
-//   fs.rmSync(distPath, { recursive: true });
-// }
+const ROOT = path.resolve(__dirname);
+const DIST = path.join(ROOT, '../dist');
+const NCC_CACHE = path.join(ROOT, 'node_modules/.cache/ncc');
 
-// 打包入口文件
-console.log('开始打包...');
-execSync('ncc build bin/www -m -o ../dist', { stdio: 'inherit' });
+function clean() {
+  // if (fs.existsSync(DIST)) {
+  //   fs.rmSync(DIST, { recursive: true, force: true });
+  //   console.log('Cleared dist directory');
+  // }
+  // fs.mkdirSync(DIST, { recursive: true });
 
-fs.cpSync('views', 'dist/views', { recursive: true });
-fs.cpSync('public', 'dist/public', { recursive: true });
+  if (fs.existsSync(NCC_CACHE)) {
+    fs.rmSync(NCC_CACHE, { recursive: true, force: true });
+    console.log('Cleared ncc cache');
+  }
+}
 
-console.log('打包完成！');
+// 执行 ncc 打包
+function build(label, entry, outDir, externals = []) {
+  const extFlags = externals.map(e => `-e ${e}`).join(' ');
+  const cmd = `ncc build ${entry} ${extFlags} --no-cache -m -o ${outDir}`;
+  console.log(`[${label}] ${cmd}`);
+  execSync(cmd, { stdio: 'inherit', cwd: ROOT });
+  console.log(`[${label}] build to ${outDir}`);
+}
 
+function copyStatic(src, dest) {
+  const srcPath = path.join(ROOT, src);
+  const destPath = path.join(ROOT, dest);
+  if (fs.existsSync(srcPath)) {
+    fs.cpSync(srcPath, destPath, { recursive: true });
+    console.log(`Copied ${src} -> ${dest}`);
+  }
+}
+
+function main() {
+  clean();
+
+  const tasks = [
+    {
+      label: 'server',
+      entry: 'bin/www',
+      out: '../dist',
+      externals: ['log']
+    },
+  ];
+
+  tasks.forEach(t => build(t.label, t.entry, t.out, t.externals));
+
+  const staticList = [
+    { src: 'views', dest: '../dist/views' },
+    { src: 'public', dest: '../dist/public' },
+  ];
+  staticList.forEach(({ src, dest }) => copyStatic(src, dest));
+
+  console.log('All builds completed!');
+}
+
+main();
+
+
+// const { execSync } = require('child_process');
+// const fs = require('fs');
 // const path = require('path');
 
-// // 在打包后的环境下获得运行目录
-// const rootDir = path.dirname(require.main.filename);
+// // const distPath = path.join(__dirname, '../dist');
+// // if (fs.existsSync(distPath)) {
+// //   fs.rmSync(distPath, { recursive: true });
+// // }
 
-// // 示例：设置模板目录
-// app.set('views', path.join(rootDir, 'views'));
+// console.log('开始打包...');
+// execSync('ncc build bin/www -m -o ../dist', { stdio: 'inherit' });
+
+// fs.cpSync('views', 'dist/views', { recursive: true });
+// fs.cpSync('public', 'dist/public', { recursive: true });
+
+// console.log('打包完成！');
+
+// // const path = require('path');
+
+// // const rootDir = path.dirname(require.main.filename);
+// // app.set('views', path.join(rootDir, 'views'));

@@ -13,7 +13,6 @@ router.get('/', async (ctx, next) => {
 
 const user = require('./user')
 const role = require('./role')
-const map = require('./map')
 const upload = require('./upload')
 const task = require('./task')
 const setting = require('./setting')
@@ -23,7 +22,6 @@ const robot = require('./robot')
 
 router.use(user.routes())
 router.use(role.routes())
-router.use(map.routes())
 router.use(upload.routes())
 router.use(task.routes())
 router.use(setting.routes())

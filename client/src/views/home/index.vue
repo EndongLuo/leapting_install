@@ -123,7 +123,7 @@
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
                 }}
                 </div>
-                <div v-if="taskState.last_duration&&taskState.task_type !== 2">
+                <div v-if="taskState.last_duration && taskState.task_type !== 2">
                   <!-- <span class="title" v-if="taskState.last_duration">{{ $t('task.InstallSpeed') }}:</span> -->
                   <span class="title">{{ $t('task.InstallSpeed') }}:</span>
                   {{ taskState.last_duration }}
@@ -156,7 +156,8 @@
         </div>
 
         <!-- flexbe日志 -->
-        <div class="win" v-if="flexbeLog">
+        <!-- <div class="win" v-if="flexbeLog"> -->
+        <div class="win">
           <div class="totitle">
             <span>{{ $t('task.tasklog') }}</span>
             <i class="el-icon-close" style="cursor: pointer;" @click="winClose"></i>
@@ -168,6 +169,42 @@
               <span v-if="l.status_code == 1" style="color: #E6A23C; font-weight: 600;">{{ l.text }}</span>
               <span v-if="l.status_code == 0" style="font-weight: 600;">{{ l.text }}</span>
             </div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div>assdggggggggg</div>
+            <div ref="scrollAnchor"></div>
           </div>
         </div>
       </div>
@@ -252,7 +289,7 @@ import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
 import { getRobot, updateRobot, setTaskInfo, getHistorySpeed } from '@/api';
 import * as echarts from 'echarts';
-import {date} from '@/utils/date';
+import { date } from '@/utils/date';
 
 export default {
   name: "home",
@@ -279,7 +316,6 @@ export default {
     ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep']),
   },
   mounted() {
-    this.$nextTick(() => this.scrollToBottom());
     this.loop1();
     this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
     this.getRobot();
@@ -288,11 +324,9 @@ export default {
     if (!v) localStorage.setItem('video', 0)
   },
   watch: {
-    flexbeLog() {
-      this.$nextTick(() => {
-        this.scrollToBottom();
-      });
-    },
+    flexbeLog: 'scrollToBottom',
+    isTask: 'scrollToBottom',
+    isShow: 'scrollToBottom',
     databaseUpdate(val, oldval) {
       console.log(val, oldval);
       if (val) this.getRobot();
@@ -340,8 +374,6 @@ export default {
       var res = await getHistorySpeed(id);
       console.log('res', res);
       this.historySpeedData = res.data;
-
-
     },
     /** 初始化 ECharts，仅调用一次 */
     initChart(id) {
@@ -352,7 +384,7 @@ export default {
         const yDurations = this.historySpeedData.map(item => item.duration);
 
         // console.log(date(this.historySpeedData[0].time));
-        
+
         var option = {
           title: {
             text: `ID: ${id}`
@@ -491,8 +523,14 @@ export default {
     },
     // flexbelog滚动到底部
     scrollToBottom() {
-      const contents = this.$refs.contents;
-      if (contents) contents.scrollTop = contents.scrollHeight;
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          const el = this.$refs.scrollAnchor;
+          if (el && typeof el.scrollIntoView === 'function') {
+            el.scrollIntoView({ behavior: 'auto', block: 'end' });
+          }
+        });
+      });
     },
     // 工具箱
     toolbar(num) {
