@@ -1,7 +1,6 @@
 const router = require('koa-router')()
 const RobotController = require('../controllers/robot');
 const RobotParamController = require('../controllers/robotParam');
-const MapTransformer = require('../utils/mapOffset');
 
 router.prefix('/api/robot')  // 路由器前缀
 
@@ -25,7 +24,6 @@ router.get('/robot', RobotController.getRobot);
 router.get('/robotAll', RobotController.getRobotAll);
 router.get('/singleRobot', RobotController.getSingleRobot);
 router.get('/MultiSite', RobotController.getMultiSite);
-router.get('/robots', MapTransformer.loadSiteInfo.bind(MapTransformer));
 
 /**
  * @swagger

@@ -286,10 +286,10 @@
         </div>
         <div class="install-btn">
           <div class="install-first" v-if="installType == 'InstallFirstPVM'">
-            <el-button type="primary" @click="newSendTask(1,'InstallFirstPVM', {first_back: false})">{{ $t('prompt.back') }}</el-button>
+            <el-button type="primary" @click="newSendTask(1,'InstallFirstPVM', {first_back: true})">{{ $t('prompt.back') }}</el-button>
           </div>
           <div class="install-first" v-if="installType == 'InstallFirstPVM'">
-            <el-button type="primary" @click="newSendTask(1,'InstallFirstPVM', {first_back: true})">{{ $t('prompt.front') }}</el-button>
+            <el-button type="primary" @click="newSendTask(1,'InstallFirstPVM', {first_back: false})">{{ $t('prompt.front') }}</el-button>
           </div>
           <div v-if="installType == 'Web_Detach'">
             <el-button type="primary" @click="sendTask(2)">{{$t('mains.confirm')}}</el-button>
