@@ -5,10 +5,7 @@
   "scripts": {
     "start": "nodemon bin/www",
     "pkg": "pkg . --compress Brotli",
-<<<<<<< HEAD
-=======
     "build": "node ncc.config.js",
->>>>>>> led
     "debug": "node --inspect app.js",
     "dev": "./node_modules/.bin/nodemon bin/www",
     "prd": "pm2 start bin/www",
