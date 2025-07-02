@@ -3,7 +3,6 @@
     <div style="display: flex; justify-content: space-between;">
       <Tips :robotName="robotParam['robot_name']" />
       <Tasks @winChanged="winChanged" />
-      <!-- <el-button type="primary" size="mini" @click="diagnosticsShow = true">诊断信息</el-button> -->
     </div>
 
     <div class="h_outer">
@@ -27,7 +26,7 @@
         </div> -->
 
         <!-- 自动安装 -->
-        <div class="btn" :title="$t('install.fai')" @click="sendTask(0)">
+        <div class="btn" :title="$t('install.fai')" @click="installDialogShow('Web_Fully-Auto')">
           <img src="./img/auto.png" alt="">
           <span>{{ $t('install.fai') }}</span>
         </div>
@@ -229,11 +228,11 @@
           <!-- <img src="./img/joy.png" alt="" @click="toolbar(3)"> -->
           <!-- <img src="./img/arm.png" alt="" @click="toolbar(4)"> -->
           <div class="box">
-            <img src="./img/QRcode.png" alt="扫码安装" @click="InstallFirstTask()">
+            <img src="./img/QRcode.png" alt="扫码安装" @click="installDialogShow('InstallFirstPVM')">
             <span>{{ $t('install.InstallFirstPVM') }}</span>
           </div>
           <div class="box">
-            <img src="./img/chai.png"  alt="拆卸" @click="sendTask(2)">
+            <img src="./img/chai.png"  alt="拆卸" @click="installDialogShow('Web_Detach')">
             <span>{{ $t('install.detach') }}</span>
           </div>
           <div class="box">
@@ -265,19 +264,51 @@
       <div class="diagnostics">{{ diagnosticsObj[$t('diagnostics.inverter_voltage_c')] }}</div>
     </el-card>
 
-    <!-- treeDiagnotics -->
-    <!-- <el-dialog title="诊断信息" :visible.sync="diagnosticsShow" width="80%" height="500px" center
+    <el-dialog :title="installDialogTitle" :visible.sync="installDialog" center
       :close-on-click-modal="false">
-      <DiagnosticTree />
-    </el-dialog> -->
+      <div class="install-info">
+        <div class="install-rows" v-if="installType == 'Web_Fully-Auto' || installType == 'Web_Detach'">
+          <div class="install-label">{{ $t('install.pvmNumber') }}：</div>
+          <div class="install-el"><el-input v-model="robotParam['autoInstallNumber']" @blur="updateRobotParam('autoInstallNumber', 36)" ></el-input></div>
+        </div>
+        <div class="install-rows" v-if="installType == 'Web_Fully-Auto' || installType == 'InstallFirstPVM'">
+          <div class="install-label">{{ $t('install.isNewPanels') }}：</div>
+          <div class="install-el">
+            <el-radio-group v-model="robotParam['/isnewpanels']" @change="updateRobotParam('/isnewpanels', false)">
+              <el-radio label=false>{{ $t('install.noPanels') }}</el-radio>
+              <el-radio label=true>{{ $t('install.yesPanels') }}</el-radio>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="install-rows" v-if="robotParam['/isnewpanels'] == 'true'">
+          <div class="install-label">{{ $t('install.panelsNumber') }}：</div>
+          <div class="install-el"><el-input v-model="robotParam['/pack_pvm_num']" @blur="updateRobotParam('/pack_pvm_num', 36)"></el-input></div>
+        </div>
+        <div class="install-btn">
+          <div class="install-first" v-if="installType == 'InstallFirstPVM'">
+            <el-button type="primary" @click="newSendTask(1,'InstallFirstPVM', {first_back: false})">{{ $t('prompt.back') }}</el-button>
+          </div>
+          <div class="install-first" v-if="installType == 'InstallFirstPVM'">
+            <el-button type="primary" @click="newSendTask(1,'InstallFirstPVM', {first_back: true})">{{ $t('prompt.front') }}</el-button>
+          </div>
+          <div v-if="installType == 'Web_Detach'">
+            <el-button type="primary" @click="sendTask(2)">{{$t('mains.confirm')}}</el-button>
+          </div>
+          <div v-if="installType == 'Web_Fully-Auto'">
+            <el-button type="primary" @click="sendTask(0)">{{$t('mains.confirm')}}</el-button>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <div class="version">updated-v: 202507021025001</div>
   </div>
 </template>
 
 <script>
 import Tips from "./tips";
 import Telecontrol from "@/components/Telecontrol";
-import DiagnosticTree from "@/components/deviceDiagnostic/diagnosticTree";
-import { mapState } from "vuex";
+import { install, mapState } from "vuex";
 import Toast from "@/components/toast";
 import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
@@ -287,7 +318,7 @@ import {date} from '@/utils/date';
 
 export default {
   name: "home",
-  components: { Tips, Telecontrol, Toast, Tasks, DiagnosticTree },
+  components: { Tips, Telecontrol, Toast, Tasks },
   data() {
     return {
       isTask: false,
@@ -309,7 +340,9 @@ export default {
       historySpeedData: [],
       diagnosticsObj: {},
       obstacleNotifyObj: null,
-      diagnosticsShow: false
+      installDialog: false,
+      installDialogTitle: '',
+      installType: ''
     };
   },
   computed: {
@@ -405,15 +438,24 @@ export default {
       }
     },
     
-    /**
-     * 任务信息窗口出来后重置滑动条
-     */
-    isShow(){
-      this.$nextTick(() => this.scrollToBottom());
-    }
-
   },
   methods: {
+    async installDialogShow(installType){
+      if (!this.rosConnect) {
+        return;
+      }
+      this.robotParam['/isnewpanels'] = 'false';
+      const res = await updateRobotParam({param_name: '/isnewpanels', param_value: this.robotParam['/isnewpanels'], default_value: 'false'});
+      if (res.code == 200) {
+        this.$store.dispatch('socket/robotParamUpdate', {seq: 11});
+      }else{
+        this.$message.error(res.msg);
+      }
+      this.installDialog = true;
+      this.installType = installType;
+      this.installDialogTitle = this.$t(`install.${installType}`)
+    },
+
     /** 弹窗打开：拉取数据 -> 初始化实例 -> 首次渲染 */
     async onDialogOpened(id) {
       console.log('onDialogOpenedid', id);
@@ -568,39 +610,44 @@ export default {
     winChanged(val) {
       this.isTask = val;
       this.isShow = 1;
+      this.$nextTick(() => {
+        this.scrollToBottom()
+      });
     },
     async winClose() {
       this.isTask = false;
       this.isShow = 0;
     },
     // 发送任务
-    sendTask(num) {
+    async sendTask(num) {
       if (!this.rosConnect) {
         return;
       }
       var isInstall = this.taskState.task_status == 1 || this.taskState.task_status == 2;
       if (isInstall) return this.$message.error(`${this.$t('prompt.tasking')}`);
+      if(this.taskState.task_status == 0 && this.taskState.id == 0) return this.$message.error(`${this.$t('prompt.flexbeNoConnected')}`);
       var id = Math.round(Math.random() * 900000000 + 100000000);
-      this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
-        confirmButtonText: this.$t('mains.confirm'),
-        cancelButtonText: this.$t('mains.cancel'),
-        inputPattern: /^[1-9]\d{0,2}$/,  // 三位整数
-        inputErrorMessage: this.$t('prompt.inputErrorMessage')
-      }).then(async ({ value }) => {
+      // this.$prompt(this.$t('prompt.inputNum'), this.$t('prompt.prompt'), {
+      //   confirmButtonText: this.$t('mains.confirm'),
+      //   cancelButtonText: this.$t('mains.cancel'),
+      //   inputPattern: /^[1-9]\d{0,2}$/,  // 三位整数
+      //   inputErrorMessage: this.$t('prompt.inputErrorMessage')
+      // }).then(async ({ value }) => {
         const modeMap = { 0: 'Web_Fully-Auto', 1: 'Web_Semi-Auto', 2: 'Web_Detach' };
-        var taskmsg = { id, task_status: 1, task_name: modeMap[num], task_type: num, task_num: Number(value) };
+        var taskmsg = { id, task_status: 1, task_name: modeMap[num], task_type: num, task_num: Number(this.robotParam['autoInstallNumber']) };
         this.$store.dispatch('socket/sendTask', taskmsg);
-        var taskinfo = { id, taskId: num, task_state: 1, result: value }
+        var taskinfo = { id, taskId: num, task_state: 1, result: this.robotParam['autoInstallNumber'] }
         // console.log('taskinfo', taskinfo);
         var res = await setTaskInfo(taskinfo);
         console.log('res', res);
-        this.$message.success('任务发送成功');
+        this.$message.success(this.$t('prompt.sendTask'));
         this.isShow = 1;
         this.toolbar1 = false;
+        this.installDialog = false;
         this.setLogInfo('info', '任务下发', modeMap[num]);
-      }).catch((error) => {
-        console.log('sendTask error', error);
-      });
+      // }).catch((error) => {
+      //   console.log('sendTask error', error);
+      // });
     },
     // 修改任务状态
     changeTask(num) {
@@ -616,7 +663,6 @@ export default {
           }
         }
         this.$store.dispatch('socket/obstacleUpdate', msg);
-        this.$message.success('关闭电子围栏');
       }
       this.setLogInfo('warning', '任务操作', 'task_status:' + num == 0 ? '停止任务' : num == 1 ? '继续任务' : '暂停任务');
     },
@@ -639,6 +685,7 @@ export default {
     async newSendTask(task_id ,task_name, params){
       var isInstall = this.taskState.task_status == 1 || this.taskState.task_status == 2;
       if (isInstall) return this.$message.error(`${this.$t('prompt.tasking')}`);
+      if(this.taskState.task_status == 0 && this.taskState.id == 0) return this.$message.error(`${this.$t('prompt.flexbeNoConnected')}`);
       var id = Math.round(Math.random() * 900000000 + 100000000);
       var taskmsg = { id, task_status: 1, task_name: task_name, task_type: 99, task_num: 1, param: JSON.stringify(params) };
       this.$store.dispatch('socket/sendTask', taskmsg);
@@ -646,11 +693,13 @@ export default {
       // console.log('taskinfo', taskinfo);
       // var res =  await setTaskInfo(taskinfo);
       // console.log('res', res);
-      this.$message.success('任务发送成功');
+        this.$message.success(this.$t('prompt.sendTask'));
       this.isShow = 1;
       this.toolbar1 = false;
+      this.installDialog = false;
       this.setLogInfo('info', '任务下发', task_name);
     },
+
     //首块安装任务
     InstallFirstTask(){
       if (!this.rosConnect) {
@@ -680,6 +729,7 @@ export default {
           }         
         });
     },
+
     // flexbelog滚动到底部
     scrollToBottom() {
       const contents = this.$refs.contents;
@@ -694,7 +744,6 @@ export default {
     },
     // 机械臂和底盘急停
     estop(arm, base) {
-      this.$message.error('急停按钮已触发');
       this.isEstop = base;
       this.$store.dispatch('socket/armEstop', arm);
       this.$store.dispatch('socket/Estop', base);
@@ -1230,9 +1279,41 @@ export default {
       color: #d6d6d6;
     }
   }
-  
 }
-::v-deep .el-dialog{
-  height: calc(100vh - 120px);
+
+.install-info {
+    width: 60%;
+    margin: auto;
+
+    .install-rows {    
+      display: flex;
+      display: -webkit-flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .install-btn {
+      display: flex;
+      display: -webkit-flex;
+      justify-content: flex-end;
+
+      .install-first {
+        margin-left: 40px;
+      }
+    }
+    .install-el {
+      width: calc(100% - 90px);
+    }
+}
+.version {
+  position: absolute;
+  bottom: 2px;
+  left: 5px;
+  font-size: 12px;
+  color: #d6d6d6;
+}
+::v-deep .el-radio__original {
+  display: none !important; /* 隐藏原生 radio 输入，但仍然允许交互 */
 }
 </style>

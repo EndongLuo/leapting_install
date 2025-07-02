@@ -18,6 +18,7 @@ const upload = require('./upload')
 const task = require('./task')
 const setting = require('./setting')
 const robot = require('./robot')
+const log = require('./log')
 
 
 
@@ -28,4 +29,6 @@ router.use(upload.routes())
 router.use(task.routes())
 router.use(setting.routes())
 router.use(robot.routes())
+router.use(log.routes())
+
 module.exports = router

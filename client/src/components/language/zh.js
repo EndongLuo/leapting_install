@@ -104,6 +104,11 @@ const zh = {
     global: '全局',
     majoradjust: '粗调',
     minoradjust: '微调',
+    pvmNumber: '组件数量',
+    isNewPanels: '是否新组',
+    panelsNumber: '新组数量',
+    noPanels: '否',
+    yesPanels: '是'
   },
   config: {
     pducontrol: 'PDU 控制',
@@ -153,7 +158,8 @@ const zh = {
     enabled: '已启用',
     disabled: '已禁用',
     trigmsg: '向/trig话题发送信号',
-    pressure_threshold: '压力阈值'
+    pressure_threshold: '压力阈值',
+    handEyeMsg: '数值必须大于25',
   },
   connPrompt: {
     success: '安装机器人已连接。',
@@ -173,6 +179,7 @@ const zh = {
     updateFailed:'更新失败',
     noSwitch: '无需切换, 当前版本为：',
     tasking: '任务正在执行中，请等待任务结束后再发送新任务！',
+    flexbeNoConnected: 'Flexbe 未连接，请检查或等待Flexbe',
     robotNotConnected: '机器人未连接，请检查机器人连接状态后再进行操作。',
     cancelReboot: '取消重启',
     confirmReboot: '确认重启？',
@@ -230,7 +237,9 @@ const zh = {
     NOPACKAGE: '未检测到更新包',
     NOUSB: '未检测到U盘',
     electronic_fencing: '电子围栏范围内有障碍物，请移除障碍物并且重新启动示教器程序',
-    pressure_error: '吸盘压力已低于设定阈值，组件有掉落风险。请注意安全'
+    pressure_error: '吸盘压力已低于设定阈值，组件有掉落风险。请注意安全',
+    pvm_num: '大概剩余',
+    stop: '停止'
   },
   diagnostics: {
     'battery_voltage': '电池电压',

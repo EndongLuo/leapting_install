@@ -101,6 +101,11 @@ const en = {
     RGB: 'RGB',
     depth: 'Depth',
     res:'Segmentation',
+    pvmNumber: 'PVM Number',
+    isNewPanels: 'Is New Panels',
+    panelsNumber: 'Panels Number',
+    noPanels: 'No',
+    yesPanels: 'Yes'
   },
   config: {
     pducontrol: 'PDU Control',
@@ -150,7 +155,8 @@ const en = {
     enabled: 'Enabled',
     disabled: 'Disabled',
     trigmsg: 'Send a signal to the /trig topic',
-    pressure_threshold: 'Pressure Tthreshold'
+    pressure_threshold: 'Pressure Tthreshold',
+    handEyeMsg: 'Number must > 25',
   },
   connPrompt: {
     success: 'Connected to Install Robot.',
@@ -168,6 +174,7 @@ const en = {
     updateFailed: 'Update failed',
     noSwitch: 'No need to switch, the current version is:',
     tasking: 'The task is in progress, please end the task before sending a new task!',
+    flexbeNoConnected: 'The Flexbe is not connected. Please check the connection status before proceeding.',
     robotNotConnected: 'The robot is not connected. Please check the connection status before proceeding.',
     cancelReboot: 'Reboot canceled',
     confirmReboot: 'Confirm reboot?',
@@ -227,7 +234,9 @@ const en = {
     NOPACKAGE: 'No Find Update Package',
     NOUSB: 'No Find USB Device',
     electronic_fencing: 'There are obstacles near the electronic fence. Please remove the obstacles and restart the teaching device program.',
-    pressure_error: 'The suction cup pressure has dropped below the set threshold, and there is a risk of the component falling. Please pay attention to safety.'
+    pressure_error: 'The suction cup pressure has dropped below the set threshold, and there is a risk of the component falling. Please pay attention to safety.',
+    pvm_num: 'Probably remaining ',
+    stop: 'Stop'
   },
   diagnostics: {
     'battery_voltage': 'battery_voltage',

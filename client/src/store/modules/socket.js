@@ -5,6 +5,7 @@ const state = {
   socket: null,
   // ips: ['192.168.147.9'],
   // ips: ['10.168.2.178'],
+  // ips: ['10.168.2.166'],
   ips: ['127.0.0.1'],
   nowIP: localStorage.getItem('nowIP') || '127.0.0.1',
   taskState: {},

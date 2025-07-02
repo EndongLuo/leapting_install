@@ -75,6 +75,7 @@ app.use(jwt({
 }).unless({
   // 设置login、register接口，可以不需要认证访问
   path: [
+    /\/api\/log/,
     /\/api\/robot/,
     /\/api\/task/,
     /\/api\/user\/register/,

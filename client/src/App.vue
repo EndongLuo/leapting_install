@@ -193,7 +193,11 @@ export default {
     dialogs(d){
       this.numberText = '';
       if(/\d/.test(d.btns[0])){
-        this.numberText = d.btns[0] + '个文件';
+        if(this.dialogs.text == 'pvm_num'){
+          this.numberText = d.btns[0] + '块组件';
+        }else{
+          this.numberText = d.btns[0] + '个文件';
+        }
       }     
     }
   },

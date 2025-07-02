@@ -68,6 +68,12 @@ export default [
         name: 'three',
         component: () => import('@/views/three/index'),
         meta: { isShow: true ,title: 'three'},
+      },
+      {
+        path: '/db_diagnostics',
+        name: 'db_diagnostics',
+        component: () => import('@/views/diagnostics/db_diagnostics'),
+        meta: { isShow: true ,title: 'DB Diagnostics'},
       }
     ]
   },

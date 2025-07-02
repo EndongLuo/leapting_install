@@ -32,35 +32,19 @@ function buildTreeForElTree(data) {
       currentNode = childNode;
       
       // 处理/STATUS节点的values
-      if (currentNode.fullPath === '/STATUS' && item.values?.length > 0) {
+      if (currentNode.fullPath === '/DEVICES/PLC/rosbridge_plc24: Hardware status') {
         item.values.forEach(valueItem => {
           const valueNode = {
             id: `${idCounter++}`,
             label: `${valueItem.key}: ${valueItem.value}`,
-            name: valueItem.key,
-            value: valueItem.value,
-            fullPath: `${currentNode.fullPath}/${valueItem.key}`,
+            name: 'plc24/' + valueItem.key,
+            value: 'plc24/' + valueItem.value,
+            fullPath: `plc24/${valueItem.key}`,
             isValueNode: true
           };
           currentNode.children.push(valueNode);
         });
       }
-    }
-    
-    // 处理非/STATUS节点的values
-    if (currentNode.fullPath !== '/STATUS' && item.values?.length > 0) {
-      item.values.forEach(valueItem => {
-        const valueNode = {
-          id: `${idCounter++}`,
-          label: `${valueItem.key}: ${valueItem.value}`,
-          name: valueItem.key,
-          value: valueItem.value,
-          fullPath: `${currentNode.fullPath}/${valueItem.key}`,
-          isValueNode: true
-        };
-        if (!currentNode.children) currentNode.children = [];
-        currentNode.children.push(valueNode);
-      });
     }
   });
   

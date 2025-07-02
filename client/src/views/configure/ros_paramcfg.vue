@@ -432,8 +432,6 @@ export default {
         msg.frame_id.enable = this.fencingEnable;
         msg.frame_id.distance = this.robotParam['/mid360_elect_fence/detect_dis'];
         this.$store.dispatch('socket/setParam', this.fencingEnable);
-        if(this.fencingEnable) this.$message.success(`上位机发送启用电子围栏信号`);
-        else this.$message.success(`上位机发送禁用电子围栏信号`);
       }
       this.$store.dispatch('socket/obstacleUpdate', msg);
     },
@@ -442,7 +440,7 @@ export default {
     checkHandEyeData(val){
       if(val < 25){
         this.HandEyeData = 25;
-        this.$message.error(`${this.$t('数值必须大于25')}`);
+        this.$message.error(`${this.$t('config.handEyeMsg')}`);
       }
     }
   },

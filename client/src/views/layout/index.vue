@@ -261,6 +261,7 @@ export default {
 .menu_font {
   color: #000000;
   font-size: 36px;
+  margin-left: 10px;
 }
 
 .header_right {

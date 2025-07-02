@@ -44,10 +44,26 @@ export const setLog = data => request.post(`/robot/log`, data);
 export const getLog = data => request.get(`/robot/log`, data);
 
 /**
- * 更新ROS Param
+ * @description更新ROS Param
  * @param {*} data 
  * @returns 
  */
 export const updateRobotParam = data => request.put(`/robot/RobotParam`, data);
 
+/**
+ * @description 获取robot_param—表格数据
+ * @returns 
+ */
 export const getRobotParam = () => request.get(`/robot/RobotParam`);
+
+/**
+ * @description 获取诊断数据存储表 开机次数集合
+ * @returns Array 
+ */
+export const getBootsNumList = () => request.get(`/log/getBootsNumList`);
+
+/**
+ * @description 获取诊断数据存储表 选定时间段内msg
+ * @returns Array 
+ */
+export const getMessages = data => request.post(`/log/getMessages`, data);

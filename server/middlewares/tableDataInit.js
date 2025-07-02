@@ -25,6 +25,9 @@ module.exports = function() {
         {'id': 19,'param_name': '/trajectory_path/stop_distance', 'param_type': 'FLOAT', 'param_value': '2.4', 'param_class': 'ros', 'param_description': '避障距离'},
         {'id': 20,'param_name': '/mid360_elect_fence/detect_dis', 'param_type': 'FLOAT', 'param_value': '2.0', 'param_class': 'ros', 'param_description': '电子围栏检测范围值'},
         {'id': 21,'param_name': '/flexbe/open_fence_bool', 'param_type': 'BOOL', 'param_value': 'false', 'param_class': 'ros', 'param_description': '电子围栏flexb安装任务是否开启'},
+        {'id': 22,'param_name': '/pack_pvm_num', 'param_type': 'INTEGER', 'param_value': '0', 'param_class': 'ros', 'param_description': '组件放置数量'},
+        {'id': 23,'param_name': '/isnewpanels', 'param_type': 'BOOL', 'param_value': 'false', 'param_class': 'ros', 'param_description': '是否整组组件'},
+        {'id': 24,'param_name': 'autoInstallNumber', 'param_type': 'INTEGER', 'param_value': '0', 'param_class': 'web', 'param_description': '安装组件数量'},
     ]
     const robot_param_res = await RobotParamModel.init(robotParamData);
     console.log('initRobotParamTable', robot_param_res);
