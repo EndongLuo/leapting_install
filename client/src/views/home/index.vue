@@ -122,7 +122,11 @@
                 <div v-if="taskState.end_time"><span class="title">{{ $t('task.endtime') }}:</span>{{ taskState.end_time
                 }}
                 </div>
+<<<<<<< HEAD
                 <div  v-if="taskState.last_duration&&taskState.task_type !== 2">
+=======
+                <div v-if="taskState.last_duration && taskState.task_type !== 2">
+>>>>>>> led
                   <!-- <span class="title" v-if="taskState.last_duration">{{ $t('task.InstallSpeed') }}:</span> -->
                   <span class="title">{{ $t('task.InstallSpeed') }}:</span>
                   {{ taskState.last_duration }}
@@ -168,6 +172,7 @@
               <span v-if="l.status_code == 1" style="color: #E6A23C; font-weight: 600;">{{ l.text }}</span>
               <span v-if="l.status_code == 0" style="font-weight: 600;">{{ l.text }}</span>
             </div>
+            <div ref="scrollAnchor"></div>
           </div>
         </div>
       </div>
@@ -314,7 +319,7 @@ import Tasks from "@/components/Tacks";
 import { debounce } from 'lodash';
 import { setTaskInfo, getHistorySpeed, setLog, updateRobotParam, getRobotParam } from '@/api';
 import * as echarts from 'echarts';
-import {date} from '@/utils/date';
+import { date } from '@/utils/date';
 
 export default {
   name: "home",
@@ -349,7 +354,6 @@ export default {
     ...mapState("socket", ['rosConnect', 'Estop', 'flexbeLog', 'taskState', 'rawImg', 'depImg', 'resImg', 'databaseUpdate', 'armDep', 'newDiagnostics', 'obstacled', 'bridgeEnable']),
   },
   mounted() {
-    this.$nextTick(() => this.scrollToBottom());
     this.loop1();
     this.flexbeSwitch = JSON.parse(localStorage.getItem('flexbeSwitch'));
     this.getRobotParam();
@@ -358,11 +362,9 @@ export default {
     if (!v) localStorage.setItem('video', 0)
   },
   watch: {
-    flexbeLog() {
-      this.$nextTick(() => {
-        this.scrollToBottom();
-      });
-    },
+    flexbeLog: 'scrollToBottom',
+    isTask: 'scrollToBottom',
+    isShow: 'scrollToBottom',
     databaseUpdate(val, oldval) {
       console.log(val, oldval);
       if (val) this.getRobot();
@@ -475,8 +477,6 @@ export default {
       var res = await getHistorySpeed(id);
       console.log('res', res);
       this.historySpeedData = res.data;
-
-
     },
     /** 初始化 ECharts，仅调用一次 */
     initChart(id) {
@@ -487,7 +487,7 @@ export default {
         const yDurations = this.historySpeedData.map(item => item.duration);
 
         // console.log(date(this.historySpeedData[0].time));
-        
+
         var option = {
           title: {
             text: `ID: ${id}`
@@ -732,8 +732,14 @@ export default {
 
     // flexbelog滚动到底部
     scrollToBottom() {
-      const contents = this.$refs.contents;
-      if (contents) contents.scrollTop = contents.scrollHeight;
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          const el = this.$refs.scrollAnchor;
+          if (el && typeof el.scrollIntoView === 'function') {
+            el.scrollIntoView({ behavior: 'auto', block: 'end' });
+          }
+        });
+      });
     },
     // 工具箱
     toolbar(num) {

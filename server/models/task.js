@@ -318,10 +318,9 @@ class TaskModel {
   static async updateTaskInfo(data) {
     return await TaskInfo.update(
       {
-        odom: data.task_odom,
         path: data.path,
-        task_state: data.task_type,
-        result: data.progress,
+        task_state: data.task_status,
+        odom: data.odom,
         start_time: data.start_time,
         end_time: data.end_time,
       },

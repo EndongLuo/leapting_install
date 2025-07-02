@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+
 
 /**
  * Module dependencies.
@@ -7,6 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('demo:server');
 var http = require('http');
+
+const path = require('path');
+const fs = require('fs');
+
 
 /**
  * Get port from environment and store in Express.
@@ -92,3 +96,9 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+// // 动态加载打包后的 socket 模块
+// const socketModulePath = path.join(__dirname, '../socket/index.js');
+// if (fs.existsSync(socketModulePath)) {
+//   require(socketModulePath)(server);
+// }
